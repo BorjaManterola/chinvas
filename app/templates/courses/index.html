@@ -19,6 +19,9 @@
                         <a href="{{ url_for('course_routes.edit_course_form', id=course.id) }}" class="btn btn-sm btn-warning">
                             <i class="bi bi-pencil-square"></i> Editar
                         </a>
+                        <a href="{{ url_for('course_routes.show_course', id=course.id) }}" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
                         <form method="POST" action="{{ url_for('course_routes.delete_course', id=course.id) }}" onsubmit="return confirm('¿Estás seguro de eliminar este curso?');">
                             <button type="submit" class="btn btn-sm btn-danger">
                                 <i class="bi bi-trash3"></i> Eliminar

@@ -76,3 +76,8 @@ def delete_course(id):
     db.session.delete(course)
     db.session.commit()
     return redirect(url_for('course_routes.get_courses'))
+
+@course_bp.route('/<int:id>/show', methods=['GET'])
+def show_course(id):
+    course = Course.query.get_or_404(id)
+    return render_template('courses/show.html', course=course)
