@@ -12,7 +12,11 @@ def create_app():
     db.init_app(app)
 
     with app.app_context():
-        from app import models  # ✅ Esto sí se permite
-        db.create_all()
+        from app import models  # Importa todos los modelos
+        db.create_all()  # Crea las tablas en la base de datos si no existen
+
+        # Registrar rutas (blueprints)
+        from app.routes import register_routes
+        register_routes(app)
 
     return app

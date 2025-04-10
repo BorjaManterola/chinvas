@@ -1,5 +1,5 @@
 -- Elimina tablas si existen (respetando el orden de FK)
-DROP TABLE IF EXISTS grades, tasks, assessments, members, groups,
+DROP TABLE IF EXISTS grades, tasks, assessments, members, `groups`,
     usersituations, prerequisites, sections, periods,
     courses, users;
 
@@ -61,7 +61,7 @@ CREATE TABLE usersituations (
 );
 
 -- Tabla: groups
-CREATE TABLE groups (
+CREATE TABLE `groups` (
     id INT PRIMARY KEY AUTO_INCREMENT,
     section_id INT NOT NULL,
     name VARCHAR(255),
@@ -74,7 +74,7 @@ CREATE TABLE members (
     group_id INT,
     user_id INT,
     PRIMARY KEY (group_id, user_id),
-    FOREIGN KEY (group_id) REFERENCES groups(id),
+    FOREIGN KEY (group_id) REFERENCES `groups`(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
