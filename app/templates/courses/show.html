@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card mt-4 shadow-sm">
+        <div class="card-body">
+            <h3 class="card-title">{{ course.name }}</h3>
+            <p class="card-text">
+                <strong>Descripción:</strong> {{ course.description or 'Sin descripción' }}
+            </p>
+            <a href="{{ url_for('course_routes.get_courses') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver al listado
+            </a>
+            <a href="{{ url_for('course_routes.edit_course_form', id=course.id) }}" class="btn btn-warning ms-2">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
