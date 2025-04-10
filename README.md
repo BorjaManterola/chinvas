@@ -75,8 +75,8 @@ DB_NAME=chinvas
 ### 3. Ejecutar los scripts SQL
 
 ```bash
-mysql -u root -p chinvas < db/init_db.sql
-mysql -u root -p chinvas < db/populate_db.sql
+Get-Content db/init_db.sql | mysql -u root -p chinvas
+Get-Content db/populate_db.sql | mysql -u root -p chinvas
 ```
 
 ---
