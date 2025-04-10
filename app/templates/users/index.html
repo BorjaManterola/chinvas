@@ -3,6 +3,7 @@
 {% block content %}
 <div class="container">
     <h2 class="mb-4">Usuarios</h2>
+    <a href="/users/create" class="btn btn-primary mb-3">New User</a>
     {% if users %}
         <ul class="list-group">
             {% for user in users %}
@@ -11,8 +12,10 @@
                         <strong>{{ user.name }}</strong> - <span class="text-muted">{{ user.email }}</span>
                     </div>
                     <div>
-                        <a href="/users/{{ user.id }}/edit" class="btn btn-sm btn-warning me-2">Editar</a>
-                        <a href="/users/{{ user.id }}/delete" class="btn btn-sm btn-danger">Eliminar</a>
+                        <a href="/users/{{ user.id }}/edit" class="btn btn-sm btn-warning me-2">Edit</a>
+                        <form action="/users/{{ user.id }}/delete" method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro de eliminar este curso?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
                     </div>
                 </li>
             {% endfor %}

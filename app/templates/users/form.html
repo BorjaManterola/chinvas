@@ -2,55 +2,29 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="mb-4">Formulario de Usuario</h2>
-    <form id="userForm" class="card card-body bg-light">
+    <h2 class="mb-4">{{ "Editar Usuario" if user else "Crear Usuario" }}</h2>
+    <form method="POST" action="{{ url_for('user_routes.update_user', id=user.id) if user else url_for('user_routes.create_user') }}">
         <div class="mb-3">
-            <label for="name" class="form-label">Nombre:</label>
-            <input type="text" class="form-control" id="name" name="name" required>
+            <label for="name" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ user.name if user else '' }}" required>
         </div>
-
         <div class="mb-3">
-            <label for="email" class="form-label">Correo Electrónico:</label>
-            <input type="email" class="form-control" id="email" name="email" required>
+            <label for="email" class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ user.email if user else '' }}" required>
         </div>
-
         <div class="mb-3">
-            <label for="role" class="form-label">Rol:</label>
-            <select id="role" name="role" class="form-select">
-                <option value="alumno">Alumno</option>
-                <option value="profesor">Profesor</option>
+            <label for="role" class="form-label">Rol</label>
+            <select class="form-select" id="role" name="role">
+                <option value="alumno" {% if user and user.role == 'alumno' %}selected{% endif %}>Alumno</option>
+                <option value="profesor" {% if user and user.role == 'profesor' %}selected{% endif %}>Profesor</option>
             </select>
         </div>
-
         <div class="mb-3">
-            <label for="entry_date" class="form-label">Fecha de Ingreso:</label>
-            <input type="date" class="form-control" id="entry_date" name="entry_date">
+            <label for="entry_date" class="form-label">Fecha de Ingreso</label>
+            <input type="date" class="form-control" id="entry_date" name="entry_date" value="{{ user.entry_date if user else '' }}">
         </div>
-
-        <button type="button" class="btn btn-primary" id="submitBtn">Guardar</button>
+        <button type="submit" class="btn btn-primary">{{ "Actualizar" if user else "Guardar" }}</button>
+        <a href="{{ url_for('user_routes.get_users') }}" class="btn btn-secondary">Volver</a>
     </form>
 </div>
-
-<script>
-    document.getElementById('submitBtn').addEventListener('click', async () => {
-        const form = document.getElementById('userForm');
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
-        const response = await fetch('/users/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
-
-        if (response.ok) {
-            alert('Usuario creado exitosamente');
-            window.location.href = '/users/'; // Redirige a la página de usuarios
-        } else {
-            alert('Error al crear el usuario');
-        }
-    });
-</script>
 {% endblock %}
