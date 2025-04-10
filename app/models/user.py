@@ -6,6 +6,6 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
-    role = db.Column(db.String(50), nullable=False)  # alumno, profesor, etc.
-    entry_date = db.Column(db.Date)
+    role = db.Column(db.String(50), nullable=False)
+    entry_date = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime)

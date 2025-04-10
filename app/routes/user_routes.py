@@ -31,22 +31,30 @@ def new_user_form():
 def create_user():
     if request.is_json:
         data = request.get_json()
-        name = data.get('name')
-        email = data.get('email')
-        role = data.get('role')
-        entry_date = data.get('entry_date')
     else:
-        name = request.form['name']
-        email = request.form['email']
-        role = request.form['role']
-        entry_date = request.form.get('entry_date')
+        data = request.form
 
-    user = User(name=name, email=email, role=role, entry_date=entry_date)
+    name = data.get('name')
+    email = data.get('email')
+    role = data.get('role')
+    entry_date = data.get('entry_date')
+
+    # Server-side validation
+    if not name or not email or not role:
+        return jsonify({'error': 'Name, email, and role are required'}), 400
+
+    if role == 'Student' and not entry_date:
+        return jsonify({'error': 'Entry date is required for students'}), 400
+
+    if role == 'Teacher' and entry_date:
+        return jsonify({'error': 'Teachers should not have an entry date'}), 400
+
+    user = User(name=name, email=email, role=role, entry_date=entry_date if entry_date else None)
     db.session.add(user)
     db.session.commit()
 
     if request.is_json:
-        return jsonify({'message': 'Usuario creado', 'id': user.id}), 201
+        return jsonify({'message': 'User created successfully', 'id': user.id}), 201
     return redirect(url_for('user_routes.get_users'))
 
 # ✅ Mostrar formulario para editar usuario
