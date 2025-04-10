@@ -1,14 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Usuarios</h2>
-{% if users %}
-    <ul>
-        {% for user in users %}
-            <li>{{ user.name }} - {{ user.email }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No hay usuarios disponibles.</p>
-{% endif %}
+<div class="container">
+    <h2 class="mb-4">Usuarios</h2>
+    {% if users %}
+        <ul class="list-group">
+            {% for user in users %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ user.name }}</strong> - <span class="text-muted">{{ user.email }}</span>
+                    </div>
+                    <div>
+                        <a href="/users/{{ user.id }}/edit" class="btn btn-sm btn-warning me-2">Editar</a>
+                        <a href="/users/{{ user.id }}/delete" class="btn btn-sm btn-danger">Eliminar</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            No hay usuarios disponibles.
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

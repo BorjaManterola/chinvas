@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Formulario de Usuario</h2>
+    <form id="userForm" class="card card-body bg-light">
+        <div class="mb-3">
+            <label for="name" class="form-label">Nombre:</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Correo Electrónico:</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="role" class="form-label">Rol:</label>
+            <select id="role" name="role" class="form-select">
+                <option value="alumno">Alumno</option>
+                <option value="profesor">Profesor</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="entry_date" class="form-label">Fecha de Ingreso:</label>
+            <input type="date" class="form-control" id="entry_date" name="entry_date">
+        </div>
+
+        <button type="button" class="btn btn-primary" id="submitBtn">Guardar</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+        const form = document.getElementById('userForm');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        const response = await fetch('/users/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            alert('Usuario creado exitosamente');
+            window.location.href = '/users/'; // Redirige a la página de usuarios
+        } else {
+            alert('Error al crear el usuario');
+        }
+    });
+</script>
+{% endblock %}

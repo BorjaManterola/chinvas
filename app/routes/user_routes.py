@@ -41,7 +41,6 @@ def delete_user(id):
     db.session.commit()
     return jsonify({ 'message': 'Usuario eliminado' })
 
-@user_bp.route('/users/index')
-def index_users():
-    users = User.query.all()
-    return render_template('users/index.html', users=users)
+@user_bp.route('/form', methods=['GET'])
+def user_form():
+    return render_template('users/form.html')

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Formulario de Curso</h2>
+<form method="POST" action="/courses/">
+    <label for="name">Nombre del Curso:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="description">Descripción:</label>
+    <textarea id="description" name="description"></textarea>
+
+    <button type="submit">Guardar</button>
+</form>
+{% endblock %}

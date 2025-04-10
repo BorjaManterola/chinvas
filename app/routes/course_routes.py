@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 from app.models.course import Course
 from app import db
 
@@ -37,3 +37,11 @@ def delete_course(id):
     db.session.delete(course)
     db.session.commit()
     return jsonify({ 'message': 'Curso eliminado' })
+
+@course_bp.route('/form', methods=['GET'])
+def course_form():
+    return render_template('courses/form.html')
+
+@course_bp.route('/index', methods=['GET'])
+def course_index():
+    return render_template('courses/index.html')
