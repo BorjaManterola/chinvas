@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">{{ 'Edit Section' if section else 'New Section' }}</h2>
+
+    <form method="POST"
+          action="{{ url_for('section_routes.update_section', id=section.id) if section else url_for('section_routes.create_section') }}"
+          class="card card-body bg-light shadow-sm">
+
+        {% if period %}
+            <input type="hidden" name="period_id" value="{{ period.id }}">
+            <div class="mb-3">
+                <label class="form-label">Period:</label>
+                <input type="text" class="form-control" value="{{ period.semester }}" disabled>
+            </div>
+        {% elif section %}
+            <input type="hidden" name="period_id" value="{{ section.period_id }}">
+        {% endif %}
+
+        <div class="mb-3">
+            <label for="nrc" class="form-label">Section Code (NRC):</label>
+            <input type="number" class="form-control" id="nrc" name="nrc"
+                   value="{{ section.nrc if section else '' }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="type_evaluate" class="form-label">Evaluation Type:</label>
+            <select class="form-select" id="type_evaluate" name="type_evaluate" required>
+                <option value="" disabled selected>Select evaluation type</option>
+                <option value="Percentage" {% if section and section.type_evaluate == 'Percentage' %}selected{% endif %}>Percentage</option>
+                <option value="Weight" {% if section and section.type_evaluate == 'Weight' %}selected{% endif %}>Weight</option>
+            </select>
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <a href="{{ url_for('period_routes.show_period', id=period.id if period else section.period_id) }}"
+               class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-save"></i> Save
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
