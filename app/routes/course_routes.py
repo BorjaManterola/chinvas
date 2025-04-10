@@ -35,12 +35,14 @@ def create_course():
     if request.is_json:
         data = request.get_json()
         name = data.get('name')
+        code = data.get('code')
         description = data.get('description')
     else:
         name = request.form['name']
+        code = request.form['code']
         description = request.form.get('description', '')
 
-    course = Course(name=name, description=description)
+    course = Course(name=name, code=code, description=description)
     db.session.add(course)
     db.session.commit()
 
@@ -61,6 +63,7 @@ def edit_course_form(id):
 def update_course(id):
     course = Course.query.get_or_404(id)
     course.name = request.form['name']
+    course.code = request.form['code']
     course.description = request.form.get('description', '')
     db.session.commit()
     return redirect(url_for('course_routes.get_courses'))
