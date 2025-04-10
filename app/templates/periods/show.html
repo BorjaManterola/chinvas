@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card mt-4 shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title">Detalle del Período</h4>
+
+            <p><strong>Curso:</strong> {{ period.course.name }}</p>
+            <p><strong>Semestre:</strong> {{ period.semester }}</p>
+
+            <div class="mt-3">
+                <a href="{{ url_for('course_routes.show_course', id=period.course_id) }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al curso
+                </a>
+                <a href="{{ url_for('period_routes.edit_period_form', id=period.id) }}" class="btn btn-warning ms-2">
+                    <i class="bi bi-pencil"></i> Editar período
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

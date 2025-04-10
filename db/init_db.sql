@@ -26,7 +26,6 @@ CREATE TABLE courses (
 CREATE TABLE periods (
     id INT PRIMARY KEY AUTO_INCREMENT,
     course_id INT NOT NULL,
-    nrc INT NOT NULL,
     semester VARCHAR(10),
     FOREIGN KEY (course_id) REFERENCES courses(id)
 );
@@ -35,7 +34,7 @@ CREATE TABLE periods (
 CREATE TABLE sections (
     id INT PRIMARY KEY AUTO_INCREMENT,
     period_id INT NOT NULL,
-    code INT,
+    nrc INT NOT NULL,
     type_evaluate VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (period_id) REFERENCES periods(id)
