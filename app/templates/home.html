@@ -1,7 +1,70 @@
-<!-- filepath: d:\2025\Diseño de Software Verificable\Proyecto\chinvas\app\templates\home.html -->
 {% extends "base.html" %}
-
 {% block content %}
-<h2>Bienvenido al Sistema de Gestión Académica - Chinvas</h2>
-<p>Utiliza el menú para navegar por las diferentes secciones del sistema.</p>
+<h2 class="text-center mb-4">Bienvenido al Sistema de Gestión Académica - Chinvas</h2>
+<p class="text-center mb-5">Utiliza el menú para navegar por las diferentes secciones del sistema.</p>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-4 mb-4 text-center">
+      <a href="{{ url_for('user_routes.get_users') }}" class="btn-menu-home shadow user-btn">
+        <div class="icon-container mb-3">
+          <i class="fas fa-users fa-3x"></i>
+        </div>
+        <h3>Usuarios</h3>
+        <p>Gestiona los usuarios del sistema</p>
+      </a>
+    </div>
+    <div class="col-md-4 mb-4 text-center">
+      <a href="{{ url_for('course_routes.get_courses') }}" class="btn-menu-home shadow course-btn">
+        <div class="icon-container mb-3">
+          <i class="fas fa-book fa-3x"></i>
+        </div>
+        <h3>Cursos</h3>
+        <p>Administra los cursos académicos</p>
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .btn-menu-home {
+    display: block;
+    padding: 2rem 1rem;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    height: 100%;
+    color: white;
+  }
+  
+  .user-btn {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+  }
+  
+  .course-btn {
+    background: linear-gradient(135deg, #1cc88a, #13855c);
+  }
+  
+  .btn-menu-home:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+    text-decoration: none;
+    color: white;
+  }
+  
+  .btn-menu-home .icon-container {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-menu-home h3 {
+    font-weight: 600;
+  }
+  
+  .btn-menu-home p {
+    opacity: 0.9;
+  }
+</style>
 {% endblock %}
