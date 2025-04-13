@@ -2,14 +2,14 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="mb-4">{{ 'Editar Período' if period else 'Nuevo Período' }}</h2>
+    <h2 class="mb-4">{{ 'Edit Period' if period else 'New Period' }}</h2>
 
     <form method="POST"
           action="{{ url_for('period_routes.update_period', id=period.id) if period else url_for('period_routes.create_period') }}"
           class="card card-body bg-light shadow-sm">
 
         <div class="mb-3">
-            <label for="semester" class="form-label">Semestre:</label>
+            <label for="semester" class="form-label">Semester:</label>
             <input type="text" class="form-control" id="semester" name="semester"
                    value="{{ period.semester if period else '' }}" required>
         </div>
@@ -17,7 +17,7 @@
         {% if course %}
             <input type="hidden" name="course_id" value="{{ course.id }}">
             <div class="mb-3">
-                <label class="form-label">Curso:</label>
+                <label class="form-label">Course:</label>
                 <input type="text" class="form-control" value="{{ course.name }}" disabled>
             </div>
         {% elif period %}
@@ -27,10 +27,10 @@
         <div class="d-flex justify-content-end">
             <a href="{{ url_for('course_routes.show_course', id=course.id if course else period.course_id) }}"
                class="btn btn-outline-secondary me-2">
-                <i class="bi bi-arrow-left"></i> Cancelar
+                <i class="bi bi-arrow-left"></i> Cancel
             </a>
             <button type="submit" class="btn btn-success">
-                <i class="bi bi-save"></i> Guardar
+                <i class="bi bi-save"></i> Save
             </button>
         </div>
     </form>

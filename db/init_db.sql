@@ -51,11 +51,11 @@ CREATE TABLE prerequisites (
 
 -- Tabla: usersituations
 CREATE TABLE usersituations (
+    id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
     section_id INT,
     situation VARCHAR(50),
     final_grade DECIMAL(4,2),
-    PRIMARY KEY (user_id, section_id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (section_id) REFERENCES sections(id)
 );

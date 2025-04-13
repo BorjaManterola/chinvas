@@ -27,11 +27,48 @@
         <div class="mb-3">
             <label for="type_evaluate" class="form-label">Evaluation Type:</label>
             <select class="form-select" id="type_evaluate" name="type_evaluate" required>
-                <option value="" disabled selected>Select evaluation type</option>
+                <option value="" disabled {% if not section %}selected{% endif %}>Select evaluation type</option>
                 <option value="Percentage" {% if section and section.type_evaluate == 'Percentage' %}selected{% endif %}>Percentage</option>
                 <option value="Weight" {% if section and section.type_evaluate == 'Weight' %}selected{% endif %}>Weight</option>
             </select>
         </div>
+
+        <!-- ✅ Acordeón único con buscador de profesores -->
+        {% if not section %}
+            <!-- Acordeón de selección de profesores solo al crear -->
+            <div class="accordion mb-3" id="accordionTeachers">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTeachers">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTeachers" aria-expanded="false" aria-controls="collapseTeachers">
+                            Seleccionar Profesores
+                        </button>
+                    </h2>
+                    <div id="collapseTeachers" class="accordion-collapse collapse" aria-labelledby="headingTeachers"
+                        data-bs-parent="#accordionTeachers">
+                        <div class="accordion-body">
+                            <input type="text" class="form-control mb-3" id="teacherSearch" placeholder="Buscar profesor por nombre...">
+
+                            <div id="teacherList">
+                                {% for teacher in teachers %}
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                            type="checkbox"
+                                            name="teacher_ids"
+                                            id="teacher_{{ teacher.id }}"
+                                            value="{{ teacher.id }}">
+                                        <label class="form-check-label teacher-label" for="teacher_{{ teacher.id }}">
+                                            {{ teacher.name }} ({{ teacher.email }})
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
 
         <div class="d-flex justify-content-end">
             <a href="{{ url_for('period_routes.show_period', id=period.id if period else section.period_id) }}"
@@ -44,4 +81,21 @@
         </div>
     </form>
 </div>
+
+<!-- 🔍 Script para buscar profesores -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('teacherSearch');
+    const labels = document.querySelectorAll('.teacher-label');
+
+    searchInput.addEventListener('input', function () {
+        const searchValue = this.value.toLowerCase();
+        labels.forEach(label => {
+            const container = label.closest('.form-check');
+            const text = label.textContent.toLowerCase();
+            container.style.display = text.includes(searchValue) ? 'block' : 'none';
+        });
+    });
+});
+</script>
 {% endblock %}

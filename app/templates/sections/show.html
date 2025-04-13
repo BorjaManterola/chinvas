@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card mt-4 shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title">Section Details</h4>
+
+            <p><strong>Semester:</strong> {{ section.period.semester }}</p>
+            <p><strong>Section Code (NRC):</strong> {{ section.nrc }}</p>
+            <p><strong>Evaluation Type:</strong> {{ section.type_evaluate }}</p>
+
+            <a href="{{ url_for('section_routes.add_students_form', id=section.id) }}" class="btn btn-primary mb-3">
+                <i class="bi bi-person-plus"></i> Add Students
+            </a>
+            <a href="{{ url_for('section_routes.add_teachers_form', id=section.id) }}" class="btn btn-secondary mb-3 ms-2">
+                <i class="bi bi-person-plus"></i> Add Teachers
+            </a>
+            
+
+            <hr>
+            <h5>Assigned Teachers</h5>
+            {% if teachers %}
+                <ul class="list-group">
+                    {% for teacher in teachers %}
+                        <li class="list-group-item">{{ teacher.name }} – {{ teacher.email }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No teachers assigned to this section.</p>
+            {% endif %}
+
+            <hr>
+            <h5>Assigned Students</h5>
+            {% if students %}
+                <ul class="list-group">
+                    {% for usersituation in section.usersituations if usersituation.situation == 'student' %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            {{ usersituation.user.name }} – {{ usersituation.user.email }}
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('usersituation_routes.show', id=usersituation.id) }}"
+                            class="btn btn-sm btn-info">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            <form method="POST"
+                                action="{{ url_for('usersituation_routes.delete', id=usersituation.id) }}"
+                                onsubmit="return confirm('Are you sure you want to remove this student?');">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash3"></i> Remove
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+
+                </ul>
+            {% else %}
+                <p class="text-muted">No students assigned to this section.</p>
+            {% endif %}
+
+            <div class="mt-4 d-flex justify-content-end">
+                <a href="{{ url_for('period_routes.show_period', id=section.period_id) }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Period
+                </a>
+                <a href="{{ url_for('section_routes.edit_section_form', id=section.id) }}" class="btn btn-warning ms-2">
+                    <i class="bi bi-pencil"></i> Edit Section
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

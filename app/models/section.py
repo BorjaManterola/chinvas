@@ -8,3 +8,5 @@ class Section(db.Model):
     nrc = db.Column(db.Integer, nullable=False)
     type_evaluate = db.Column(db.String(50))
     created_at = db.Column(db.DateTime)
+
+    usersituations = db.relationship("UserSituation", back_populates="section", cascade="all, delete-orphan")

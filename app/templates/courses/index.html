@@ -2,10 +2,10 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="mb-4">Cursos</h2>
+    <h2 class="mb-4">Courses</h2>
 
     <a href="{{ url_for('course_routes.new_course_form') }}" class="btn btn-primary mb-3">
-        <i class="bi bi-plus-lg"></i> Crear nuevo curso
+        <i class="bi bi-plus-lg"></i> Create New Course
     </a>
 
     {% if courses %}
@@ -17,14 +17,14 @@
                     </div>
                     <div class="d-flex gap-2">
                         <a href="{{ url_for('course_routes.show_course', id=course.id) }}" class="btn btn-sm btn-info">
-                            <i class="bi bi-eye"></i> Ver
+                            <i class="bi bi-eye"></i> View
                         </a>
                         <a href="{{ url_for('course_routes.edit_course_form', id=course.id) }}" class="btn btn-sm btn-warning">
-                            <i class="bi bi-pencil-square"></i> Editar
+                            <i class="bi bi-pencil-square"></i> Edit
                         </a>
-                        <form method="POST" action="{{ url_for('course_routes.delete_course', id=course.id) }}" onsubmit="return confirm('¿Estás seguro de eliminar este curso?');">
+                        <form method="POST" action="{{ url_for('course_routes.delete_course', id=course.id) }}" onsubmit="return confirm('Are you sure you want to delete this course?');">
                             <button type="submit" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash3"></i> Eliminar
+                                <i class="bi bi-trash3"></i> Delete
                             </button>
                         </form>
                     </div>
@@ -33,7 +33,7 @@
         </ul>
     {% else %}
         <div class="alert alert-info mt-3" role="alert">
-            No hay cursos disponibles.
+            No courses available.
         </div>
     {% endif %}
 </div>
