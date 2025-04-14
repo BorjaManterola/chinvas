@@ -1,41 +1,75 @@
-from flask import Blueprint, request, jsonify
-from app.models.grade import Grade
+from flask import Blueprint, request, render_template, redirect, url_for, flash
 from app import db
+from app.models.grade import Grade
+from app.models.task import Task
+from app.models.user import User
+from app.models.usersituation import UserSituation
+from app.models.assessment import Assessment
 
-grade_bp = Blueprint('grades', __name__, url_prefix='/grades')
+grade_bp = Blueprint('grade_routes', __name__, url_prefix='/grades')
+
+@grade_bp.route('/new', methods=['GET'])
+def new_grade_form():
+    user_id = request.args.get('user_id', type=int)
+    task_id = request.args.get('task_id', type=int)
+
+    user = User.query.get_or_404(user_id)
+    task = Task.query.get_or_404(task_id)
+    assessment = Assessment.query.get_or_404(task.assessment_id)
+    usersituation = UserSituation.query.filter_by(user_id=user_id, section_id=assessment.section_id).first()
+
+
+    return render_template('grades/form.html', grade=None, user=user, task=task, usersituation=usersituation)
+
 
 @grade_bp.route('/', methods=['POST'])
 def create_grade():
-    data = request.get_json()
-    grade = Grade(user_id=data['user_id'], task_id=data['task_id'], score=data['score'], feedback=data.get('feedback'))
+    grade = Grade(
+        user_id=request.form['user_id'],
+        task_id=request.form['task_id'],
+        score=request.form['score'],
+        feedback=request.form.get('feedback', '')
+    )
     db.session.add(grade)
     db.session.commit()
-    return jsonify({ 'message': 'Nota creada', 'id': grade.id }), 201
 
-@grade_bp.route('/', methods=['GET'])
-def get_grades():
-    grades = Grade.query.all()
-    return jsonify([{ 'id': g.id, 'user_id': g.user_id, 'task_id': g.task_id, 'score': g.score, 'feedback': g.feedback } for g in grades])
+    task = Task.query.get_or_404(grade.task_id)
+    assessment = Assessment.query.get_or_404(task.assessment_id)
+    usersituation = UserSituation.query.filter_by(user_id=grade.user_id, section_id=assessment.section_id).first()
 
-@grade_bp.route('/<int:id>', methods=['GET'])
-def get_grade(id):
+    return redirect(url_for('usersituation_routes.show', id=usersituation.id))
+
+
+@grade_bp.route('/<int:id>/edit', methods=['GET'])
+def edit_grade_form(id):
     grade = Grade.query.get_or_404(id)
-    return jsonify({ 'id': grade.id, 'user_id': grade.user_id, 'task_id': grade.task_id, 'score': grade.score, 'feedback': grade.feedback })
+    user = User.query.get_or_404(grade.user_id)
+    task = Task.query.get_or_404(grade.task_id)
+    assessment = Assessment.query.get_or_404(task.assessment_id)
+    usersituation = UserSituation.query.filter_by(user_id=grade.user_id, section_id=assessment.section_id).first()
 
-@grade_bp.route('/<int:id>', methods=['PUT'])
+    return render_template('grades/form.html', grade=grade, user=user, task=task, usersituation=usersituation)
+
+
+@grade_bp.route('/<int:id>', methods=['POST'])
 def update_grade(id):
     grade = Grade.query.get_or_404(id)
-    data = request.get_json()
-    grade.user_id = data.get('user_id', grade.user_id)
-    grade.task_id = data.get('task_id', grade.task_id)
-    grade.score = data.get('score', grade.score)
-    grade.feedback = data.get('feedback', grade.feedback)
+    grade.score = request.form['score']
+    grade.feedback = request.form.get('feedback', '')
     db.session.commit()
-    return jsonify({ 'message': 'Nota actualizada' })
 
-@grade_bp.route('/<int:id>', methods=['DELETE'])
+    task = Task.query.get_or_404(grade.task_id)
+    assessment = Assessment.query.get_or_404(task.assessment_id)
+    usersituation = UserSituation.query.filter_by(user_id=grade.user_id, section_id=assessment.section_id).first()
+    return redirect(url_for('usersituation_routes.show', id=usersituation.id))
+
+
+@grade_bp.route('/<int:id>/delete', methods=['POST'])
 def delete_grade(id):
     grade = Grade.query.get_or_404(id)
+    usersituation_id = request.form.get('usersituation_id')
     db.session.delete(grade)
     db.session.commit()
-    return jsonify({ 'message': 'Nota eliminada' })
+    flash("Grade deleted successfully.", "success")
+
+    return redirect(url_for('usersituation_routes.show', id=usersituation_id))

@@ -92,12 +92,12 @@ CREATE TABLE assessments (
 -- Tabla: tasks
 CREATE TABLE tasks (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    assesstment_id INT NOT NULL,
+    assessment_id INT NOT NULL,
     name VARCHAR(255),
     optional BOOLEAN,
     weighting INT,
     date DATE,
-    FOREIGN KEY (assesstment_id) REFERENCES assessments(id)
+    FOREIGN KEY (assessment_id) REFERENCES assessments(id)
 );
 
 -- Tabla: grades

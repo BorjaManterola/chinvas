@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h3 class="mb-4">
+        {{ 'Edit Grade' if grade else 'New Grade' }}
+    </h3>
+
+    <form method="POST"
+          action="{{ url_for('grade_routes.update_grade', id=grade.id) if grade else url_for('grade_routes.create_grade') }}"
+          class="card card-body shadow-sm bg-light">
+
+        <input type="hidden" name="user_id" value="{{ user.id }}">
+        <input type="hidden" name="task_id" value="{{ task.id }}">
+
+        <div class="mb-3">
+            <label class="form-label">User:</label>
+            <input type="text" class="form-control" value="{{ user.name }} ({{ user.email }})" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Task:</label>
+            <input type="text" class="form-control" value="{{ task.name }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label for="score" class="form-label">Score:</label>
+            <input type="number" step="0.01" class="form-control" id="score" name="score" value="{{ grade.score if grade else '' }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="feedback" class="form-label">Feedback:</label>
+            <textarea class="form-control" id="feedback" name="feedback" rows="3">{{ grade.feedback if grade else '' }}</textarea>
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <a href="{{ url_for('usersituation_routes.show', id=usersituation.id) }}" class="btn btn-outline-secondary me-2">
+                Cancel
+            </a>
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-save"></i> Save
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

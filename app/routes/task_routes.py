@@ -40,7 +40,7 @@ def create_task():
     except ValueError:
         return jsonify({'error': 'Weighting must be a number'}), 400
 
-    total_weight = db.session.query(db.func.sum(Task.weighting)).filter_by(assesstment_id=assessment_id).scalar() or 0
+    total_weight = db.session.query(db.func.sum(Task.weighting)).filter_by(assessment_id=assessment_id).scalar() or 0
     if total_weight + weighting > 100:
         return jsonify({'error': f'Total task weighting cannot exceed 100%. Current total: {total_weight}%'}), 400
 
@@ -49,7 +49,7 @@ def create_task():
     except ValueError:
         return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
 
-    task = Task(name=name, optional=optional, weighting=weighting, date=task_date, assesstment_id=assessment_id)
+    task = Task(name=name, optional=optional, weighting=weighting, date=task_date, assessment_id=assessment_id)
     db.session.add(task)
     db.session.commit()
 
@@ -61,13 +61,13 @@ def create_task():
 @task_bp.route('/<int:id>/edit', methods=['GET'])
 def edit_task_form(id):
     task = Task.query.get_or_404(id)
-    assessment = Assessment.query.get_or_404(task.assesstment_id)
+    assessment = Assessment.query.get_or_404(task.assessment_id)
     return render_template('tasks/form.html', task=task, assessment=assessment)
 
 @task_bp.route('/<int:id>', methods=['POST'])
 def update_task(id):
     task = Task.query.get_or_404(id)
-    assessment = Assessment.query.get_or_404(task.assesstment_id)
+    assessment = Assessment.query.get_or_404(task.assessment_id)
 
     name = request.form.get('name')
     optional = request.form.get('optional') == 'on'
@@ -88,7 +88,7 @@ def update_task(id):
         return render_template('tasks/form.html', task=task, assessment=assessment)
 
     total_weight = db.session.query(db.func.sum(Task.weighting)).filter_by(
-        assesstment_id=task.assesstment_id).filter(Task.id != id).scalar() or 0
+        assessment_id=task.assessment_id).filter(Task.id != id).scalar() or 0
     if total_weight + weighting > 100 and assessment.type_evaluate == 'Percentage':
         flash(f'Total task weighting cannot exceed 100%. Current total: {total_weight}%', 'danger')
         return render_template('tasks/form.html', task=task, assessment=assessment)
@@ -100,13 +100,13 @@ def update_task(id):
     db.session.commit()
 
     flash('Task updated successfully', 'success')
-    return redirect(url_for('assessment_routes.show_assessment', id=task.assesstment_id))
+    return redirect(url_for('assessment_routes.show_assessment', id=task.assessment_id))
 
 
 @task_bp.route('/<int:id>/delete', methods=['POST'])
 def delete_task(id):
     task = Task.query.get_or_404(id)
-    assessment_id = task.assesstment_id
+    assessment_id = task.assessment_id
 
     db.session.delete(task)
     db.session.commit()

@@ -2,6 +2,9 @@ from flask import Blueprint, render_template, redirect, url_for, request
 from app.models.usersituation import UserSituation
 from app.models.section import Section
 from app.models.user import User
+from app.models.grade import Grade
+from app.models.task import Task
+from app.models.assessment import Assessment
 from app import db
 
 usersituation_bp = Blueprint('usersituation_routes', __name__, url_prefix='/usersituations')
@@ -9,7 +12,21 @@ usersituation_bp = Blueprint('usersituation_routes', __name__, url_prefix='/user
 @usersituation_bp.route('/<int:id>/show', methods=['GET'])
 def show(id):
     usersituation = UserSituation.query.get_or_404(id)
-    return render_template('usersituations/show.html', usersituation=usersituation)
+    section = usersituation.section
+    course = section.period.course
+    user = usersituation.user
+    tasks = Task.query.join(Assessment).filter(Assessment.section_id == section.id).all()
+    grades = {
+        (g.task_id): g for g in Grade.query.filter_by(user_id=user.id).all()
+    }
+
+    return render_template(
+        'usersituations/show.html',
+        usersituation=usersituation,
+        tasks=tasks,
+        grades=grades,
+        user=user
+    )
 
 @usersituation_bp.route('/<int:id>/delete', methods=['POST'])
 def delete(id):
