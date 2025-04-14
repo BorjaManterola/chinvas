@@ -2,6 +2,7 @@ from flask import Blueprint, request, render_template, redirect, url_for
 from app.models.section import Section
 from app.models.period import Period
 from app.models.user import User
+from app.models.assessment import Assessment
 from app.models.usersituation import UserSituation  # Asegúrate de importar esto también
 from app import db
 
@@ -141,3 +142,11 @@ def assign_teachers(id):
 
     db.session.commit()
     return redirect(url_for('section_routes.show_section', id=section.id))
+
+
+###
+@section_bp.route('/<int:id>/assessments')
+def manage_assessments(id):
+    section = Section.query.get_or_404(id)
+    assessments = Assessment.query.filter_by(section_id=id).all()
+    return render_template('assessments/index.html', section=section, assessments=assessments)

@@ -11,6 +11,8 @@ def create_app():
 
     db.init_app(app)
 
+    app.config['SECRET_KEY'] = 'your-secret-key-here'
+
     with app.app_context():
         from app import models  # Importa todos los modelos
         db.create_all()  # Crea las tablas en la base de datos si no existen
