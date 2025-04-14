@@ -14,10 +14,10 @@
 
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <a href="{{ url_for('section_routes.add_students_form', id=section.id) }}" class="btn btn-primary">
+                    <a href="{{ url_for('usersituation_routes.assign_users', section_id=section.id, situation='student') }}" class="btn btn-primary">
                         <i class="fas fa-plus me-1"></i> Add Students
                     </a>
-                    <a href="{{ url_for('section_routes.add_teachers_form', id=section.id) }}" class="btn btn-secondary ms-2">
+                    <a href="{{ url_for('usersituation_routes.assign_users', section_id=section.id, situation='teacher') }}" class="btn btn-secondary ms-2">
                         <i class="fas fa-plus me-1"></i> Add Teachers
                     </a>
                     <a href="{{ url_for('assessment_routes.create_assessment', id=section.id) }}" class="btn btn-success ms-2">
