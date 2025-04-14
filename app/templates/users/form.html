@@ -24,8 +24,8 @@
             <label for="entry_date" class="form-label">Entry Date</label>
             <input type="date" class="form-control" id="entry_date" name="entry_date" value="{{ user.entry_date if user else '' }}">
         </div>
-        <button type="submit" class="btn btn-primary"> {{ "Update" if user else "Save" }} </button>
-        <a href="{{ url_for('user_routes.get_users') }}" class="btn btn-secondary">Back</a>
+        <button type="submit" class="btn btn-primary"> <i class="fas fa-save me-1"></i>{{ "Update" if user else "Save" }} </button>
+        <a href="{{ url_for('user_routes.get_users') }}" class="btn btn-secondary"> <i class="fas fa-arrow-left me-1"></i>Back</a>
     </form>
 </div>
 

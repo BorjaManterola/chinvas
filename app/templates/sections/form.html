@@ -33,22 +33,19 @@
             </select>
         </div>
 
-        <!-- ✅ Acordeón único con buscador de profesores -->
         {% if not section %}
-            <!-- Acordeón de selección de profesores solo al crear -->
             <div class="accordion mb-3" id="accordionTeachers">
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingTeachers">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapseTeachers" aria-expanded="false" aria-controls="collapseTeachers">
-                            Seleccionar Profesores
+                            <i class="fas fa-chalkboard-teacher me-2"></i> Seleccionar Profesores
                         </button>
                     </h2>
                     <div id="collapseTeachers" class="accordion-collapse collapse" aria-labelledby="headingTeachers"
                         data-bs-parent="#accordionTeachers">
                         <div class="accordion-body">
                             <input type="text" class="form-control mb-3" id="teacherSearch" placeholder="Buscar profesor por nombre...">
-
                             <div id="teacherList">
                                 {% for teacher in teachers %}
                                     <div class="form-check">
@@ -69,20 +66,18 @@
             </div>
         {% endif %}
 
-
         <div class="d-flex justify-content-end">
             <a href="{{ url_for('period_routes.show_period', id=period.id if period else section.period_id) }}"
                class="btn btn-outline-secondary me-2">
-                <i class="bi bi-arrow-left"></i> Cancel
+                <i class="fas fa-arrow-left me-1"></i> Cancel
             </a>
             <button type="submit" class="btn btn-success">
-                <i class="bi bi-save"></i> Save
+                <i class="fas fa-save me-1"></i> Save
             </button>
         </div>
     </form>
 </div>
 
-<!-- 🔍 Script para buscar profesores -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('teacherSearch');
