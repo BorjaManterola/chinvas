@@ -4,6 +4,14 @@ from app import db
 
 group_bp = Blueprint('groups', __name__, url_prefix='/groups')
 
+@group_bp.route('/', methods=['POST'])
+def create_group():
+    data = request.get_json()
+    group = Group(section_id=data['section_id'], name=data['name'])
+    db.session.add(group)
+    db.session.commit()
+    return jsonify({ 'message': 'Grupo creado', 'id': group.id }), 201
+
 @group_bp.route('/', methods=['GET'])
 def get_groups():
     groups = Group.query.all()
@@ -13,14 +21,6 @@ def get_groups():
 def get_group(id):
     group = Group.query.get_or_404(id)
     return jsonify({ 'id': group.id, 'section_id': group.section_id, 'name': group.name })
-
-@group_bp.route('/', methods=['POST'])
-def create_group():
-    data = request.get_json()
-    group = Group(section_id=data['section_id'], name=data['name'])
-    db.session.add(group)
-    db.session.commit()
-    return jsonify({ 'message': 'Grupo creado', 'id': group.id }), 201
 
 @group_bp.route('/<int:id>', methods=['PUT'])
 def update_group(id):

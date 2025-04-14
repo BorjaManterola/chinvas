@@ -21,7 +21,7 @@ def delete(id):
 
 @usersituation_bp.route('/assign/<int:section_id>', methods=['GET', 'POST'])
 def assign_users(section_id):
-    situation = request.args.get('situation')  # e.g. 'student' or 'teacher'
+    situation = request.args.get('situation')
     section = Section.query.get_or_404(section_id)
 
     if not situation or situation not in ['student', 'teacher']:

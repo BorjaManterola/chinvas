@@ -4,32 +4,10 @@ from app import db
 
 course_bp = Blueprint('course_routes', __name__, url_prefix='/courses')
 
-
-# ✅ Lista de cursos (HTML)
-@course_bp.route('/', methods=['GET'])
-def get_courses():
-    courses = Course.query.all()
-    return render_template('courses/index.html', courses=courses)
-
-
-# ✅ Ver curso individual como JSON (opcional para API)
-@course_bp.route('/<int:id>', methods=['GET'])
-def get_course(id):
-    course = Course.query.get_or_404(id)
-    return jsonify({
-        'id': course.id,
-        'name': course.name,
-        'description': course.description
-    })
-
-
-# ✅ Mostrar formulario para nuevo curso (HTML)
 @course_bp.route('/form', methods=['GET'])
 def new_course_form():
     return render_template('courses/form.html', course=None)
 
-
-# ✅ Crear curso (HTML o JSON)
 @course_bp.route('/', methods=['POST'])
 def create_course():
     if request.is_json:
@@ -50,15 +28,30 @@ def create_course():
         return jsonify({'message': 'Curso creado', 'id': course.id}), 201
     return redirect(url_for('course_routes.get_courses'))
 
+@course_bp.route('/', methods=['GET'])
+def get_courses():
+    courses = Course.query.all()
+    return render_template('courses/index.html', courses=courses)
 
-# ✅ Mostrar formulario para editar curso
+@course_bp.route('/<int:id>', methods=['GET'])
+def get_course(id):
+    course = Course.query.get_or_404(id)
+    return jsonify({
+        'id': course.id,
+        'name': course.name,
+        'description': course.description
+    })
+
+@course_bp.route('/<int:id>/show', methods=['GET'])
+def show_course(id):
+    course = Course.query.get_or_404(id)
+    return render_template('courses/show.html', course=course)
+
 @course_bp.route('/<int:id>/edit', methods=['GET'])
 def edit_course_form(id):
     course = Course.query.get_or_404(id)
     return render_template('courses/form.html', course=course)
 
-
-# ✅ Actualizar curso (formulario HTML)
 @course_bp.route('/<int:id>', methods=['POST'])
 def update_course(id):
     course = Course.query.get_or_404(id)
@@ -68,16 +61,9 @@ def update_course(id):
     db.session.commit()
     return redirect(url_for('course_routes.get_courses'))
 
-
-# ✅ Eliminar curso (desde formulario HTML)
 @course_bp.route('/<int:id>/delete', methods=['POST'])
 def delete_course(id):
     course = Course.query.get_or_404(id)
     db.session.delete(course)
     db.session.commit()
     return redirect(url_for('course_routes.get_courses'))
-
-@course_bp.route('/<int:id>/show', methods=['GET'])
-def show_course(id):
-    course = Course.query.get_or_404(id)
-    return render_template('courses/show.html', course=course)

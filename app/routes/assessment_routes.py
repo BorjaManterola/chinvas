@@ -6,12 +6,6 @@ from app import db
 
 assessment_bp= Blueprint('assessment_routes', __name__)
 
-@assessment_bp.route('/sections/<int:id>/assessments')
-def manage_assessments(id):
-    section = Section.query.get_or_404(id)
-    assessments = Assessment.query.filter_by(section_id=id).all()
-    return render_template('assessments/index.html', section=section, assessments=assessments)
-
 @assessment_bp.route('/sections/<int:id>/assessments/new', methods=['GET', 'POST'])
 def create_assessment(id):
     section = Section.query.get_or_404(id)
@@ -49,6 +43,12 @@ def create_assessment(id):
         return redirect(url_for('section_routes.show_section', id=id))
 
     return render_template('assessments/form.html', section=section, assessment=None)
+
+@assessment_bp.route('/assessments/<int:id>', methods=['GET'])
+def show_assessment(id):
+    assessment = Assessment.query.get_or_404(id)
+    tasks = Task.query.filter_by(assesstment_id=id).all()
+    return render_template('assessments/show.html', assessment=assessment, tasks=tasks)
 
 @assessment_bp.route('/assessments/<int:id>/edit', methods=['GET', 'POST'])
 def edit_assessment(id):
