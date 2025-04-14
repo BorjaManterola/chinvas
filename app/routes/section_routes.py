@@ -27,8 +27,9 @@ def new_section_form():
 def create_section():
     period_id = request.form['period_id']
     nrc = request.form['nrc']
+    type_evaluate = request.form['type_evaluate']
 
-    section = Section(nrc=nrc, period_id=period_id)
+    section = Section(nrc=nrc, period_id=period_id, type_evaluate=type_evaluate)
     db.session.add(section)
     db.session.flush()  # Para obtener section.id antes del commit
 

@@ -28,7 +28,7 @@
                             <tr>
                                 <td>{{ assessment.name }}</td>
                                 <td>{{ assessment.type_evaluate }}</td>
-                                <td>{{ assessment.weighting }}%</td>
+                                <td>{{ assessment.weighting }}</td>
                                 <td>{{ assessment.tasks|length }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
@@ -52,14 +52,16 @@
                     </table>
                 </div>
                 
-                <div class="alert alert-info mt-3">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-info-circle me-2"></i>
-                        <div>
-                            <strong>Note:</strong> Total weighting: {{ assessments|sum(attribute='weighting') }}% (should not exceed 100%)
+                {% if section.type_evaluate == 'percentage' %}
+                    <div class="alert alert-info mt-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <div>
+                                <strong>Note:</strong> Total weighting: {{ assessments|sum(attribute='weighting') }}% (should not exceed 100%)
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
             {% else %}
                 <div class="alert alert-info">
                     <i class="bi bi-info-circle me-2"></i>
