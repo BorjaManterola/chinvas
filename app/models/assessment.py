@@ -9,3 +9,5 @@ class Assessment(db.Model):
     type_evaluate = db.Column(db.String(50))
     weighting = db.Column(db.Integer)
     created_at = db.Column(db.DateTime)
+    
+    tasks = db.relationship("Task", cascade="all, delete-orphan")

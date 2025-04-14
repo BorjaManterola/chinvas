@@ -10,3 +10,4 @@ class Section(db.Model):
     created_at = db.Column(db.DateTime)
 
     usersituations = db.relationship("UserSituation", back_populates="section", cascade="all, delete-orphan")
+    assessments = db.relationship("Assessment", cascade="all, delete-orphan")

@@ -31,9 +31,8 @@ def create_section():
 
     section = Section(nrc=nrc, period_id=period_id, type_evaluate=type_evaluate)
     db.session.add(section)
-    db.session.flush()  # Para obtener section.id antes del commit
+    db.session.flush()
 
-    # Procesar profesores seleccionados
     teacher_ids = request.form.getlist('teacher_ids')
     for teacher_id in teacher_ids:
         usersituation = UserSituation(
@@ -47,13 +46,11 @@ def create_section():
     db.session.commit()
     return redirect(url_for('period_routes.show_period', id=period_id))
 
-
 @section_bp.route('/<int:id>/edit', methods=['GET'])
 def edit_section_form(id):
     section = Section.query.get_or_404(id)
     teachers = User.query.filter_by(role='Teacher').all()
     return render_template('sections/form.html', section=section, period=section.period, teachers=teachers)
-
 
 @section_bp.route('/<int:id>', methods=['POST'])
 def update_section(id):
@@ -62,7 +59,6 @@ def update_section(id):
     section.type_evaluate = request.form['type_evaluate']
     db.session.commit()
     return redirect(url_for('period_routes.show_period', id=section.period_id))
-
 
 @section_bp.route('/<int:id>/delete', methods=['POST'])
 def delete_section(id):
@@ -78,10 +74,9 @@ def show_section(id):
     usersituations = section.usersituations
     teachers = [us.user for us in usersituations if us.situation.strip().lower() == "teacher"]
     students = [us.user for us in usersituations if us.situation.strip().lower() == "student"]
+    assessments = Assessment.query.filter_by(section_id=id).all()
 
-    return render_template('sections/show.html', section=section, teachers=teachers, students=students)
-
-
+    return render_template('sections/show.html', section=section, teachers=teachers, students=students, assessments=assessments)
 
 @section_bp.route('/<int:id>/add-students', methods=['GET'])
 def add_students_form(id):
@@ -94,8 +89,6 @@ def add_students_form(id):
 
     return render_template('sections/add_students.html', section=section, students=students)
 
-
-
 @section_bp.route('/<int:id>/assign-students', methods=['POST'])
 def assign_students(id):
     section = Section.query.get_or_404(id)
@@ -105,7 +98,7 @@ def assign_students(id):
         usersituation = UserSituation(
             user_id=int(student_id),
             section_id=section.id,
-            situation='student',  # ¡importante que sea exactamente 'student'!
+            situation='student',
             final_grade=None
         )
         db.session.add(usersituation)
