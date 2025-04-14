@@ -66,7 +66,7 @@ def edit_assessment(id):
 
         try:
             weighting = int(weighting)
-            if weighting < 0 or weighting > 100:
+            if weighting < 0 or weighting > 100 and section.type_evaluate == 'Percentage':
                 flash('Weighting must be between 0 and 100', 'danger')
                 return render_template('assessments/form.html', assessment=assessment, section=section)
         except ValueError:

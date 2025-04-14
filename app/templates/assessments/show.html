@@ -35,11 +35,11 @@
                     {% for task in tasks %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>{{ task.name }}</strong> – {{ task.weighting }}% ({{ task.date }})
+                            <strong>{{ task.name }}</strong> - <strong>Weighting:</strong> ({{ task.weighting }}) - <strong>Due:</strong> ({{ task.date.strftime('%d-%m-%Y') }})
                             {% if task.optional %}<span class="badge bg-info text-dark ms-2">Optional</span>{% endif %}
                         </div>
                         <div class="d-flex gap-2">
-                            <a href="{{ url_for('task_routes.edit_task', id=task.id) }}" class="btn btn-sm btn-warning">
+                            <a href="{{ url_for('task_routes.edit_task_form', id=task.id) }}" class="btn btn-sm btn-warning">
                                 <i class="bi bi-pencil"></i> Edit
                             </a>
                             <form method="POST" action="{{ url_for('task_routes.delete_task', id=task.id) }}"

@@ -30,7 +30,7 @@
                             {% for task in tasks %}
                             <tr>
                                 <td>{{ task.name }}</td>
-                                <td>{{ task.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ task.date.strftime('%d-%m-%Y') }}</td>
                                 <td>{{ task.weighting }}%</td>
                                 <td>{% if task.optional %}Yes{% else %}No{% endif %}</td>
                                 <td>

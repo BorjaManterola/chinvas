@@ -2,13 +2,13 @@
 
 {% block content %}
 <div class="container">
-    <div class="card mt-4 shadow-sm">
+    <div class="card mt-4 shadow-sm col-md-6 mx-auto">
         <div class="card-body">
             <h4 class="card-title">{{ 'Edit Task' if task else 'Create Task' }}</h4>
             <p class="text-muted">For assessment: {{ assessment.name }} ({{ assessment.type_evaluate | capitalize }})</p>
 
             <form method="POST"
-                action="{{ url_for('task_routes.edit_task', id=task.id) if task else url_for('task_routes.create_task') }}">
+            action="{{ url_for('task_routes.update_task', id=task.id) if task else url_for('task_routes.create_task') }}">
                 
                 <input type="hidden" name="assessment_id" value="{{ assessment.id }}">
                 <div class="mb-3">
@@ -19,13 +19,24 @@
 
                 <div class="mb-3">
                     <label for="date" class="form-label">Due Date</label>
-                    <input type="date" class="form-control" id="date" name="date" value="{{ task.date.strftime('%Y-%m-%d') if task else '' }}" required>
+                    <input type="date" class="form-control" id="date" name="date" value="{{ task.date.strftime('%Y-%m-%d') if task and task.date else '' }}" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="weighting" class="form-label">Weighting (%)</label>
-                    <input type="number" class="form-control" id="weighting" name="weighting" min="1" max="100" value="{{ task.weighting if task else '' }}" required>
-                    <div class="form-text">Percentage weight within this assessment category (must be between 1-100)</div>
+                    <label for="weighting" class="form-label">
+                        {% if assessment and assessment.type_evaluate %}
+                            {% if assessment.type_evaluate == 'Weight' %}
+                                Weight
+                            {% elif assessment.type_evaluate == 'Percentage' %}
+                                Percentage (%)
+                            {% else %}
+                                Unknown Evaluation Type
+                            {% endif %}
+                        {% else %}
+                            Evaluation Type Not Set
+                        {% endif %}
+                    </label>
+                    <input type="number" class="form-control" id="weighting" name="weighting" value="{{ assessment.weighting if assessment else '' }}" min="1" max="100" required>
                 </div>
 
                 <div class="mb-3 form-check">
@@ -35,12 +46,12 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4">
-                    <a href="{{ url_for('assessment_routes.show_assessment', id=assessment.id) }}" class="btn btn-secondary">
-                        <i class="bi bi-x-circle"></i> Cancel
-                    </a>
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check-circle"></i> {{ 'Update Task' if task else 'Create Task' }}
                     </button>
+                    <a href="{{ url_for('assessment_routes.show_assessment', id=assessment.id) }}" class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-arrow-left me-1"></i>Cancel
+                    </a>
                 </div>
             </form>
         </div>

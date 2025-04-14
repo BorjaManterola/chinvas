@@ -41,7 +41,7 @@
                     {% for assessment in assessments %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>{{ assessment.name }}</strong> – {{ assessment.type_evaluate }} ({{ assessment.weighting }}%)
+                            <strong>{{ assessment.name }}</strong> - {{ assessment.type_evaluate }} ({{ assessment.weighting }})
                         </div>
                         <div class="d-flex gap-2">
                             <a href="{{ url_for('assessment_routes.show_assessment', id=assessment.id) }}" class="btn btn-sm btn-info">
@@ -71,7 +71,7 @@
                     {% for usersituation in section.usersituations if usersituation.situation == 'teacher' %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            {{ usersituation.user.name }} - {{ usersituation.user.email }}
+                            <strong>{{ usersituation.user.name }}</strong> - {{ usersituation.user.email }}
                         </div>
                         <div class="d-flex gap-2">
                             <a href="{{ url_for('usersituation_routes.show', id=usersituation.id) }}" class="btn btn-sm btn-info">
@@ -98,7 +98,7 @@
                     {% for usersituation in section.usersituations if usersituation.situation == 'student' %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            {{ usersituation.user.name }} – {{ usersituation.user.email }}
+                            <strong>{{ usersituation.user.name }}</strong> - {{ usersituation.user.email }}
                         </div>
                         <div class="d-flex gap-2">
                             <a href="{{ url_for('usersituation_routes.show', id=usersituation.id) }}" class="btn btn-sm btn-info">

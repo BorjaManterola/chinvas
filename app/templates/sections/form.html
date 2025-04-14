@@ -2,80 +2,84 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="mb-4">{{ 'Edit Section' if section else 'New Section' }}</h2>
+    <div class="card mt-4 shadow-sm col-md-6 mx-auto">
+        <div class="card-body">
+            <h2 class="mb-4">{{ 'Edit Section' if section else 'New Section' }}</h2>
 
-    <form method="POST"
-          action="{{ url_for('section_routes.update_section', id=section.id) if section else url_for('section_routes.create_section') }}"
-          class="card card-body bg-light shadow-sm">
+            <form method="POST"
+                action="{{ url_for('section_routes.update_section', id=section.id) if section else url_for('section_routes.create_section') }}"
+                class="card card-body bg-light shadow-sm">
 
-        {% if period %}
-            <input type="hidden" name="period_id" value="{{ period.id }}">
-            <div class="mb-3">
-                <label class="form-label">Period:</label>
-                <input type="text" class="form-control" value="{{ period.semester }}" disabled>
-            </div>
-        {% elif section %}
-            <input type="hidden" name="period_id" value="{{ section.period_id }}">
-        {% endif %}
+                {% if period %}
+                    <input type="hidden" name="period_id" value="{{ period.id }}">
+                    <div class="mb-3">
+                        <label class="form-label">Period:</label>
+                        <input type="text" class="form-control" value="{{ period.semester }}" disabled>
+                    </div>
+                {% elif section %}
+                    <input type="hidden" name="period_id" value="{{ section.period_id }}">
+                {% endif %}
 
-        <div class="mb-3">
-            <label for="nrc" class="form-label">Section Code (NRC):</label>
-            <input type="number" class="form-control" id="nrc" name="nrc"
-                   value="{{ section.nrc if section else '' }}" required>
-        </div>
+                <div class="mb-3">
+                    <label for="nrc" class="form-label">Section Code (NRC):</label>
+                    <input type="number" class="form-control" id="nrc" name="nrc"
+                        value="{{ section.nrc if section else '' }}" required>
+                </div>
 
-        <div class="mb-3">
-            <label for="type_evaluate" class="form-label">Evaluation Type:</label>
-            <select class="form-select" id="type_evaluate" name="type_evaluate" required>
-                <option value="" disabled {% if not section %}selected{% endif %}>Select evaluation type</option>
-                <option value="Percentage" {% if section and section.type_evaluate == 'Percentage' %}selected{% endif %}>Percentage</option>
-                <option value="Weight" {% if section and section.type_evaluate == 'Weight' %}selected{% endif %}>Weight</option>
-            </select>
-        </div>
+                <div class="mb-3">
+                    <label for="type_evaluate" class="form-label">Evaluation Type:</label>
+                    <select class="form-select" id="type_evaluate" name="type_evaluate" required>
+                        <option value="" disabled {% if not section %}selected{% endif %}>Select evaluation type</option>
+                        <option value="Percentage" {% if section and section.type_evaluate == 'Percentage' %}selected{% endif %}>Percentage</option>
+                        <option value="Weight" {% if section and section.type_evaluate == 'Weight' %}selected{% endif %}>Weight</option>
+                    </select>
+                </div>
 
-        {% if not section %}
-            <div class="accordion mb-3" id="accordionTeachers">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingTeachers">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseTeachers" aria-expanded="false" aria-controls="collapseTeachers">
-                            <i class="fas fa-chalkboard-teacher me-2"></i> Seleccionar Profesores
-                        </button>
-                    </h2>
-                    <div id="collapseTeachers" class="accordion-collapse collapse" aria-labelledby="headingTeachers"
-                        data-bs-parent="#accordionTeachers">
-                        <div class="accordion-body">
-                            <input type="text" class="form-control mb-3" id="teacherSearch" placeholder="Buscar profesor por nombre...">
-                            <div id="teacherList">
-                                {% for teacher in teachers %}
-                                    <div class="form-check">
-                                        <input class="form-check-input"
-                                            type="checkbox"
-                                            name="teacher_ids"
-                                            id="teacher_{{ teacher.id }}"
-                                            value="{{ teacher.id }}">
-                                        <label class="form-check-label teacher-label" for="teacher_{{ teacher.id }}">
-                                            {{ teacher.name }} ({{ teacher.email }})
-                                        </label>
+                {% if not section %}
+                    <div class="accordion mb-3" id="accordionTeachers">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTeachers">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseTeachers" aria-expanded="false" aria-controls="collapseTeachers">
+                                    <i class="fas fa-chalkboard-teacher me-2"></i> Seleccionar Profesores
+                                </button>
+                            </h2>
+                            <div id="collapseTeachers" class="accordion-collapse collapse" aria-labelledby="headingTeachers"
+                                data-bs-parent="#accordionTeachers">
+                                <div class="accordion-body">
+                                    <input type="text" class="form-control mb-3" id="teacherSearch" placeholder="Buscar profesor por nombre...">
+                                    <div id="teacherList">
+                                        {% for teacher in teachers %}
+                                            <div class="form-check">
+                                                <input class="form-check-input"
+                                                    type="checkbox"
+                                                    name="teacher_ids"
+                                                    id="teacher_{{ teacher.id }}"
+                                                    value="{{ teacher.id }}">
+                                                <label class="form-check-label teacher-label" for="teacher_{{ teacher.id }}">
+                                                    {{ teacher.name }} ({{ teacher.email }})
+                                                </label>
+                                            </div>
+                                        {% endfor %}
                                     </div>
-                                {% endfor %}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        {% endif %}
+                {% endif %}
 
-        <div class="d-flex justify-content-end">
-            <a href="{{ url_for('period_routes.show_period', id=period.id if period else section.period_id) }}"
-               class="btn btn-outline-secondary me-2">
-                <i class="fas fa-arrow-left me-1"></i> Cancel
-            </a>
-            <button type="submit" class="btn btn-success">
-                <i class="fas fa-save me-1"></i> Save
-            </button>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-1"></i> Save
+                    </button>
+                    <a href="{{ url_for('period_routes.show_period', id=period.id if period else section.period_id) }}"
+                    class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-arrow-left me-1"></i>Cancel
+                    </a>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
 
 <script>
