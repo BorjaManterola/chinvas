@@ -106,20 +106,6 @@ def assign_students(id):
     db.session.commit()
     return redirect(url_for('section_routes.show_section', id=section.id))
 
-@section_bp.route('/<int:id>/add-teachers', methods=['GET'])
-def add_teachers_form(id):
-    section = Section.query.get_or_404(id)
-
-    assigned_teacher_ids = {
-        us.user_id for us in section.usersituations if us.situation.strip().lower() == "teacher"
-    }
-
-    teachers = User.query.filter_by(role='Teacher')\
-                .filter(~User.id.in_(assigned_teacher_ids)).all()
-
-    return render_template('sections/add_teachers.html', section=section, teachers=teachers)
-
-
 @section_bp.route('/<int:id>/assign-teachers', methods=['POST'])
 def assign_teachers(id):
     section = Section.query.get_or_404(id)
@@ -137,8 +123,6 @@ def assign_teachers(id):
     db.session.commit()
     return redirect(url_for('section_routes.show_section', id=section.id))
 
-
-###
 @section_bp.route('/<int:id>/assessments')
 def manage_assessments(id):
     section = Section.query.get_or_404(id)
