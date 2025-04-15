@@ -60,7 +60,7 @@ VALUES
 (1, 'Tareas', 'porcentaje', 60);
 
 -- Tareas dentro de las evaluaciones
-INSERT INTO tasks (assesstment_id, name, optional, weighting, date)
+INSERT INTO tasks (assessment_id, name, optional, weighting, date)
 VALUES 
 (1, 'Control 1', 0, 50, '2025-04-01'),
 (1, 'Control 2', 1, 50, '2025-04-08'),

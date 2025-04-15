@@ -18,7 +18,7 @@ Este proyecto es una aplicación web desarrollada con Flask y MySQL para gestion
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/BorjaManterola/Proyecto-DSV.git
+git clone https://github.com/BorjaManterola/chinvas.git
 cd chinvas
 ```
 

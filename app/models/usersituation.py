@@ -6,7 +6,7 @@ class UserSituation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     section_id = db.Column(db.Integer, db.ForeignKey('sections.id'), nullable=False)
-    situation = db.Column(db.String(20), nullable=False)  # "teacher", "student", etc.
+    situation = db.Column(db.String(20), nullable=False)
     final_grade = db.Column(db.Float, nullable=True)
 
     user = db.relationship("User")

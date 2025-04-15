@@ -39,11 +39,6 @@ def create_section():
     db.session.commit()
     return redirect(url_for('period_routes.show_period', id=period_id))
 
-@section_bp.route('/', methods=['GET'])
-def list_sections():
-    sections = Section.query.all()
-    return render_template('sections/index.html', sections=sections)
-
 @section_bp.route('/<int:id>/show', methods=['GET'])
 def show_section(id):
     section = Section.query.get_or_404(id)

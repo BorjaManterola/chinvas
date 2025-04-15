@@ -46,8 +46,8 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-circle"></i> {{ 'Update Task' if task else 'Create Task' }}
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-1"></i>Save
                     </button>
                     <a href="{{ url_for('assessment_routes.show_assessment', id=assessment.id) }}" class="btn btn-outline-secondary ms-2">
                         <i class="fas fa-arrow-left me-1"></i>Cancel

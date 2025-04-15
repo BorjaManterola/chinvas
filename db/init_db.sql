@@ -3,7 +3,6 @@ DROP TABLE IF EXISTS grades, tasks, assessments, members, `groups`,
     usersituations, prerequisites, sections, periods,
     courses, users;
 
--- Tabla: users
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
@@ -13,7 +12,6 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla: courses
 CREATE TABLE courses (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
@@ -22,7 +20,6 @@ CREATE TABLE courses (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla: periods
 CREATE TABLE periods (
     id INT PRIMARY KEY AUTO_INCREMENT,
     course_id INT NOT NULL,
@@ -30,7 +27,6 @@ CREATE TABLE periods (
     FOREIGN KEY (course_id) REFERENCES courses(id)
 );
 
--- Tabla: sections
 CREATE TABLE sections (
     id INT PRIMARY KEY AUTO_INCREMENT,
     period_id INT NOT NULL,
@@ -39,8 +35,6 @@ CREATE TABLE sections (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (period_id) REFERENCES periods(id)
 );
-
--- Tabla: prerequisites
 CREATE TABLE prerequisites (
     id INT PRIMARY KEY AUTO_INCREMENT,
     period_id INT NOT NULL,
@@ -49,7 +43,6 @@ CREATE TABLE prerequisites (
     FOREIGN KEY (prerequisite_id) REFERENCES courses(id)
 );
 
--- Tabla: usersituations
 CREATE TABLE usersituations (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
@@ -60,7 +53,6 @@ CREATE TABLE usersituations (
     FOREIGN KEY (section_id) REFERENCES sections(id)
 );
 
--- Tabla: groups
 CREATE TABLE `groups` (
     id INT PRIMARY KEY AUTO_INCREMENT,
     section_id INT NOT NULL,
@@ -69,7 +61,6 @@ CREATE TABLE `groups` (
     FOREIGN KEY (section_id) REFERENCES sections(id)
 );
 
--- Tabla: members
 CREATE TABLE members (
     group_id INT,
     user_id INT,
@@ -78,7 +69,6 @@ CREATE TABLE members (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- Tabla: assessments
 CREATE TABLE assessments (
     id INT PRIMARY KEY AUTO_INCREMENT,
     section_id INT NOT NULL,
@@ -89,7 +79,6 @@ CREATE TABLE assessments (
     FOREIGN KEY (section_id) REFERENCES sections(id)
 );
 
--- Tabla: tasks
 CREATE TABLE tasks (
     id INT PRIMARY KEY AUTO_INCREMENT,
     assessment_id INT NOT NULL,
@@ -100,7 +89,6 @@ CREATE TABLE tasks (
     FOREIGN KEY (assessment_id) REFERENCES assessments(id)
 );
 
--- Tabla: grades
 CREATE TABLE grades (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,

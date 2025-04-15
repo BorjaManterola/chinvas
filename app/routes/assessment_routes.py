@@ -99,9 +99,3 @@ def delete_assessment(id):
 
     flash('Assessment deleted successfully', 'success')
     return redirect(url_for('section_routes.show_section', id=section_id))
-
-@assessment_bp.route('/assessments/<int:id>/tasks')
-def view_tasks(id):
-    assessment = Assessment.query.get_or_404(id)
-    tasks = Task.query.filter_by(assessment_id=id).all()
-    return render_template('tasks/index.html', assessment=assessment, tasks=tasks)
