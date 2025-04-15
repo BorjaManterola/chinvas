@@ -9,3 +9,6 @@ class User(db.Model):
     role = db.Column(db.String(50), nullable=False)
     entry_date = db.Column(db.Date, nullable=True)
     created_at = db.Column(db.DateTime)
+
+    grade = db.relationship("Grade", cascade="all, delete-orphan")
+    usersituation = db.relationship("UserSituation", cascade="all, delete-orphan")
