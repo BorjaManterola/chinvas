@@ -27,8 +27,9 @@ def load_json(file_path):
 
 def insert_data(cursor, query, data):
     cursor.execute(query, data)
+    
 
-def process_students(cursor):
+def populate_students(cursor):
     students = load_json('db/population/1-alumnos.json')['alumnos']
     for student in students:
         query = """
@@ -38,7 +39,7 @@ def process_students(cursor):
         data = (student['id'], student['nombre'], student['correo'], f"{student['anio_ingreso']}-01-01")
         insert_data(cursor, query, data)
 
-def process_professors(cursor):
+def populate_professors(cursor):
     professors = load_json('db/population/2-profesores.json')['profesores']
     for professor in professors:
         query = """
@@ -47,8 +48,18 @@ def process_professors(cursor):
         """
         data = (professor['id'], professor['nombre'], professor['correo'])
         insert_data(cursor, query, data)
+        
+def populate_prerequisites(cursor, course):
+    for prereq_code in course['requisitos']:
+        prereq_query = """
+        INSERT INTO prerequisites (course_id, prerequisite_id)
+        SELECT %s, id FROM courses WHERE code = %s
+        """
+        prereq_data = (course['id'], prereq_code)
+        
+        insert_data(cursor, prereq_query, prereq_data)
 
-def process_courses(cursor):
+def populate_courses(cursor):
     courses = load_json('db/population/3-cursos.json')['cursos']
     for course in courses:
         query = """
@@ -57,16 +68,11 @@ def process_courses(cursor):
         """
         data = (course['id'], course['descripcion'], course['codigo'], course['creditos'])
         insert_data(cursor, query, data)
+        
+        print("Populating prerequisites for course:", course['id'])
+        populate_prerequisites(cursor, course)
 
-        for prereq_code in course['requisitos']:
-            prereq_query = """
-            INSERT INTO prerequisites (course_id, prerequisite_id)
-            SELECT %s, id FROM courses WHERE code = %s
-            """
-            prereq_data = (course['id'], prereq_code)
-            cursor.execute(prereq_query, prereq_data)
-
-def process_course_instances(cursor):
+def populate_course_instances(cursor):
     year = load_json('db/population/4-instancias_cursos.json')['año']
     semester = load_json('db/population/4-instancias_cursos.json')['semestre']
     instances = load_json('db/population/4-instancias_cursos.json')['instancias']
@@ -77,8 +83,34 @@ def process_course_instances(cursor):
         """
         data = (instance['id'], instance['curso_id'], year, semester)
         insert_data(cursor, query, data)
+        
+def populate_tasks(cursor, task, assessment):
+    for i in range(task["cantidad"]):
+        task_query = """
+        INSERT INTO tasks (assessment_id, optional, weighting)
+        VALUES (%s, %s, %s)
+        """
+        task_data = (assessment["id"], task['obligatorias'][i], task['valores'][i])
+        insert_data(cursor, task_query, task_data)
+        
+def populate_assessments(cursor, assessments, section):
+    for assessment in assessments:
+        assessment_query = """
+        INSERT INTO assessments (id, section_id, name, type_evaluate, weighting)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        type_evaluate_assessment = section['evaluacion']['topicos'][f"{assessment['id']}"]["tipo"]
+        assessment_data = (assessment["id"], section['id'], assessment['nombre'],
+                            type_evaluate_assessment, assessment['valor'])
+        
+        insert_data(cursor, assessment_query, assessment_data)
+        
+        task=section['evaluacion']['topicos'][f"{assessment['id']}"]
 
-def process_sections(cursor):
+        print("Populating tasks for assessment:", assessment['id'])
+        populate_tasks(cursor, task, assessment)
+
+def populate_sections(cursor):
     sections = load_json('db/population/5-instancia_cursos_con_secciones.json')['secciones']
     for section in sections:
         query = """
@@ -89,31 +121,11 @@ def process_sections(cursor):
         insert_data(cursor, query, data)
         
         assessments = section['evaluacion']['combinacion_topicos']
-        tasks = section['evaluacion']['topicos']
         
-        for assessment in assessments:
-            assessment_query = """
-            INSERT INTO assessments (id, section_id, name, type_evaluate, weighting)
-            VALUES (%s, %s, %s, %s, %s)
-            """
-            type_evaluate_assessment = section['evaluacion']['topicos'][f"{assessment['id']}"]["tipo"]
-            assessment_data = (assessment["id"], section['id'], assessment['nombre'],
-                               type_evaluate_assessment, assessment['valor'])
-            
-            insert_data(cursor, assessment_query, assessment_data)
-        
-            task = tasks[f"{assessment['id']}"]
-            
-            for i in range(task["cantidad"]):
-                task_query = """
-                INSERT INTO tasks (assessment_id, optional, weighting)
-                VALUES (%s, %s, %s)
-                """
-                task_data = (assessment["id"], task['obligatorias'][i], task['valores'][i])
-                insert_data(cursor, task_query, task_data)
+        print("Populating assessments for section:", section['id'])
+        populate_assessments(cursor, assessments, section)
                 
-
-def process_students_per_section(cursor):
+def populate_students_per_section(cursor):
     students_sections = load_json('db/population/6-alumnos_por_seccion.json')['alumnos_seccion']
     for record in students_sections:
         query = """
@@ -122,34 +134,39 @@ def process_students_per_section(cursor):
         """
         data = (record['alumno_id'], record['seccion_id'])
         insert_data(cursor, query, data)
+        
+def get_task_id(cursor, topic_id, instance):
+    task_query = """
+    SELECT id FROM tasks
+    WHERE assessment_id = %s
+    ORDER BY id ASC
+    LIMIT 1 OFFSET %s
+    """
+    offset = instance - 1
+    cursor.execute(task_query, (topic_id, offset))
+    result = cursor.fetchone()
+    
+    if result:
+        return result[0]
+    else:
+        print(f"No se encontró un task_id para topico_id {topic_id} con instancia {instance}")
+        return None
 
-def process_grades(cursor):
+def populate_grades(cursor):
     grades = load_json('db/population/7-notas_alumnos.json')['notas']
     for grade in grades:
-        # Buscar el task_id correcto basado en el topico_id y la instancia
-        task_query = """
-        SELECT id FROM tasks
-        WHERE assessment_id = %s
-        ORDER BY id ASC
-        LIMIT 1 OFFSET %s
-        """
-        # La instancia determina el desplazamiento (OFFSET) en la búsqueda
-        offset = grade['instancia'] - 1
-        cursor.execute(task_query, (grade['topico_id'], offset))
-        result = cursor.fetchone()
+        
+        task_id = get_task_id(cursor, grade['topico_id'], grade['instancia'])
 
-        if result:
-            task_id = result[0]
+        if task_id:
             query = """
             INSERT INTO grades (student_id, task_id, score)
             VALUES (%s, %s, %s)
             """
             data = (grade['alumno_id'], task_id, grade['nota'])
             insert_data(cursor, query, data)
-        else:
-            print(f"No se encontró un task_id para topico_id {grade['topico_id']} con instancia {grade['instancia']}")
 
-def process_classrooms(cursor):
+def populate_classrooms(cursor):
     classrooms = load_json('db/population/8-salas_de_clases.json')['salas']
     for classroom in classrooms:
         query = """
@@ -164,22 +181,22 @@ def main():
     cursor = connection.cursor()
 
     try:
-        print("Processinf Students")
-        process_students(cursor)
-        print("Processing Professors")
-        process_professors(cursor)
-        print("Processing Courses")
-        process_courses(cursor)
-        print("Processing Course Instances")
-        process_course_instances(cursor)
-        print("Processing Sections")
-        process_sections(cursor)
-        print("Processing Students per Section")
-        process_students_per_section(cursor)
-        print("Processing Grades")
-        process_grades(cursor)
-        print("Processing Classrooms")
-        process_classrooms(cursor)
+        print("Populating Students...")
+        populate_students(cursor)
+        print("Populating Professors...")
+        populate_professors(cursor)
+        print("Populating Courses")
+        populate_courses(cursor)
+        print("Populating Course Instances...")
+        populate_course_instances(cursor)
+        print("Populating Sections...")
+        populate_sections(cursor)
+        print("Populating Students per Section...")
+        populate_students_per_section(cursor)
+        print("Populating Grades...")
+        populate_grades(cursor)
+        print("Populating Classrooms...")
+        populate_classrooms(cursor)
 
         connection.commit()
     except Exception as e:
