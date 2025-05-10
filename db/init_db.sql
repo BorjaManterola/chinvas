@@ -22,7 +22,7 @@ CREATE TABLE courses (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     code VARCHAR(50) NOT NULL,
-    description TEXT,
+    credits INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -36,6 +36,7 @@ CREATE TABLE classroom (
 CREATE TABLE periods (
     id INT PRIMARY KEY AUTO_INCREMENT,
     course_id INT NOT NULL,
+    year INT NOT NULL,
     semester VARCHAR(10),
     FOREIGN KEY (course_id) REFERENCES courses(id)
 );
@@ -43,10 +44,11 @@ CREATE TABLE periods (
 CREATE TABLE sections (
     id INT PRIMARY KEY AUTO_INCREMENT,
     period_id INT NOT NULL,
-    nrc INT NOT NULL,
+    teacher_id INT NOT NULL,
     type_evaluate VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (period_id) REFERENCES periods(id)
+    FOREIGN KEY (period_id) REFERENCES periods(id),
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id)
 );
 
 CREATE TABLE class (
@@ -62,26 +64,18 @@ CREATE TABLE class (
 
 CREATE TABLE prerequisites (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    period_id INT NOT NULL,
+    course_id INT NOT NULL,
     prerequisite_id INT NOT NULL,
-    FOREIGN KEY (period_id) REFERENCES periods(id),
+    FOREIGN KEY (course_id) REFERENCES courses(id),
     FOREIGN KEY (prerequisite_id) REFERENCES courses(id)
 );
 
-CREATE TABLE studentsituations (
+CREATE TABLE student_situations (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    student_id INT,
-    section_id INT,
-    final_grade DECIMAL(4,2),
-    FOREIGN KEY (student_id) REFERENCES students(id),
-    FOREIGN KEY (section_id) REFERENCES sections(id)
-);
-
-CREATE TABLE teachersections (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    teacher_id INT NOT NULL,
+    student_id INT NOT NULL,
     section_id INT NOT NULL,
-    FOREIGN KEY (teacher_id) REFERENCES teachers(id),
+    final_grade DECIMAL(2,1),
+    FOREIGN KEY (student_id) REFERENCES students(id),
     FOREIGN KEY (section_id) REFERENCES sections(id)
 );
 
@@ -106,7 +100,7 @@ CREATE TABLE assessments (
     section_id INT NOT NULL,
     name VARCHAR(255),
     type_evaluate VARCHAR(50),
-    weighting INT,
+    weighting FLOAT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (section_id) REFERENCES sections(id)
 );
@@ -114,10 +108,8 @@ CREATE TABLE assessments (
 CREATE TABLE tasks (
     id INT PRIMARY KEY AUTO_INCREMENT,
     assessment_id INT NOT NULL,
-    name VARCHAR(255),
     optional BOOLEAN,
-    weighting INT,
-    date DATE,
+    weighting FLOAT,
     FOREIGN KEY (assessment_id) REFERENCES assessments(id)
 );
 

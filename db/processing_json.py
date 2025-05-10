@@ -52,37 +52,72 @@ def process_courses(cursor):
     courses = load_json('db/population/3-cursos.json')['cursos']
     for course in courses:
         query = """
-        INSERT INTO courses (id, name, code, description)
+        INSERT INTO courses (id, name, code, credits)
         VALUES (%s, %s, %s, %s)
         """
-        data = (course['id'], course['codigo'], course['descripcion'])
+        data = (course['id'], course['descripcion'], course['codigo'], course['creditos'])
         insert_data(cursor, query, data)
 
+        for prereq_code in course['requisitos']:
+            prereq_query = """
+            INSERT INTO prerequisites (course_id, prerequisite_id)
+            SELECT %s, id FROM courses WHERE code = %s
+            """
+            prereq_data = (course['id'], prereq_code)
+            cursor.execute(prereq_query, prereq_data)
+
 def process_course_instances(cursor):
+    year = load_json('db/population/4-instancias_cursos.json')['año']
+    semester = load_json('db/population/4-instancias_cursos.json')['semestre']
     instances = load_json('db/population/4-instancias_cursos.json')['instancias']
     for instance in instances:
         query = """
-        INSERT INTO periods (id, course_id, semester)
-        VALUES (%s, %s, '2025-1')
+        INSERT INTO periods (id, course_id, year, semester)
+        VALUES (%s, %s, %s, %s)
         """
-        data = (instance['id'], instance['curso_id'])
+        data = (instance['id'], instance['curso_id'], year, semester)
         insert_data(cursor, query, data)
 
 def process_sections(cursor):
     sections = load_json('db/population/5-instancia_cursos_con_secciones.json')['secciones']
     for section in sections:
         query = """
-        INSERT INTO sections (id, period_id, nrc, type_evaluate)
+        INSERT INTO sections (id, period_id, teacher_id, type_evaluate)
         VALUES (%s, %s, %s, %s)
         """
-        data = (section['id'], section['instancia_curso'], section['nrc'], section['evaluacion']['tipo'])
+        data = (section['id'], section['instancia_curso'], section["profesor_id"], section['evaluacion']['tipo'])
         insert_data(cursor, query, data)
+        
+        assessments = section['evaluacion']['combinacion_topicos']
+        tasks = section['evaluacion']['topicos']
+        
+        for assessment in assessments:
+            assessment_query = """
+            INSERT INTO assessments (id, section_id, name, type_evaluate, weighting)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+            type_evaluate_assessment = section['evaluacion']['topicos'][f"{assessment['id']}"]["tipo"]
+            assessment_data = (assessment["id"], section['id'], assessment['nombre'],
+                               type_evaluate_assessment, assessment['valor'])
+            
+            insert_data(cursor, assessment_query, assessment_data)
+        
+            task = tasks[f"{assessment['id']}"]
+            
+            for i in range(task["cantidad"]):
+                task_query = """
+                INSERT INTO tasks (assessment_id, optional, weighting)
+                VALUES (%s, %s, %s)
+                """
+                task_data = (assessment["id"], task['obligatorias'][i], task['valores'][i])
+                insert_data(cursor, task_query, task_data)
+                
 
 def process_students_per_section(cursor):
     students_sections = load_json('db/population/6-alumnos_por_seccion.json')['alumnos_seccion']
     for record in students_sections:
         query = """
-        INSERT INTO studentsituations (student_id, section_id, final_grade)
+        INSERT INTO student_situations (student_id, section_id, final_grade)
         VALUES (%s, %s, NULL)
         """
         data = (record['alumno_id'], record['seccion_id'])
