@@ -18,36 +18,64 @@ def new_section_form():
 
 @section_bp.route('/', methods=['POST'])
 def create_section():
-    period_id = request.form['period_id']
-    nrc = request.form['nrc']
-    type_evaluate = request.form['type_evaluate']
+    form = request.form
+    section = _create_section_from_form(form)
+    _assign_teachers_to_section(form.getlist('teacher_ids'), section.id)
 
-    section = Section(nrc=nrc, period_id=period_id, type_evaluate=type_evaluate)
+    db.session.commit()
+    return redirect(url_for('period_routes.show_period', id=form['period_id']))
+
+
+def _create_section_from_form(form):
+    section = Section(
+        nrc=form['nrc'],
+        period_id=form['period_id'],
+        type_evaluate=form['type_evaluate']
+    )
     db.session.add(section)
-    db.session.flush()
+    db.session.flush()  
+    return section
 
-    teacher_ids = request.form.getlist('teacher_ids')
+
+def _assign_teachers_to_section(teacher_ids, section_id):
     for teacher_id in teacher_ids:
         usersituation = UserSituation(
             user_id=int(teacher_id),
-            section_id=section.id,
+            section_id=section_id,
             situation='teacher',
             final_grade=None
         )
         db.session.add(usersituation)
 
-    db.session.commit()
-    return redirect(url_for('period_routes.show_period', id=period_id))
-
 @section_bp.route('/<int:id>/show', methods=['GET'])
 def show_section(id):
     section = Section.query.get_or_404(id)
-    usersituations = section.usersituations
-    teachers = [us.user for us in usersituations if us.situation.strip().lower() == "teacher"]
-    students = [us.user for us in usersituations if us.situation.strip().lower() == "student"]
-    assessments = Assessment.query.filter_by(section_id=id).all()
+    teachers, students = _get_teachers_and_students(section)
+    assessments = _get_assessments_for_section(id)
 
-    return render_template('sections/show.html', section=section, teachers=teachers, students=students, assessments=assessments)
+    return render_template(
+        'sections/show.html',
+        section=section,
+        teachers=teachers,
+        students=students,
+        assessments=assessments
+    )
+
+
+def _get_teachers_and_students(section):
+    teachers = []
+    students = []
+    for us in section.usersituations:
+        role = us.situation.strip().lower()
+        if role == "teacher":
+            teachers.append(us.user)
+        elif role == "student":
+            students.append(us.user)
+    return teachers, students
+
+
+def _get_assessments_for_section(section_id):
+    return Assessment.query.filter_by(section_id=section_id).all()
 
 @section_bp.route('/<int:id>/edit', methods=['GET'])
 def edit_section_form(id):

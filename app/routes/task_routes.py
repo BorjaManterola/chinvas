@@ -19,43 +19,60 @@ def new_task_form(id):
 
 @task_bp.route('/', methods=['POST'])
 def create_task():
-    if request.is_json:
-        data = request.get_json()
-    else:
-        data = request.form
+    data = request.get_json() if request.is_json else request.form
 
-    name = data.get('name')
-    optional = data.get('optional', 'false').lower() == 'true'
-    weighting = data.get('weighting')
-    date = data.get('date')
-    assessment_id = data.get('assessment_id')
+    is_valid, error_response = _validate_task_data(data)
+    if not is_valid:
+        return error_response
 
-    if not name or not weighting or not date or not assessment_id:
-        return jsonify({'error': 'Name, weighting, date, and assessment_id are required'}), 400
-
-    try:
-        weighting = int(weighting)
-        if weighting < 0 or weighting > 100:
-            return jsonify({'error': 'Weighting must be between 0 and 100'}), 400
-    except ValueError:
-        return jsonify({'error': 'Weighting must be a number'}), 400
-
-    total_weight = db.session.query(db.func.sum(Task.weighting)).filter_by(assessment_id=assessment_id).scalar() or 0
-    if total_weight + weighting > 100:
-        return jsonify({'error': f'Total task weighting cannot exceed 100%. Current total: {total_weight}%'}), 400
-
-    try:
-        task_date = datetime.strptime(date, '%Y-%m-%d').date()
-    except ValueError:
-        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
-
-    task = Task(name=name, optional=optional, weighting=weighting, date=task_date, assessment_id=assessment_id)
-    db.session.add(task)
+    task = _create_task_from_data(data)
     db.session.commit()
 
     if request.is_json:
         return jsonify({'message': 'Task created successfully', 'id': task.id}), 201
-    return redirect(url_for('assessment_routes.show_assessment', id=assessment_id))
+
+    return redirect(url_for('assessment_routes.show_assessment', id=task.assessment_id))
+
+
+def _validate_task_data(data):
+    required_fields = ['name', 'weighting', 'date', 'assessment_id']
+    for field in required_fields:
+        if not data.get(field):
+            return False, jsonify({'error': f'{field} is required'}), 400
+
+    try:
+        weighting = int(data.get('weighting'))
+        if weighting < 0 or weighting > 100:
+            return False, jsonify({'error': 'Weighting must be between 0 and 100'}), 400
+    except ValueError:
+        return False, jsonify({'error': 'Weighting must be a number'}), 400
+
+    total_weight = db.session.query(db.func.sum(Task.weighting)) \
+        .filter_by(assessment_id=data.get('assessment_id')).scalar() or 0
+    if total_weight + weighting > 100:
+        return False, jsonify({
+            'error': f'Total task weighting cannot exceed 100%. Current total: {total_weight}%'
+        }), 400
+
+    try:
+        datetime.strptime(data.get('date'), '%Y-%m-%d').date()
+    except ValueError:
+        return False, jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+
+    return True, None
+
+
+def _create_task_from_data(data):
+    task = Task(
+        name=data.get('name'),
+        optional=data.get('optional', 'false').lower() == 'true',
+        weighting=int(data.get('weighting')),
+        date=datetime.strptime(data.get('date'), '%Y-%m-%d').date(),
+        assessment_id=data.get('assessment_id')
+    )
+    db.session.add(task)
+    return task
+
 
 
 @task_bp.route('/<int:id>/edit', methods=['GET'])
@@ -69,38 +86,59 @@ def update_task(id):
     task = Task.query.get_or_404(id)
     assessment = Assessment.query.get_or_404(task.assessment_id)
 
-    name = request.form.get('name')
-    optional = request.form.get('optional') == 'on'
-    weighting = request.form.get('weighting')
-    date = request.form.get('date')
-
-    if not name or not weighting or not date:
-        flash('Name, weighting and date are required', 'danger')
+    is_valid, result = _validate_update_task_data(request.form, assessment, task.id)
+    if not is_valid:
+        flash(result['message'], 'danger')
         return render_template('tasks/form.html', task=task, assessment=assessment)
 
-    try:
-        weighting = int(weighting)
-        if weighting < 0 or (weighting > 100 and assessment.type_evaluate == 'Percentage'):
-            flash('Weighting must be between 0 and 100', 'danger')
-            return render_template('tasks/form.html', task=task, assessment=assessment)
-    except ValueError:
-        flash('Weighting must be a number', 'danger')
-        return render_template('tasks/form.html', task=task, assessment=assessment)
-
-    total_weight = db.session.query(db.func.sum(Task.weighting)).filter_by(
-        assessment_id=task.assessment_id).filter(Task.id != id).scalar() or 0
-    if total_weight + weighting > 100 and assessment.type_evaluate == 'Percentage':
-        flash(f'Total task weighting cannot exceed 100%. Current total: {total_weight}%', 'danger')
-        return render_template('tasks/form.html', task=task, assessment=assessment)
-
-    task.name = name
-    task.optional = optional
-    task.weighting = weighting
-    task.date = datetime.strptime(date, '%Y-%m-%d').date()
+    _update_task_fields(task, result)
     db.session.commit()
 
     flash('Task updated successfully', 'success')
     return redirect(url_for('assessment_routes.show_assessment', id=task.assessment_id))
+
+
+def _validate_update_task_data(form, assessment, task_id):
+    name = form.get('name')
+    optional = form.get('optional') == 'on'
+    weighting = form.get('weighting')
+    date = form.get('date')
+
+    if not name or not weighting or not date:
+        return False, {'message': 'Name, weighting and date are required'}
+
+    try:
+        weighting = int(weighting)
+        if weighting < 0 or (weighting > 100 and assessment.type_evaluate == 'Percentage'):
+            return False, {'message': 'Weighting must be between 0 and 100'}
+    except ValueError:
+        return False, {'message': 'Weighting must be a number'}
+
+    total_weight = db.session.query(db.func.sum(Task.weighting)) \
+        .filter_by(assessment_id=assessment.id) \
+        .filter(Task.id != task_id).scalar() or 0
+    if total_weight + weighting > 100 and assessment.type_evaluate == 'Percentage':
+        return False, {'message': f'Total task weighting cannot exceed 100%. Current total: {total_weight}%'}
+
+    try:
+        date_obj = datetime.strptime(date, '%Y-%m-%d').date()
+    except ValueError:
+        return False, {'message': 'Invalid date format. Use YYYY-MM-DD'}
+
+    return True, {
+        'name': name,
+        'optional': optional,
+        'weighting': weighting,
+        'date': date_obj
+    }
+
+
+def _update_task_fields(task, data):
+    task.name = data['name']
+    task.optional = data['optional']
+    task.weighting = data['weighting']
+    task.date = data['date']
+
 
 
 @task_bp.route('/<int:id>/delete', methods=['POST'])

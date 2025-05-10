@@ -13,7 +13,6 @@ usersituation_bp = Blueprint('usersituation_routes', __name__, url_prefix='/user
 def show(id):
     usersituation = UserSituation.query.get_or_404(id)
     section = usersituation.section
-    course = section.period.course
     user = usersituation.user
     tasks = Task.query.join(Assessment).filter(Assessment.section_id == section.id).all()
     grades = {
