@@ -14,17 +14,11 @@
                     <input type="hidden" name="period_id" value="{{ period.id }}">
                     <div class="mb-3">
                         <label class="form-label">Period:</label>
-                        <input type="text" class="form-control" value="{{ period.semester }}" disabled>
+                        <input type="text" class="form-control" value="{{ period.year }} – {{ period.semester }}" disabled>
                     </div>
                 {% elif section %}
                     <input type="hidden" name="period_id" value="{{ section.period_id }}">
                 {% endif %}
-
-                <div class="mb-3">
-                    <label for="nrc" class="form-label">Section Code (NRC):</label>
-                    <input type="number" class="form-control" id="nrc" name="nrc"
-                        value="{{ section.nrc if section else '' }}" required>
-                </div>
 
                 <div class="mb-3">
                     <label for="type_evaluate" class="form-label">Evaluation Type:</label>
@@ -35,66 +29,30 @@
                     </select>
                 </div>
 
-                {% if not section %}
-                    <div class="accordion mb-3" id="accordionTeachers">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingTeachers">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapseTeachers" aria-expanded="false" aria-controls="collapseTeachers">
-                                    <i class="fas fa-chalkboard-teacher me-2"></i> Seleccionar Profesores
-                                </button>
-                            </h2>
-                            <div id="collapseTeachers" class="accordion-collapse collapse" aria-labelledby="headingTeachers"
-                                data-bs-parent="#accordionTeachers">
-                                <div class="accordion-body">
-                                    <input type="text" class="form-control mb-3" id="teacherSearch" placeholder="Buscar profesor por nombre...">
-                                    <div id="teacherList">
-                                        {% for teacher in teachers %}
-                                            <div class="form-check">
-                                                <input class="form-check-input"
-                                                    type="checkbox"
-                                                    name="teacher_ids"
-                                                    id="teacher_{{ teacher.id }}"
-                                                    value="{{ teacher.id }}">
-                                                <label class="form-check-label teacher-label" for="teacher_{{ teacher.id }}">
-                                                    {{ teacher.name }} ({{ teacher.email }})
-                                                </label>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
+                <div class="mb-3">
+                    <label for="teacher_id" class="form-label">Assigned Teacher:</label>
+                    <select class="form-select" id="teacher_id" name="teacher_id" required>
+                        <option value="" disabled selected>Select a teacher</option>
+                        {% for teacher in teachers %}
+                            <option value="{{ teacher.id }}"
+                                {% if section and section.teacher_id == teacher.id %}selected{% endif %}>
+                                {{ teacher.name }} ({{ teacher.email }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save me-1"></i> Save
                     </button>
                     <a href="{{ url_for('period_routes.show_period', id=period.id if period else section.period_id) }}"
-                    class="btn btn-outline-secondary ms-2">
-                        <i class="fas fa-arrow-left me-1"></i>Cancel
+                       class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-arrow-left me-1"></i> Cancel
                     </a>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('teacherSearch');
-    const labels = document.querySelectorAll('.teacher-label');
-
-    searchInput.addEventListener('input', function () {
-        const searchValue = this.value.toLowerCase();
-        labels.forEach(label => {
-            const container = label.closest('.form-check');
-            const text = label.textContent.toLowerCase();
-            container.style.display = text.includes(searchValue) ? 'block' : 'none';
-        });
-    });
-});
-</script>
 {% endblock %}

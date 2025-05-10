@@ -2,8 +2,8 @@ from flask import Blueprint, request, render_template, redirect, url_for, flash
 from app import db
 from app.models.grade import Grade
 from app.models.task import Task
-from app.models.user import User
-from app.models.usersituation import UserSituation
+from app.models.student import Student
+from app.models.student_situation import StudentSituation
 from app.models.assessment import Assessment
 
 grade_bp = Blueprint('grade_routes', __name__, url_prefix='/grades')

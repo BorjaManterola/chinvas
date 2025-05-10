@@ -5,12 +5,21 @@
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-md-4 mb-4 text-center">
-      <a href="{{ url_for('user_routes.get_users') }}" class="btn-menu-home shadow user-btn">
+      <a href="{{ url_for('student_routes.get_students') }}" class="btn-menu-home shadow student-btn">
         <div class="icon-container mb-3">
-          <i class="fas fa-users fa-3x"></i>
+          <i class="fas fa-user-graduate fa-3x"></i>
         </div>
-        <h3>Users</h3>
-        <p>Manage system users</p>
+        <h3>Students</h3>
+        <p>Manage all registered students</p>
+      </a>
+    </div>
+    <div class="col-md-4 mb-4 text-center">
+      <a href="{{ url_for('teacher_routes.index') }}" class="btn-menu-home shadow teacher-btn">
+        <div class="icon-container mb-3">
+          <i class="fas fa-chalkboard-teacher fa-3x"></i>
+        </div>
+        <h3>Teachers</h3>
+        <p>View and manage teachers</p>
       </a>
     </div>
     <div class="col-md-4 mb-4 text-center">
@@ -35,33 +44,37 @@
     height: 100%;
     color: white;
   }
-  
-  .user-btn {
-    background: linear-gradient(135deg, #4e73df, #224abe);
+
+  .student-btn {
+    background: linear-gradient(135deg, #36b9cc, #2c9faf);
   }
-  
+
+  .teacher-btn {
+    background: linear-gradient(135deg, #f6c23e, #dda20a);
+  }
+
   .course-btn {
     background: linear-gradient(135deg, #1cc88a, #13855c);
   }
-  
+
   .btn-menu-home:hover {
     transform: translateY(-5px) scale(1.02);
     box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
     text-decoration: none;
     color: white;
   }
-  
+
   .btn-menu-home .icon-container {
     height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  
+
   .btn-menu-home h3 {
     font-weight: 600;
   }
-  
+
   .btn-menu-home p {
     opacity: 0.9;
   }

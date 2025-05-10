@@ -2,9 +2,9 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from app.models.task import Task
 from app.models.assessment import Assessment
 from app.models.grade import Grade
-from app.models.user import User
+from app.models.student import Student
 from app.models.section import Section
-from app.models.usersituation import UserSituation
+from app.models.student_situation import StudentSituation
 from app import db
 from datetime import datetime
 

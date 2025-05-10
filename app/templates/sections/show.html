@@ -14,11 +14,8 @@
 
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <a href="{{ url_for('usersituation_routes.assign_users', section_id=section.id, situation='student') }}" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i> Add Students
-                    </a>
-                    <a href="{{ url_for('usersituation_routes.assign_users', section_id=section.id, situation='teacher') }}" class="btn btn-secondary ms-2">
-                        <i class="fas fa-plus me-1"></i> Add Teachers
+                    <a href="{{ url_for('student_situation_routes.new_student_situation_form', section_id=section.id) }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Add Student
                     </a>
                     <a href="{{ url_for('assessment_routes.create_assessment', id=section.id) }}" class="btn btn-success ms-2">
                         <i class="fas fa-plus me-1"></i> Add Assessment
@@ -71,47 +68,22 @@
             {% endif %}
 
             <hr>
-            
-            <h5>Teachers</h5>
-            {% if teachers %}
-                <ul class="list-group">
-                    {% for usersituation in section.usersituations if usersituation.situation == 'teacher' %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>{{ usersituation.user.name }}</strong> - {{ usersituation.user.email }}
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a href="{{ url_for('usersituation_routes.show', id=usersituation.id) }}" class="btn btn-sm btn-info">
-                                <i class="fas fa-eye me-1"></i> View
-                            </a>
-                            <form method="POST" action="{{ url_for('usersituation_routes.delete', id=usersituation.id) }}"
-                                  onsubmit="return confirm('Are you sure you want to remove this student?');">
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash me-1"></i> Remove
-                                </button>
-                            </form>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-muted">No teachers assigned to this section.</p>
-            {% endif %}
 
-            <hr>
             <h5>Students</h5>
             {% if students %}
                 <ul class="list-group">
-                    {% for usersituation in section.usersituations if usersituation.situation == 'student' %}
+                    {% for situation in students %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>{{ usersituation.user.name }}</strong> - {{ usersituation.user.email }}
+                            <strong>{{ situation.student.name }}</strong> - {{ situation.student.email }}
+                            <br>
+                            Final Grade: {{ situation.final_grade or 'N/A' }}
                         </div>
                         <div class="d-flex gap-2">
-                            <a href="{{ url_for('usersituation_routes.show', id=usersituation.id) }}" class="btn btn-sm btn-info">
+                            <a href="{{ url_for('student_situation_routes.show_student_situation', id=situation.id) }}" class="btn btn-sm btn-info">
                                 <i class="fas fa-eye me-1"></i> View
                             </a>
-                            <form method="POST" action="{{ url_for('usersituation_routes.delete', id=usersituation.id) }}"
+                            <form method="POST" action="{{ url_for('student_situation_routes.delete_student_situation', id=situation.id) }}"
                                   onsubmit="return confirm('Are you sure you want to remove this student?');">
                                 <button type="submit" class="btn btn-sm btn-danger">
                                     <i class="fas fa-trash me-1"></i> Remove
