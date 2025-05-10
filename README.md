@@ -64,7 +64,7 @@ CREATE DATABASE chinvas;
 ### 2. Crear archivo `.env` en la raíz del proyecto
 
 ```env
-DB_USER=root
+DB_USER=tu_usuario
 DB_PASSWORD=tu_contraseña
 DB_HOST=localhost
 DB_NAME=chinvas
@@ -75,8 +75,8 @@ DB_NAME=chinvas
 ### 3. Ejecutar los scripts SQL
 
 ```bash
-Get-Content db/init_db.sql | mysql -u root -p chinvas
-Get-Content db/populate_db.sql | mysql -u root -p chinvas
+Get-Content db/init_db.sql | mysql -u tu_usuario -p chinvas
+py db/processing_json.py
 ```
 
 ---
