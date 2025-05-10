@@ -126,18 +126,34 @@ def process_students_per_section(cursor):
 def process_grades(cursor):
     grades = load_json('db/population/7-notas_alumnos.json')['notas']
     for grade in grades:
-        query = """
-        INSERT INTO grades (student_id, task_id, score, feedback)
-        VALUES (%s, %s, %s, NULL)
+        # Buscar el task_id correcto basado en el topico_id y la instancia
+        task_query = """
+        SELECT id FROM tasks
+        WHERE assessment_id = %s
+        ORDER BY id ASC
+        LIMIT 1 OFFSET %s
         """
-        data = (grade['alumno_id'], grade['topico_id'], grade['nota'])
-        insert_data(cursor, query, data)
+        # La instancia determina el desplazamiento (OFFSET) en la búsqueda
+        offset = grade['instancia'] - 1
+        cursor.execute(task_query, (grade['topico_id'], offset))
+        result = cursor.fetchone()
+
+        if result:
+            task_id = result[0]
+            query = """
+            INSERT INTO grades (student_id, task_id, score)
+            VALUES (%s, %s, %s)
+            """
+            data = (grade['alumno_id'], task_id, grade['nota'])
+            insert_data(cursor, query, data)
+        else:
+            print(f"No se encontró un task_id para topico_id {grade['topico_id']} con instancia {grade['instancia']}")
 
 def process_classrooms(cursor):
     classrooms = load_json('db/population/8-salas_de_clases.json')['salas']
     for classroom in classrooms:
         query = """
-        INSERT INTO classroom (id, code, capacity)
+        INSERT INTO classroom (id, name, capacity)
         VALUES (%s, %s, %s)
         """
         data = (classroom['id'], classroom['nombre'], classroom['capacidad'])

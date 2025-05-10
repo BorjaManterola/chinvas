@@ -1,6 +1,6 @@
 -- Elimina tablas si existen (respetando el orden de FK)
 DROP TABLE IF EXISTS class, classroom, grades, tasks, assessments, members, `groups`,
-    studentsituations, teachersections, prerequisites, sections, periods,
+    student_situations, prerequisites, sections, periods,
     courses, students, teachers;
 
 CREATE TABLE teachers (
@@ -28,7 +28,7 @@ CREATE TABLE courses (
 
 CREATE TABLE classroom (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    code VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL,
     capacity INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -117,8 +117,7 @@ CREATE TABLE grades (
     id INT PRIMARY KEY AUTO_INCREMENT,
     student_id INT NOT NULL,
     task_id INT NOT NULL,
-    score DECIMAL(5,2),
-    feedback TEXT,
+    score DECIMAL(2,1),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES students(id),
     FOREIGN KEY (task_id) REFERENCES tasks(id)
