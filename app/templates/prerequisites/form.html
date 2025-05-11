@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card mt-4 shadow-sm col-md-6 mx-auto">
+        <div class="card-body">
+            <h3 class="mb-4">Assign Prerequisites to {{ course.name }}</h3>
+
+            <form method="POST" action="{{ url_for('prerequisite_routes.create_prerequisites') }}" class="card card-body bg-light shadow-sm">
+                <input type="hidden" name="course_id" value="{{ course.id }}">
+
+                {% if all_courses %}
+                    <div class="accordion mb-3" id="accordionCourses">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingCourses">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseCourses" aria-expanded="false" aria-controls="collapseCourses">
+                                    Select Courses as Prerequisites
+                                </button>
+                            </h2>
+                            <div id="collapseCourses" class="accordion-collapse collapse" aria-labelledby="headingCourses">
+                                <div class="accordion-body">
+                                    <input type="text" class="form-control mb-3" id="courseSearch" placeholder="Search by name or code...">
+                                    <div id="courseList">
+                                        {% for c in all_courses %}
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="prereq_ids" id="course_{{ c.id }}" value="{{ c.id }}">
+                                                <label class="form-check-label course-label" for="course_{{ c.id }}">
+                                                    {{ c.name }} ({{ c.code }})
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">No other courses available to assign as prerequisites.</div>
+                {% endif %}
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success" {% if not all_courses %}disabled{% endif %}>
+                        <i class="bi bi-check2-circle"></i> Assign
+                    </button>
+                    <a href="{{ url_for('course_routes.show_course', id=course.id) }}" class="btn btn-outline-secondary ms-2">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('courseSearch');
+    const labels = document.querySelectorAll('.course-label');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const value = this.value.toLowerCase();
+            labels.forEach(label => {
+                const container = label.closest('.form-check');
+                container.style.display = label.textContent.toLowerCase().includes(value) ? 'block' : 'none';
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

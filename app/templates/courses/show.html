@@ -12,6 +12,34 @@
 
             <hr>
 
+            <div class="mb-4">
+                <h5>Prerequisites</h5>
+
+                {% if prerequisites %}
+                    <ul class="list-group mb-3">
+                        {% for prereq in prerequisites %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ prereq.name }} ({{ prereq.code }})
+                                <form method="POST" action="{{ url_for('prerequisite_routes.delete_prerequisite', course_id=course.id, prerequisite_id=prereq.id) }}"
+                                      onsubmit="return confirm('Are you sure you want to remove this prerequisite?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash-alt me-1"></i> Remove
+                                    </button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="alert alert-info">This course has no prerequisites.</div>
+                {% endif %}
+
+                <a href="{{ url_for('prerequisite_routes.new_prerequisite_form', course_id=course.id) }}" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i> Add Prerequisite
+                </a>
+            </div>
+
+            <hr>
+
             <div class="mt-4 mb-3">
                 <a href="{{ url_for('period_routes.new_period_form', course_id=course.id) }}" class="btn btn-success">
                     <i class="fas fa-plus me-1"></i> Add Period

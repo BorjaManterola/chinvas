@@ -2,6 +2,8 @@ from flask import Blueprint, request, render_template, redirect, url_for, jsonif
 from app.models.student_situation import StudentSituation
 from app.models.student import Student
 from app.models.section import Section
+from app.models.task import Task
+from app.models.grade import Grade
 from app import db
 
 student_situation_bp = Blueprint('student_situation_routes', __name__, url_prefix='/student_situations')
@@ -39,7 +41,14 @@ def list_student_situations():
 @student_situation_bp.route('/<int:id>/show', methods=['GET'])
 def show_student_situation(id):
     student_situation = StudentSituation.query.get_or_404(id)
-    return render_template('student_situations/show.html', student_situation=student_situation)
+    tasks = db.session.query(Task).filter_by(assessment_id=student_situation.section_id).all()
+    grades = {grade.task_id: grade for grade in db.session.query(Grade).filter_by(student_id=student_situation.student_id).all()}
+    return render_template(
+        'student_situations/show.html',
+        student_situation=student_situation,
+        tasks=tasks,
+        grades=grades
+    )
 
 @student_situation_bp.route('/<int:id>/edit', methods=['GET'])
 def edit_student_situation_form(id):

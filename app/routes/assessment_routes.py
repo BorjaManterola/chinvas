@@ -76,8 +76,12 @@ def update_assessment(id):
 @assessment_bp.route('/<int:id>/delete', methods=['POST'])
 def delete_assessment(id):
     assessment = Assessment.query.get_or_404(id)
-    section_id = assessment.section_id
+    for task in assessment.tasks:
+        db.session.delete(task)
     db.session.delete(assessment)
     db.session.commit()
-    flash('Assessment deleted successfully.', 'success')
-    return redirect(url_for('section_routes.show_section', id=section_id))
+
+    flash("Assessment deleted successfully", "success")
+    return redirect(url_for('section_routes.show_section', id=assessment.section_id))
+
+

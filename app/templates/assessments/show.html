@@ -25,12 +25,12 @@
             <hr>
 
             <h5>Tasks</h5>
-            {% if tasks %}
+            {% if assessment.tasks %}
                 <ul class="list-group">
-                    {% for task in tasks %}
+                    {% for task in assessment.tasks %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
-                                <strong>{{ task.name or 'Unnamed Task' }}</strong> – Weight: {{ task.weighting }}% {% if task.optional %}(Optional){% endif %}
+                                <strong>Task {{ loop.index }}</strong> – Weight: {{ task.weighting }}% {% if task.optional %}(Optional){% endif %}
                             </div>
                             <div class="d-flex gap-2">
                                 <a href="{{ url_for('task_routes.edit_task_form', id=task.id) }}" class="btn btn-sm btn-warning">

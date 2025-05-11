@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash
 from app.models.course import Course
+from app.models.prerequisite import Prerequisite
 from app import db
 
 course_bp = Blueprint('course_routes', __name__, url_prefix='/courses')
@@ -62,7 +63,14 @@ def get_course(id):
 @course_bp.route('/<int:id>/show', methods=['GET'])
 def show_course(id):
     course = Course.query.get_or_404(id)
-    return render_template('courses/show.html', course=course)
+    prerequisites = (
+        db.session.query(Course)
+        .join(Prerequisite, Course.id == Prerequisite.prerequisite_id)
+        .filter(Prerequisite.course_id == id)
+        .all()
+    )
+    return render_template("courses/show.html", course=course, prerequisites=prerequisites)
+
 
 
 @course_bp.route('/<int:id>/edit', methods=['GET'])

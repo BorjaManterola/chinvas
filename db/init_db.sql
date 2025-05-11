@@ -38,7 +38,7 @@ CREATE TABLE periods (
     course_id INT NOT NULL,
     year INT NOT NULL,
     semester VARCHAR(10),
-    FOREIGN KEY (course_id) REFERENCES courses(id)
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
 
 CREATE TABLE sections (
@@ -47,8 +47,8 @@ CREATE TABLE sections (
     teacher_id INT NOT NULL,
     type_evaluate VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (period_id) REFERENCES periods(id),
-    FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+    FOREIGN KEY (period_id) REFERENCES periods(id) ON DELETE CASCADE,
+    FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE
 );
 
 CREATE TABLE class (
@@ -58,16 +58,16 @@ CREATE TABLE class (
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (section_id) REFERENCES sections(id),
-    FOREIGN KEY (classroom_id) REFERENCES classroom(id)
+    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE,
+    FOREIGN KEY (classroom_id) REFERENCES classroom(id) ON DELETE CASCADE
 );
 
 CREATE TABLE prerequisites (
     id INT PRIMARY KEY AUTO_INCREMENT,
     course_id INT NOT NULL,
     prerequisite_id INT NOT NULL,
-    FOREIGN KEY (course_id) REFERENCES courses(id),
-    FOREIGN KEY (prerequisite_id) REFERENCES courses(id)
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    FOREIGN KEY (prerequisite_id) REFERENCES courses(id) ON DELETE CASCADE
 );
 
 CREATE TABLE student_situations (
@@ -75,8 +75,8 @@ CREATE TABLE student_situations (
     student_id INT NOT NULL,
     section_id INT NOT NULL,
     final_grade DECIMAL(2,1),
-    FOREIGN KEY (student_id) REFERENCES students(id),
-    FOREIGN KEY (section_id) REFERENCES sections(id)
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE
 );
 
 CREATE TABLE `groups` (
@@ -84,15 +84,15 @@ CREATE TABLE `groups` (
     section_id INT NOT NULL,
     name VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (section_id) REFERENCES sections(id)
+    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE
 );
 
 CREATE TABLE members (
     group_id INT,
     student_id INT,
     PRIMARY KEY (group_id, student_id),
-    FOREIGN KEY (group_id) REFERENCES `groups`(id),
-    FOREIGN KEY (student_id) REFERENCES students(id)
+    FOREIGN KEY (group_id) REFERENCES `groups`(id) ON DELETE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
 );
 
 CREATE TABLE assessments (
@@ -102,7 +102,7 @@ CREATE TABLE assessments (
     type_evaluate VARCHAR(50),
     weighting FLOAT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (section_id) REFERENCES sections(id)
+    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE
 );
 
 CREATE TABLE tasks (
@@ -110,7 +110,7 @@ CREATE TABLE tasks (
     assessment_id INT NOT NULL,
     optional BOOLEAN,
     weighting FLOAT,
-    FOREIGN KEY (assessment_id) REFERENCES assessments(id)
+    FOREIGN KEY (assessment_id) REFERENCES assessments(id) ON DELETE CASCADE
 );
 
 CREATE TABLE grades (
@@ -119,6 +119,6 @@ CREATE TABLE grades (
     task_id INT NOT NULL,
     score DECIMAL(2,1),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (student_id) REFERENCES students(id),
-    FOREIGN KEY (task_id) REFERENCES tasks(id)
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
 );

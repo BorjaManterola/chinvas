@@ -10,66 +10,63 @@ grade_bp = Blueprint('grade_routes', __name__, url_prefix='/grades')
 
 @grade_bp.route('/new', methods=['GET'])
 def new_grade_form():
-    user_id = request.args.get('user_id', type=int)
+    student_id = request.args.get('student_id', type=int)
     task_id = request.args.get('task_id', type=int)
 
-    user = User.query.get_or_404(user_id)
+    student = Student.query.get_or_404(student_id)
     task = Task.query.get_or_404(task_id)
-    assessment = Assessment.query.get_or_404(task.assessment_id)
-    usersituation = UserSituation.query.filter_by(user_id=user_id, section_id=assessment.section_id).first()
 
-
-    return render_template('grades/form.html', grade=None, user=user, task=task, usersituation=usersituation)
-
+    return render_template('grades/form.html', grade=None, student=student, task=task)
 
 @grade_bp.route('/', methods=['POST'])
 def create_grade():
-    grade = Grade(
-        user_id=request.form['user_id'],
-        task_id=request.form['task_id'],
-        score=request.form['score'],
-        feedback=request.form.get('feedback', '')
-    )
+    student_id = request.form.get('student_id', type=int)
+    task_id = request.form.get('task_id', type=int)
+    score = request.form.get('score', type=float)
+
+    if score is None:
+        flash("Score is required.", "danger")
+        return redirect(url_for('grade_routes.new_grade_form', student_id=student_id, task_id=task_id))
+
+    grade = Grade(student_id=student_id, task_id=task_id, score=score)
     db.session.add(grade)
     db.session.commit()
 
-    task = Task.query.get_or_404(grade.task_id)
-    assessment = Assessment.query.get_or_404(task.assessment_id)
-    usersituation = UserSituation.query.filter_by(user_id=grade.user_id, section_id=assessment.section_id).first()
-
-    return redirect(url_for('usersituation_routes.show', id=usersituation.id))
-
+    flash("Grade created successfully.", "success")
+    return redirect(url_for('student_situation_routes.show_student_situation', id=student_id))
 
 @grade_bp.route('/<int:id>/edit', methods=['GET'])
 def edit_grade_form(id):
     grade = Grade.query.get_or_404(id)
-    user = User.query.get_or_404(grade.user_id)
+    student = Student.query.get_or_404(grade.student_id)
     task = Task.query.get_or_404(grade.task_id)
-    assessment = Assessment.query.get_or_404(task.assessment_id)
-    usersituation = UserSituation.query.filter_by(user_id=grade.user_id, section_id=assessment.section_id).first()
 
-    return render_template('grades/form.html', grade=grade, user=user, task=task, usersituation=usersituation)
-
+    return render_template('grades/form.html', grade=grade, student=student, task=task)
 
 @grade_bp.route('/<int:id>', methods=['POST'])
 def update_grade(id):
     grade = Grade.query.get_or_404(id)
-    grade.score = request.form['score']
-    grade.feedback = request.form.get('feedback', '')
+    score = request.form.get('score', type=float)
+    feedback = request.form.get('feedback', '')
+
+    if score is None:
+        flash("Score is required.", "danger")
+        return redirect(url_for('grade_routes.edit_grade_form', id=id))
+
+    grade.score = score
+    grade.feedback = feedback
     db.session.commit()
 
-    task = Task.query.get_or_404(grade.task_id)
-    assessment = Assessment.query.get_or_404(task.assessment_id)
-    usersituation = UserSituation.query.filter_by(user_id=grade.user_id, section_id=assessment.section_id).first()
-    return redirect(url_for('usersituation_routes.show', id=usersituation.id))
-
+    flash("Grade updated successfully.", "success")
+    return redirect(url_for('student_situation_routes.show_student_situation', id=grade.student_id))
 
 @grade_bp.route('/<int:id>/delete', methods=['POST'])
 def delete_grade(id):
     grade = Grade.query.get_or_404(id)
-    usersituation_id = request.form.get('usersituation_id')
+    student_id = grade.student_id
+
     db.session.delete(grade)
     db.session.commit()
-    flash("Grade deleted successfully.", "success")
 
-    return redirect(url_for('usersituation_routes.show', id=usersituation_id))
+    flash("Grade deleted successfully.", "success")
+    return redirect(url_for('student_situation_routes.show_student_situation', id=student_id))

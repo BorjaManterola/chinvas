@@ -11,16 +11,6 @@
             action="{{ url_for('task_routes.update_task', id=task.id) if task else url_for('task_routes.create_task') }}">
                 
                 <input type="hidden" name="assessment_id" value="{{ assessment.id }}">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Task Name</label>
-                    <input type="text" class="form-control" id="name" name="name" value="{{ task.name if task else '' }}" required>
-                    <div class="form-text">Examples: Assignment 1, Midterm Exam, Quiz 2</div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="date" class="form-label">Due Date</label>
-                    <input type="date" class="form-control" id="date" name="date" value="{{ task.date.strftime('%Y-%m-%d') if task and task.date else '' }}" required>
-                </div>
 
                 <div class="mb-3">
                     <label for="weighting" class="form-label">
@@ -36,7 +26,7 @@
                             Evaluation Type Not Set
                         {% endif %}
                     </label>
-                    <input type="number" class="form-control" id="weighting" name="weighting" value="{{ assessment.weighting if assessment else '' }}" min="1" max="100" required>
+                    <input type="number" class="form-control" id="weighting" name="weighting" value="{{ task.weighting if task else '' }}" step="0.01" min="0.01" max="100" required>
                 </div>
 
                 <div class="mb-3 form-check">
