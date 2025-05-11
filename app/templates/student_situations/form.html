@@ -6,16 +6,8 @@
         <div class="card-body">
             <h3 class="mb-4">Assign Students to Section {{ section.nrc }}</h3>
 
-            <form method="POST" class="card card-body bg-light shadow-sm">
-                <!-- Hidden inputs -->
+            <form method="POST" action="{{ url_for('student_situation_routes.create_student_situations') }}" class="card card-body bg-light shadow-sm">
                 <input type="hidden" name="section_id" value="{{ section.id }}">
-                <input type="hidden" name="situation" value="student">
-
-                <!-- Section display -->
-                <div class="mb-3">
-                    <label class="form-label">Section:</label>
-                    <input type="text" class="form-control" value="{{ section.nrc }} - {{ section.period.semester }}" disabled>
-                </div>
 
                 {% if students %}
                     <div class="accordion mb-3" id="accordionStudents">
@@ -29,11 +21,10 @@
                             <div id="collapseStudents" class="accordion-collapse collapse" aria-labelledby="headingStudents">
                                 <div class="accordion-body">
                                     <input type="text" class="form-control mb-3" id="studentSearch" placeholder="Search by name...">
-
                                     <div id="studentList">
                                         {% for student in students %}
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="user_ids" id="student_{{ student.id }}" value="{{ student.id }}">
+                                                <input class="form-check-input" type="checkbox" name="student_ids" id="student_{{ student.id }}" value="{{ student.id }}">
                                                 <label class="form-check-label student-label" for="student_{{ student.id }}">
                                                     {{ student.name }} ({{ student.email }})
                                                 </label>
@@ -48,7 +39,6 @@
                     <div class="alert alert-info">No students available to assign.</div>
                 {% endif %}
 
-                <!-- Actions -->
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-success" {% if not students %}disabled{% endif %}>
                         <i class="bi bi-check2-circle"></i> Assign

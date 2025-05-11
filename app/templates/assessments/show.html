@@ -4,57 +4,49 @@
 <div class="container">
     <div class="card mt-4 shadow-sm">
         <div class="card-body">
-            <h4 class="card-title">Assessment Details</h4>
-
-            <p><strong>Name:</strong> {{ assessment.name }}</p>
-            <p><strong>Type of Evaluation:</strong> {{ assessment.type_evaluate }}</p>
-            <p><strong>Weighting:</strong> {{ assessment.weighting }}%</p>
+            <h3 class="card-title">{{ assessment.name }}</h3>
+            <p><strong>Evaluation Type:</strong> {{ assessment.type_evaluate }}</p>
+            <p><strong>Weighting:</strong> {{ assessment.weighting }}{% if assessment.type_evaluate == 'Percentage' %}%{% endif %}</p>
 
             <hr>
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <a href="{{ url_for('task_routes.new_task_form', id=assessment.id) }}" class="btn btn-success">
-                        <i class="fas fa-plus me-1"></i> Add Task
-                    </a>
-                </div>
-                <div>
-                    <a href="{{ url_for('assessment_routes.edit_assessment', id=assessment.id) }}" class="btn btn-warning ms-2">
-                        <i class="fas fa-pencil-alt me-1"></i> Edit Assessment
-                    </a>
-                    <a href="{{ url_for('section_routes.show_section', id=assessment.section_id) }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-1"></i> Back to Section
-                    </a>
-                </div>
+            <div class="mb-3">
+                <a href="{{ url_for('task_routes.new_task_form', assessment_id=assessment.id) }}" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i> Add Task
+                </a>
+                <a href="{{ url_for('assessment_routes.edit_assessment_form', id=assessment.id) }}" class="btn btn-warning ms-2">
+                    <i class="fas fa-pencil-alt me-1"></i> Edit Assessment
+                </a>
+                <a href="{{ url_for('section_routes.show_section', id=assessment.section_id) }}" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Section
+                </a>
             </div>
 
             <hr>
-            
+
             <h5>Tasks</h5>
             {% if tasks %}
-                <ul class="list-group mb-3">
+                <ul class="list-group">
                     {% for task in tasks %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>{{ task.name }}</strong> - <strong>Weighting:</strong> ({{ task.weighting }}) - <strong>Due:</strong> ({{ task.date.strftime('%d-%m-%Y') }})
-                            {% if task.optional %}<span class="badge bg-info text-dark ms-2">Optional</span>{% endif %}
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a href="{{ url_for('task_routes.edit_task_form', id=task.id) }}" class="btn btn-sm btn-warning">
-                                <i class="fas fa-pencil-alt me-1"></i> Edit
-                            </a>
-                            <form method="POST" action="{{ url_for('task_routes.delete_task', id=task.id) }}"
-                                  onsubmit="return confirm('Are you sure you want to delete this task?');">
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash me-1"></i> Delete
-                                </button>
-                            </form>
-                        </div>
-                    </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ task.name or 'Unnamed Task' }}</strong> – Weight: {{ task.weighting }}% {% if task.optional %}(Optional){% endif %}
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('task_routes.edit_task_form', id=task.id) }}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-pencil-alt me-1"></i>Edit
+                                </a>
+                                <form method="POST" action="{{ url_for('task_routes.delete_task', id=task.id) }}" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash me-1"></i>Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p class="text-muted">No tasks created for this assessment yet.</p>
+                <p class="text-muted">No tasks have been added yet.</p>
             {% endif %}
         </div>
     </div>

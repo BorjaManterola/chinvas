@@ -4,15 +4,14 @@
 <div class="container">
     <div class="card mt-4 shadow-sm col-md-6 mx-auto">
         <div class="card-body">
-            <h4 class="card-title">{{ 'Edit Assessment' if assessment else 'Create Assessment' }}</h4>
-            <p class="text-muted">For section {{ section.nrc }} - {{ section.period.semester }} - {{section.type_evaluate}}</p>
-
+            <h2 class="mb-4">{{ 'Edit Assessment' if assessment else 'New Assessment' }}</h2>
             <form method="POST"
-                  action="{{ url_for('assessment_routes.edit_assessment', id=assessment.id) if assessment else url_for('assessment_routes.create_assessment', id=section.id) }}">
+                  action="{{ url_for('assessment_routes.update_assessment', id=assessment.id) if assessment else url_for('assessment_routes.create_assessment', section_id=section.id) }}"
+                  class="card card-body bg-light shadow-sm">
+
                 <div class="mb-3">
-                    <label for="name" class="form-label">Assessment Name</label>
+                    <label for="name" class="form-label">Assessment Name:</label>
                     <input type="text" class="form-control" id="name" name="name" value="{{ assessment.name if assessment else '' }}" required>
-                    <div class="form-text">Examples: Assignments, Exams, Projects, Quizzes</div>
                 </div>
 
                 <div class="mb-3">
@@ -25,25 +24,13 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="weighting" class="form-label">
-                        {% if section and section.type_evaluate %}
-                            {% if section.type_evaluate == 'Weight' %}
-                                Weight
-                            {% elif section.type_evaluate == 'Percentage' %}
-                                Percentage (%)
-                            {% else %}
-                                Unknown Evaluation Type
-                            {% endif %}
-                        {% else %}
-                            Evaluation Type Not Set
-                        {% endif %}
-                    </label>
-                    <input type="number" class="form-control" id="weighting" name="weighting" value="{{ assessment.weighting if assessment else '' }}" min="1" max="100" required>
+                    <label for="weighting" class="form-label">Weighting (e.g. 25):</label>
+                    <input type="number" class="form-control" id="weighting" name="weighting" value="{{ assessment.weighting if assessment else '' }}" step="0.01" required>
                 </div>
 
-                <div class="d-flex justify-content-end gap-2 mt-4">
+                <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-success">
-                        <i class="fas fa-save me-1"></i> Save
+                        <i class="fas fa-save me-1"></i>Save
                     </button>
                     <a href="{{ url_for('section_routes.show_section', id=section.id) }}" class="btn btn-outline-secondary ms-2">
                         <i class="fas fa-arrow-left me-1"></i>Cancel

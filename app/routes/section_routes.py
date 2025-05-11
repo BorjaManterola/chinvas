@@ -33,11 +33,18 @@ def create_section():
     flash("Section created successfully.", "success")
     return redirect(url_for('period_routes.show_period', id=period_id))
 
-
 @section_bp.route('/<int:id>/show', methods=['GET'])
 def show_section(id):
     section = Section.query.get_or_404(id)
-    return render_template('sections/show.html', section=section)
+    assessments = section.assessments
+    student_situations = section.student_situations
+    return render_template(
+        'sections/show.html',
+        section=section,
+        assessments=assessments,
+        students=student_situations
+    )
+
 
 
 @section_bp.route('/<int:id>/edit', methods=['GET'])

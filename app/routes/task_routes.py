@@ -8,14 +8,12 @@ from app.models.student_situation import StudentSituation
 from app import db
 from datetime import datetime
 
-task_bp = Blueprint('task_routes', __name__)
+task_bp = Blueprint('task_routes', __name__, url_prefix='/tasks')
 
-
-@task_bp.route('/<int:id>/create', methods=['GET'])
-def new_task_form(id):
-    assessment = Assessment.query.get_or_404(id)
+@task_bp.route('/new/<int:assessment_id>', methods=['GET'])
+def new_task_form(assessment_id):
+    assessment = Assessment.query.get_or_404(assessment_id)
     return render_template('tasks/form.html', task=None, assessment=assessment)
-
 
 @task_bp.route('/', methods=['POST'])
 def create_task():
@@ -32,7 +30,6 @@ def create_task():
         return jsonify({'message': 'Task created successfully', 'id': task.id}), 201
 
     return redirect(url_for('assessment_routes.show_assessment', id=task.assessment_id))
-
 
 def _validate_task_data(data):
     required_fields = ['name', 'weighting', 'date', 'assessment_id']
@@ -61,7 +58,6 @@ def _validate_task_data(data):
 
     return True, None
 
-
 def _create_task_from_data(data):
     task = Task(
         name=data.get('name'),
@@ -72,8 +68,6 @@ def _create_task_from_data(data):
     )
     db.session.add(task)
     return task
-
-
 
 @task_bp.route('/<int:id>/edit', methods=['GET'])
 def edit_task_form(id):
@@ -96,7 +90,6 @@ def update_task(id):
 
     flash('Task updated successfully', 'success')
     return redirect(url_for('assessment_routes.show_assessment', id=task.assessment_id))
-
 
 def _validate_update_task_data(form, assessment, task_id):
     name = form.get('name')
@@ -132,14 +125,11 @@ def _validate_update_task_data(form, assessment, task_id):
         'date': date_obj
     }
 
-
 def _update_task_fields(task, data):
     task.name = data['name']
     task.optional = data['optional']
     task.weighting = data['weighting']
     task.date = data['date']
-
-
 
 @task_bp.route('/<int:id>/delete', methods=['POST'])
 def delete_task(id):

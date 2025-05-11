@@ -10,20 +10,26 @@ student_situation_bp = Blueprint('student_situation_routes', __name__, url_prefi
 def new_student_situation_form():
     section_id = request.args.get('section_id', type=int)
     section = Section.query.get_or_404(section_id)
-    students = Student.query.all()
-    return render_template('student_situations/form.html', section=section, students=students)
 
-@student_situation_bp.route('/', methods=['POST'])
-def create_student_situation():
-    student_id = request.form['student_id']
-    section_id = request.form['section_id']
-    final_grade = request.form.get('final_grade', None)
+    assigned_student_ids = db.session.query(StudentSituation.student_id).filter_by(section_id=section_id).all()
+    assigned_ids = {id for (id,) in assigned_student_ids}
 
-    situation = StudentSituation(student_id=student_id, section_id=section_id, final_grade=final_grade or None)
-    db.session.add(situation)
+    students = Student.query.filter(~Student.id.in_(assigned_ids)).all()
+
+    return render_template("student_situations/form.html", section=section, students=students)
+
+
+@student_situation_bp.route('/new', methods=['POST'])
+def create_student_situations():
+    section_id = request.form.get('section_id')
+    student_ids = request.form.getlist('student_ids')
+
+    for student_id in student_ids:
+        situation = StudentSituation(student_id=student_id, section_id=section_id)
+        db.session.add(situation)
+    
     db.session.commit()
-
-    return redirect(url_for('student_situation_routes.list_student_situations'))
+    return redirect(url_for('section_routes.show_section', id=section_id))
 
 @student_situation_bp.route('/', methods=['GET'])
 def list_student_situations():
@@ -32,8 +38,8 @@ def list_student_situations():
 
 @student_situation_bp.route('/<int:id>/show', methods=['GET'])
 def show_student_situation(id):
-    situation = StudentSituation.query.get_or_404(id)
-    return render_template('student_situations/show.html', situation=situation)
+    student_situation = StudentSituation.query.get_or_404(id)
+    return render_template('student_situations/show.html', student_situation=student_situation)
 
 @student_situation_bp.route('/<int:id>/edit', methods=['GET'])
 def edit_student_situation_form(id):
