@@ -3,13 +3,12 @@ import json
 import pymysql
 
 from dotenv import load_dotenv
-from urllib.parse import quote_plus
 
-load_dotenv(dotenv_path="../.env")
+load_dotenv()
 
 DB_HOST = os.getenv('DB_HOST', 'localhost')
 DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = quote_plus(os.getenv('DB_PASSWORD'))
+DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_NAME = os.getenv('DB_NAME')
 
 print(f"Connecting to database {DB_NAME} at {DB_HOST} with user {DB_USER}")

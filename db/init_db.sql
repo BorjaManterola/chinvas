@@ -33,6 +33,13 @@ CREATE TABLE classroom (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE schedule (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    year INT NOT NULL,
+    semester VARCHAR(10),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE periods (
     id INT PRIMARY KEY AUTO_INCREMENT,
     course_id INT NOT NULL,
@@ -55,11 +62,14 @@ CREATE TABLE class (
     id INT PRIMARY KEY AUTO_INCREMENT,
     section_id INT NOT NULL,
     classroom_id INT NOT NULL,
+    schedule_id INT NOT NULL,
+    day_of_week ENUM('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes') NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE,
-    FOREIGN KEY (classroom_id) REFERENCES classroom(id) ON DELETE CASCADE
+    FOREIGN KEY (classroom_id) REFERENCES classroom(id) ON DELETE CASCADE,
+    FOREIGN KEY (schedule_id) REFERENCES schedule(id) ON DELETE CASCADE
 );
 
 CREATE TABLE prerequisites (
@@ -105,18 +115,4 @@ CREATE TABLE grades (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
-);
-
-CREATE TABLE schedule (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    section_id INT NOT NULL,
-    classroom_id INT NOT NULL,
-    day_of_week ENUM('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes') NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE,
-    FOREIGN KEY (classroom_id) REFERENCES classroom(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_section_schedule (section_id, day_of_week, start_time),
-    UNIQUE KEY unique_classroom_schedule (classroom_id, day_of_week, start_time, end_time)
 );

@@ -6,9 +6,8 @@ from app.models.period import Period
 from app.models.section import Section
 from app.models.prerequisite import Prerequisite
 from app.models.student_situation import StudentSituation
-from app.models.group import Group
-from app.models.member import Member
 from app.models.assessment import Assessment
 from app.models.task import Task
 from app.models.grade import Grade
 from app.models.class_ import Class
+from app.models.schedule import Schedule
