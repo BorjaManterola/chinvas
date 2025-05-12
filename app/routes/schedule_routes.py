@@ -1,6 +1,11 @@
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash
 from app.models.schedule import Schedule
+from app.models.class_ import Class
 from app import db
+from app.models.section import Section
+from app.models.period import Period
+from app.models.course import Course
+from app.models.classroom import Classroom
 
 schedule_bp = Blueprint('schedule_routes', __name__, url_prefix='/schedules')
 
@@ -12,14 +17,14 @@ def new_schedule_form():
 def create_schedule():
     if request.is_json:
         data = request.get_json()
-        year = data.get('year')
-        semester = data.get('semester')
+        year = data.get("year")
+        semester = data.get("semester")
     else:
-        year = request.form.get('year')
-        semester = request.form.get('semester')
+        year = request.form.get("year")
+        semester = request.form.get("semester")
 
     if not year or not semester:
-        flash("All fields are required.", "danger")
+        flash("Year and semester are required.", "danger")
         return render_template("schedules/form.html", schedule=None)
 
     try:
@@ -28,15 +33,39 @@ def create_schedule():
         flash("Year must be a number.", "danger")
         return render_template("schedules/form.html", schedule=None)
 
+    existing = Schedule.query.filter_by(year=year, semester=semester).first()
+    if existing:
+        flash(f"A schedule for year {year} and semester '{semester}' already exists.", "danger")
+        return render_template("schedules/form.html", schedule=None)
+
     schedule = Schedule(year=year, semester=semester)
     db.session.add(schedule)
-    db.session.commit()
+    db.session.flush()
 
-    if request.is_json:
-        return jsonify({'message': 'Schedule created', 'id': schedule.id}), 201
+    result = schedule.generate_schedule()
 
-    return redirect(url_for('schedule_routes.get_schedules'))
+    if not result["unassigned_sections"]:
+        for c in result["classes_to_create"]:
+            new_class = Class(
+                section_id=c["section_id"],
+                day_of_week=c["day_of_week"],
+                start_time=c["start_time"],
+                end_time=c["end_time"],
+                classroom_id=c["classroom_id"],
+                schedule_id=c["schedule_id"]
+            )
+            db.session.add(new_class)
 
+        db.session.commit()
+        flash("Schedule and all classes created successfully!", "success")
+        return redirect(url_for("schedule_routes.get_schedules"))
+    else:
+        db.session.rollback()
+        msg = ["⚠ Could not generate schedule due to conflicts:"]
+        for s in result["unassigned_sections"]:
+            msg.append(f"Section {s['section_id']}: {s['reason']}")
+        flash("<br>".join(msg), "danger")
+        return render_template("schedules/form.html", schedule=None)
 
 @schedule_bp.route('/', methods=['GET'])
 def get_schedules():
@@ -50,7 +79,24 @@ def get_schedules():
 @schedule_bp.route('/<int:id>', methods=['GET'])
 def show_schedule(id):
     schedule = Schedule.query.get_or_404(id)
-    return render_template('schedules/show.html', schedule=schedule)
+
+    classes = db.session.query(Class).\
+        join(Section, Class.section_id == Section.id).\
+        join(Period, Section.period_id == Period.id).\
+        join(Course, Period.course_id == Course.id).\
+        join(Classroom, Class.classroom_id == Classroom.id).\
+        filter(Class.schedule_id == id).\
+        add_columns(
+            Class.id.label("class_id"),
+            Course.name.label("course_name"),
+            Section.id.label("section_id"),
+            Classroom.name.label("classroom_name"),
+            Class.day_of_week,
+            Class.start_time,
+            Class.end_time
+        ).all()
+
+    return render_template("schedules/show.html", schedule=schedule, classes=classes)
 
 @schedule_bp.route('/<int:id>/form', methods=['GET'])
 def edit_schedule_form(id):
