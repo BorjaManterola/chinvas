@@ -7,7 +7,6 @@
             <h4 class="card-title">Student Detail</h4>
             <p><strong>Name:</strong> {{ student_situation.student.name }}</p>
             <p><strong>Email:</strong> {{ student_situation.student.email }}</p>
-            <p><strong>Section NRC:</strong> {{ student_situation.section.nrc }}</p>
             <p><strong>Final Grade:</strong> {{ student_situation.final_grade or 'Not assigned' }}</p>
 
             <hr>
@@ -26,19 +25,15 @@
                 <ul class="list-group">
                     {% for task in tasks %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>{{ task.name }}</strong> (Weight: {{ task.weighting }}%)
-                                <br>
-                                {% if grades[task.id] %}
-                                    <span class="text-success">Score: {{ grades[task.id].score }}</span>
+                            {% if grades[task.id] %}
+                                <div>
+                                    <strong>{{ task.name }}</strong> (Weight: {{ task.weighting }}%)
                                     <br>
-                                    <small class="text-muted">Feedback: {{ grades[task.id].feedback or 'No feedback' }}</small>
-                                {% else %}
-                                    <span class="text-danger">No grade assigned yet.</span>
-                                {% endif %}
-                            </div>
-                            <div>
-                                {% if grades[task.id] %}
+                                        <span class="text-success">Score: {{ grades[task.id].score }}</span>
+                                        <br>
+                                </div>
+                                {% if student_situation.section.period.opened %}
+                                <div>
                                     <a href="{{ url_for('grade_routes.edit_grade_form', id=grades[task.id].id) }}" class="btn btn-sm btn-warning">
                                         <i class="fas fa-pencil-alt me-1"></i> Edit
                                     </a>
@@ -49,12 +44,18 @@
                                             <i class="fas fa-trash me-1"></i> Delete
                                         </button>
                                     </form>
-                                {% else %}
+                                </div>
+                                {% endif %}
+                            {% else %}
+                                <div>
+                                    <span class="text-danger">No grade assigned yet.</span>
+                                </div>
+                                <div>
                                     <a href="{{ url_for('grade_routes.new_grade_form', student_id=student_situation.student.id, task_id=task.id) }}" class="btn btn-sm btn-success ms-2">
                                         <i class="fas fa-plus me-1"></i> Add Grade
                                     </a>
-                                {% endif %}
-                            </div>
+                                </div>
+                            {% endif %}
                         </li>
                     {% endfor %}
                 </ul>

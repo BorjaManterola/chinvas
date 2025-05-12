@@ -75,3 +75,10 @@ def delete_period(id):
     db.session.commit()
     return redirect(url_for('course_routes.show_course', id=course_id))
 
+@period_bp.route('/periods/<int:id>/close', methods=['POST'])
+def close_period(id):
+    period = Period.query.get_or_404(id)
+    period.opened = False
+    db.session.commit()
+    flash('The period has been closed successfully.', 'success')
+    return redirect(url_for('period_routes.show_period', id=id))

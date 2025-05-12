@@ -47,14 +47,12 @@ def edit_grade_form(id):
 def update_grade(id):
     grade = Grade.query.get_or_404(id)
     score = request.form.get('score', type=float)
-    feedback = request.form.get('feedback', '')
 
     if score is None:
         flash("Score is required.", "danger")
         return redirect(url_for('grade_routes.edit_grade_form', id=id))
 
     grade.score = score
-    grade.feedback = feedback
     db.session.commit()
 
     flash("Grade updated successfully.", "success")

@@ -10,3 +10,16 @@ class Assessment(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.current_timestamp())
 
     tasks = db.relationship("Task", backref="assessment", cascade="all, delete-orphan", passive_deletes=True)
+    
+    def calculatePercentageSumTasks(self):
+        total_percentage = 0
+        for task in self.tasks:
+            total_percentage += task.weighting
+        return total_percentage
+    
+    def validateWeightingAssessment(self):
+        if self.type_evaluate == "Percentage":
+            total_percentage = self.calculatePercentageSumTasks()
+            if total_percentage != 100:
+                return False
+        return True

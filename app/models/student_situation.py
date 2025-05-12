@@ -9,4 +9,5 @@ class StudentSituation(db.Model):
 
     student = db.relationship('Student', backref='student_situations')
 
-    
+    def calculateFinalGrade(self):
+        print("Calculating final grade for student situation")

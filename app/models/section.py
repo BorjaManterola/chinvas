@@ -10,3 +10,16 @@ class Section(db.Model):
 
     assessments = db.relationship('Assessment', backref='section', lazy=True)
     student_situations = db.relationship('StudentSituation', backref='section', lazy=True)
+    
+    def calculatePercentageSumAssessments(self):
+        total_percentage = 0
+        for assessment in self.assessments:
+            total_percentage += assessment.weighting
+        return total_percentage
+    
+    def validateWeightingSection(self):
+        if self.type_evaluate == "Percentage":
+            total_percentage = self.calculatePercentageSumAssessments()
+            if total_percentage != 100:
+                return False
+        return True
