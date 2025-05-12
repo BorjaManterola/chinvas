@@ -45,8 +45,6 @@ def show_section(id):
         students=student_situations
     )
 
-
-
 @section_bp.route('/<int:id>/edit', methods=['GET'])
 def edit_section_form(id):
     section = Section.query.get_or_404(id)

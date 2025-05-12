@@ -100,7 +100,6 @@ def get_period_courses():
                 Period.id.in_(period_ids)
             ).distinct().all()
 
-            # Aquí obtenemos las secciones de los periodos seleccionados
             sections = Section.query.filter(Section.period_id.in_(period_ids)).all()
     
     return render_template(
@@ -144,7 +143,6 @@ def generate_schedule():
 
     rooms = [f"Room {i}" for i in range(1, 11)]
 
-    # Usamos StringIO para escribir como texto
     text_output = StringIO()
     writer = csv.writer(text_output)
     writer.writerow(["Section ID", "Course ID", "Teacher ID", "Room", "Day", "Start Time", "End Time"])
@@ -167,7 +165,6 @@ def generate_schedule():
         if not success:
             writer.writerow([section.id, section.period.course_id, section.teacher_id, "N/A", "N/A", "N/A", "N/A"])
 
-    # Convertimos el contenido a binario
     binary_output = BytesIO()
     binary_output.write(text_output.getvalue().encode('utf-8'))
     binary_output.seek(0)

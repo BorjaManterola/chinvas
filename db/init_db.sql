@@ -79,22 +79,6 @@ CREATE TABLE student_situations (
     FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE
 );
 
-CREATE TABLE `groups` (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    section_id INT NOT NULL,
-    name VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE
-);
-
-CREATE TABLE members (
-    group_id INT,
-    student_id INT,
-    PRIMARY KEY (group_id, student_id),
-    FOREIGN KEY (group_id) REFERENCES `groups`(id) ON DELETE CASCADE,
-    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
-);
-
 CREATE TABLE assessments (
     id INT PRIMARY KEY AUTO_INCREMENT,
     section_id INT NOT NULL,
@@ -123,7 +107,6 @@ CREATE TABLE grades (
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE schedule (
     id INT PRIMARY KEY AUTO_INCREMENT,
     section_id INT NOT NULL,
@@ -134,8 +117,6 @@ CREATE TABLE schedule (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE,
     FOREIGN KEY (classroom_id) REFERENCES classroom(id) ON DELETE CASCADE,
-    -- Restricción para evitar duplicidad de horarios para una misma sección
     UNIQUE KEY unique_section_schedule (section_id, day_of_week, start_time),
-    -- Restricción para evitar duplicidad de una sala en un mismo horario
     UNIQUE KEY unique_classroom_schedule (classroom_id, day_of_week, start_time, end_time)
 );
