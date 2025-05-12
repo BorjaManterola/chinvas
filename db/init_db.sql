@@ -1,7 +1,7 @@
 -- Elimina tablas si existen (respetando el orden de FK)
 DROP TABLE IF EXISTS class, classroom, grades, tasks, assessments, members, `groups`,
     student_situations, prerequisites, sections, periods, usersituations, users,
-    courses, students, teachers;
+    courses, students, teachers, schedule;
 
 CREATE TABLE teachers (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -121,4 +121,21 @@ CREATE TABLE grades (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE schedule (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    section_id INT NOT NULL,
+    classroom_id INT NOT NULL,
+    day_of_week ENUM('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes') NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE,
+    FOREIGN KEY (classroom_id) REFERENCES classroom(id) ON DELETE CASCADE,
+    -- Restricción para evitar duplicidad de horarios para una misma sección
+    UNIQUE KEY unique_section_schedule (section_id, day_of_week, start_time),
+    -- Restricción para evitar duplicidad de una sala en un mismo horario
+    UNIQUE KEY unique_classroom_schedule (classroom_id, day_of_week, start_time, end_time)
 );

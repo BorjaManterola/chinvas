@@ -76,7 +76,7 @@ DB_NAME=chinvas
 
 ```bash
 Get-Content db/init_db.sql | mysql -u tu_usuario -p chinvas
-py db/processing_json.py
+py db/populate_db.py
 ```
 
 ---
