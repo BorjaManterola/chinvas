@@ -16,23 +16,20 @@ def new_assessment_form():
 def create_assessment():
     section_id = request.form['section_id']
     section = Section.query.get_or_404(section_id)
-
     name = request.form['name']
     type_evaluate = request.form['type_evaluate']
     weighting = request.form.get('weighting', type=float)
 
-    if section.type_evaluate == 'Percentage':
-        total = db.session.query(db.func.sum(Assessment.weighting)) \
-            .filter_by(section_id=section_id).scalar() or 0
-        if total + weighting > 100:
-            flash(f'Total weighting exceeds 100% (current: {total}%)', 'danger')
-            return render_template('assessments/form.html', section=section, assessment=None)
+    is_valid, total = Assessment.is_valid_weighting(section, weighting)
+    if not is_valid:
+        flash(f'Total weighting would exceed 100%. Current total: {total:.2f}%. You entered: {weighting:.2f}%.', 'danger')
+
+        return render_template('assessments/form.html', section=section, assessment=None)
 
     assessment = Assessment(name=name, type_evaluate=type_evaluate,
                             weighting=weighting, section_id=section_id)
     db.session.add(assessment)
     db.session.commit()
-
     flash('Assessment created successfully.', 'success')
     return redirect(url_for('section_routes.show_section', id=section_id))
 
@@ -52,22 +49,19 @@ def edit_assessment_form(id):
 def update_assessment(id):
     assessment = Assessment.query.get_or_404(id)
     section = Section.query.get_or_404(assessment.section_id)
-
     name = request.form['name']
     type_evaluate = request.form['type_evaluate']
     weighting = request.form.get('weighting', type=float)
 
-    if section.type_evaluate == 'Percentage':
-        total = db.session.query(db.func.sum(Assessment.weighting)) \
-            .filter(Assessment.section_id == section.id, Assessment.id != assessment.id).scalar() or 0
-        if total + weighting > 100:
-            flash(f'Total weighting exceeds 100% (current: {total}%)', 'danger')
-            return render_template('assessments/form.html', assessment=assessment, section=section)
+    is_valid, total = Assessment.is_valid_weighting(section, weighting, exclude_assessment_id=id)
+    if not is_valid:
+        flash(f'Total weighting would exceed 100%. Current total: {total:.2f}%. You entered: {weighting:.2f}%.', 'danger')
+
+        return render_template('assessments/form.html', assessment=assessment, section=section)
 
     assessment.name = name
     assessment.type_evaluate = type_evaluate
     assessment.weighting = weighting
-
     db.session.commit()
     flash('Assessment updated successfully.', 'success')
     return redirect(url_for('section_routes.show_section', id=section.id))
@@ -82,5 +76,3 @@ def delete_assessment(id):
 
     flash("Assessment deleted successfully", "success")
     return redirect(url_for('section_routes.show_section', id=assessment.section_id))
-
-

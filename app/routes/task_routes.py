@@ -22,11 +22,10 @@ def create_task():
         flash("All fields are required.", "danger")
         return redirect(url_for('assessment_routes.show_assessment', id=assessment_id))
 
-    total_weight = db.session.query(db.func.sum(Task.weighting)) \
-        .filter_by(assessment_id=assessment_id).scalar() or 0
-    if total_weight + weighting > 100:
+    is_valid, total_weight = Task.is_valid_weighting(assessment_id, weighting, exclude_task_id=id)
+    if not is_valid:
         flash(f"Total task weighting cannot exceed 100%. Current total: {total_weight}%", "danger")
-        return redirect(url_for('assessment_routes.show_assessment', id=assessment_id))
+        return redirect(url_for('task_routes.edit_task_form', id=id))
 
     task = Task(assessment_id=assessment_id, weighting=weighting, optional=optional)
     db.session.add(task)
@@ -54,12 +53,11 @@ def update_task(id):
         flash("Weighting is required.", "danger")
         return redirect(url_for('task_routes.edit_task_form', id=id))
 
-    total_weight = db.session.query(db.func.sum(Task.weighting)) \
-        .filter_by(assessment_id=assessment_id) \
-        .filter(Task.id != id).scalar() or 0
-    if total_weight + weighting > 100:
+    is_valid, total_weight = Task.is_valid_weighting(assessment_id, weighting, exclude_task_id=id)
+    if not is_valid:
         flash(f"Total task weighting cannot exceed 100%. Current total: {total_weight}%", "danger")
         return redirect(url_for('task_routes.edit_task_form', id=id))
+
 
     task.weighting = weighting
     task.optional = optional
