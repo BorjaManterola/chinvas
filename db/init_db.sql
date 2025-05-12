@@ -45,6 +45,7 @@ CREATE TABLE periods (
     course_id INT NOT NULL,
     year INT NOT NULL,
     semester VARCHAR(10),
+    opened BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
 

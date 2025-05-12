@@ -14,7 +14,6 @@ def new_section_form():
     teachers = Teacher.query.all()
     return render_template('sections/form.html', section=None, period=period, teachers=teachers)
 
-
 @section_bp.route('/', methods=['POST'])
 def create_section():
     period_id = request.form.get('period_id')
@@ -50,7 +49,6 @@ def edit_section_form(id):
     section = Section.query.get_or_404(id)
     teachers = Teacher.query.all()
     return render_template('sections/form.html', section=section, period=section.period, teachers=teachers)
-
 
 @section_bp.route('/<int:id>', methods=['POST'])
 def update_section(id):

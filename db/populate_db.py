@@ -83,6 +83,12 @@ def populateCourseInstances(cursor):
         data = (instance['id'], instance['curso_id'], year, semester)
         insertData(cursor, query, data)
         
+def typeEvaluate(type):
+    if type == 'peso':
+        return 'Weight'
+    elif type == 'porcentaje':
+        return 'Percentage'
+        
 def populateTasks(cursor, task, assessment):
     for i in range(task["cantidad"]):
         task_query = """
@@ -99,8 +105,9 @@ def populateAssessments(cursor, assessments, section):
         VALUES (%s, %s, %s, %s, %s)
         """
         type_evaluate_assessment = section['evaluacion']['topicos'][f"{assessment['id']}"]["tipo"]
+        
         assessment_data = (assessment["id"], section['id'], assessment['nombre'],
-                            type_evaluate_assessment, assessment['valor'])
+                            typeEvaluate(type_evaluate_assessment), assessment['valor'])
         
         insertData(cursor, assessment_query, assessment_data)
         
@@ -116,7 +123,7 @@ def populateSections(cursor):
         INSERT INTO sections (id, period_id, teacher_id, type_evaluate)
         VALUES (%s, %s, %s, %s)
         """
-        data = (section['id'], section['instancia_curso'], section["profesor_id"], section['evaluacion']['tipo'])
+        data = (section['id'], section['instancia_curso'], section["profesor_id"], typeEvaluate(section['evaluacion']['tipo']))
         insertData(cursor, query, data)
         
         assessments = section['evaluacion']['combinacion_topicos']

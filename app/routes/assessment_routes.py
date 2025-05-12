@@ -21,7 +21,6 @@ def create_assessment():
     type_evaluate = request.form['type_evaluate']
     weighting = request.form.get('weighting', type=float)
 
-    # Validación para porcentaje
     if section.type_evaluate == 'Percentage':
         total = db.session.query(db.func.sum(Assessment.weighting)) \
             .filter_by(section_id=section_id).scalar() or 0
