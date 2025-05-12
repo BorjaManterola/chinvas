@@ -1,4 +1,3 @@
--- Elimina tablas si existen (respetando el orden de FK)
 DROP TABLE IF EXISTS class, classroom, grades, tasks, assessments, members, `groups`,
     student_situations, prerequisites, sections, periods, usersituations, users,
     courses, students, teachers, schedule;
