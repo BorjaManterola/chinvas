@@ -1,37 +1,56 @@
 {% extends "base.html" %}
-{% block content %}
-<h2 class="text-center mb-4">Welcome to the Academic Management System - Chinvas</h2>
 
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-4 mb-4 text-center">
-      <a href="{{ url_for('student_routes.get_students') }}" class="btn-menu-home shadow student-btn">
-        <div class="icon-container mb-3">
-          <i class="fas fa-user-graduate fa-3x"></i>
+{% block content %}
+<div class="container py-4">
+    <div class="row text-center mb-5">
+        <div class="col">
+            <h1 class="display-5 fw-bold">Welcome to Chinvas</h1>
+            <p class="lead text-muted">Academic Management System</p>
         </div>
-        <h3>Students</h3>
-        <p>Manage all registered students</p>
-      </a>
     </div>
-    <div class="col-md-4 mb-4 text-center">
-      <a href="{{ url_for('teacher_routes.index') }}" class="btn-menu-home shadow teacher-btn">
-        <div class="icon-container mb-3">
-          <i class="fas fa-chalkboard-teacher fa-3x"></i>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4 justify-content-center">
+
+        <div class="col">
+            <a href="{{ url_for('student_routes.get_students') }}" class="btn-menu-home student-btn shadow text-center h-100">
+                <div class="icon-container mb-3">
+                    <i class="fas fa-user-graduate fa-3x"></i>
+                </div>
+                <h3>Students</h3>
+                <p>View and manage student records</p>
+            </a>
         </div>
-        <h3>Teachers</h3>
-        <p>View and manage teachers</p>
-      </a>
-    </div>
-    <div class="col-md-4 mb-4 text-center">
-      <a href="{{ url_for('course_routes.get_courses') }}" class="btn-menu-home shadow course-btn">
-        <div class="icon-container mb-3">
-          <i class="fas fa-book fa-3x"></i>
+
+        <div class="col">
+            <a href="{{ url_for('teacher_routes.get_teachers') }}" class="btn-menu-home teacher-btn shadow text-center h-100">
+                <div class="icon-container mb-3">
+                    <i class="fas fa-chalkboard-teacher fa-3x"></i>
+                </div>
+                <h3>Teachers</h3>
+                <p>View and manage teachers</p>
+            </a>
         </div>
-        <h3>Courses</h3>
-        <p>Manage academic courses</p>
-      </a>
+
+        <div class="col">
+            <a href="{{ url_for('course_routes.get_courses') }}" class="btn-menu-home course-btn shadow text-center h-100">
+                <div class="icon-container mb-3">
+                    <i class="fas fa-book fa-3x"></i>
+                </div>
+                <h3>Courses</h3>
+                <p>Explore academic courses</p>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{{ url_for('schedule_routes.get_schedules') }}" class="btn-menu-home schedule-btn shadow text-center h-100">
+                <div class="icon-container mb-3">
+                    <i class="fas fa-calendar-alt fa-3x"></i>
+                </div>
+                <h3 class="text-center">Schedules</h3>
+                <p>View and manage academic schedules</p>
+            </a>
+        </div>
     </div>
-  </div>
 </div>
 
 <style>
@@ -54,8 +73,12 @@
   }
 
   .course-btn {
-    background: linear-gradient(135deg, #1cc88a, #13855c);
+    background: linear-gradient(135deg, #b5179e, #7209b7);
   }
+
+  .schedule-btn {
+  background: linear-gradient(135deg, #f9a825, #f57f17);
+}
 
   .btn-menu-home:hover {
     transform: translateY(-5px) scale(1.02);

@@ -5,7 +5,7 @@ from app import db
 teacher_bp = Blueprint('teacher_routes', __name__, url_prefix='/teachers')
 
 @teacher_bp.route('/', methods=['GET'])
-def index():
+def get_teachers():
     teachers = Teacher.query.all()
     return render_template('teachers/index.html', teachers=teachers)
 

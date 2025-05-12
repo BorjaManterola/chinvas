@@ -12,6 +12,9 @@ def register_routes(app):
     from app.routes.task_routes import task_bp
     from app.routes.grade_routes import grade_bp
     from app.routes.student_situation_routes import student_situation_bp
+    from app.routes.class_routes import class_bp
+    from app.routes.schedule_routes import schedule_bp
+    from app.routes.class_routes import class_bp
 
     app.register_blueprint(home_bp)
     app.register_blueprint(teacher_bp)
@@ -24,3 +27,5 @@ def register_routes(app):
     app.register_blueprint(task_bp)
     app.register_blueprint(grade_bp)
     app.register_blueprint(student_situation_bp)
+    app.register_blueprint(class_bp)
+    app.register_blueprint(schedule_bp)

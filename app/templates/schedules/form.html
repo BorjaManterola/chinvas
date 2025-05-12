@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card mt-4 shadow-sm col-md-6 mx-auto">
+        <div class="card-body">
+            <h2 class="mb-4">{{ 'Edit Schedule' if schedule else 'New Schedule' }}</h2>
+
+            <form method="POST"
+                  action="{{ url_for('schedule_routes.update_schedule', id=schedule.id) if schedule else url_for('schedule_routes.create_schedule') }}"
+                  class="card p-4 shadow-sm bg-light">
+
+                <div class="mb-3">
+                    <label for="year" class="form-label">Year:</label>
+                    <input type="number" class="form-control" id="year" name="year" min="2000" max="2100"
+                           value="{{ schedule.year if schedule else '' }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="semester" class="form-label">Semester:</label>
+                    <select class="form-select" id="semester" name="semester" required>
+                        <option value="" disabled {{ not schedule.semester and 'selected' or '' }}>Select semester</option>
+                        <option value="1" {{ schedule.semester == '1' and 'selected' or '' }}>1</option>
+                        <option value="2" {{ schedule.semester == '2' and 'selected' or '' }}>2</option>
+                    </select>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-1"></i> {{ 'Update' if schedule else 'Save' }}
+                    </button>
+                    <a href="{{ url_for('schedule_routes.get_schedules') }}" class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-arrow-left me-1"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
