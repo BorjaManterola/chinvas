@@ -17,28 +17,28 @@ class Assessment(db.Model):
             total_percentage += task.weighting
         return total_percentage
     
-    def validateWeightingAssessment(self):
+    def validateWeightingSection(self):
         if self.type_evaluate == "Percentage":
             total_percentage = self.calculatePercentageSumTasks()
             if total_percentage != 100:
                 return False
         return True
     
-    def getSumWeightingSection(self, section_id):
-        query = db.session.query(db.func.sum(Assessment.weighting)) \
-                          .filter(Assessment.section_id == section_id)
-        return query
+    def getSumWeightingInSection(self, section_id, exclude_assessment):
+        if exclude_assessment:
+            sum = db.session.query(db.func.sum(Assessment.weighting)) \
+                              .filter(Assessment.section_id == section_id, Assessment.id != exclude_assessment)
+        else:
+            sum = db.session.query(db.func.sum(Assessment.weighting)) \
+                            .filter(Assessment.section_id == section_id)
+        return sum
         
-    def isValidWeighting(self, section, new_weighting, exclude_assessment_id=None):
-       
+    def isValidWeightingInSection(self, section, new_weighting, exclude_assessment=None):
         if section.type_evaluate != 'Percentage':
             return True, 0.0
 
-        query = self.getSumWeightingSection(section.id)
+        weighting_sum = self.getSumWeightingInSection(section.id, exclude_assessment)
 
-        if exclude_assessment_id:
-            query = query.filter(Assessment.id != exclude_assessment_id)
-
-        total = query.scalar() or 0
-        is_valid = (total + new_weighting) <= 100
+        total = weighting_sum + new_weighting
+        is_valid = total <= 100
         return is_valid, total

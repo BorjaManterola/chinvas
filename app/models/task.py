@@ -8,13 +8,24 @@ class Task(db.Model):
     assessment_id = db.Column(db.Integer, db.ForeignKey('assessments.id', ondelete='CASCADE'), nullable=False)
 
     grades = db.relationship('Grade', back_populates='task', cascade='all, delete-orphan', passive_deletes=True)
+    
+    def getSumWeightingInAssessment(self, assessment_id, exclude_task):
+        if exclude_task:
+            sum = db.session.query(db.func.sum(Task.weighting)) \
+                              .filter(Task.assessment_id == assessment_id, Task.id != exclude_task)
+        else:
+            sum = db.session.query(db.func.sum(Task.weighting)) \
+                            .filter(Task.assessment_id == assessment_id)
+        return sum
 
-    def isValidWeightingAssessment(self, cls, assessment_id, new_weighting, exclude_task_id=None):
-        query = db.session.query(db.func.sum(cls.weighting)).filter_by(assessment_id=assessment_id)
-        if exclude_task_id:
-            query = query.filter(cls.id != exclude_task_id)
+    def isValidWeightingInAssessment(self, cls, assessment, new_weighting, exclude_task=None):
+        
+        if assessment.type_evaluate != 'Percentage':
+            return True, 0.0
 
-        current_total = query.scalar() or 0
-        if current_total + new_weighting > 100:
-            return False, current_total
-        return True, current_total
+        weighting_sum = self.getSumWeightingInAssessment(assessment.id, exclude_task)
+        
+        total = weighting_sum + new_weighting
+
+        is_valid = total <= 100
+        return is_valid, total

@@ -22,7 +22,7 @@ def createTask():
         flash("All fields are required.", "danger")
         return redirect(url_for('assessment_routes.show_assessment', id=assessment_id))
 
-    is_valid, total_weight = Task.is_valid_weighting(assessment_id, weighting, exclude_task_id=id)
+    is_valid, total_weight = Task.isValidWeightingInAssessment(assessment_id, weighting)
     if not is_valid:
         flash(f"Total task weighting cannot exceed 100%. Current total: {total_weight}%", "danger")
         return redirect(url_for('task_routes.edit_task_form', id=id))
@@ -53,7 +53,7 @@ def updateTask(id):
         flash("Weighting is required.", "danger")
         return redirect(url_for('task_routes.edit_task_form', id=id))
 
-    is_valid, total_weight = Task.isValidWeightingAssessment(assessment_id, weighting, exclude_task_id=id)
+    is_valid, total_weight = Task.isValidWeightingInAssessment(assessment_id, weighting, exclude_task_id=id)
     if not is_valid:
         flash(f"Total task weighting cannot exceed 100%. Current total: {total_weight}%", "danger")
         return redirect(url_for('task_routes.edit_task_form', id=id))

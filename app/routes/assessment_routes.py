@@ -20,7 +20,7 @@ def createAssessment():
     type_evaluate = request.form['type_evaluate']
     weighting = request.form.get('weighting', type=float)
 
-    is_valid, total = Assessment.isValidWeighting(section, weighting)
+    is_valid, total = Assessment.isValidWeightingInSection(section, weighting)
     if not is_valid:
         flash(f'Total weighting would exceed 100%. Current total: {total:.2f}%. You entered: {weighting:.2f}%.', 'danger')
 
@@ -53,7 +53,7 @@ def updateAssessment(id):
     type_evaluate = request.form['type_evaluate']
     weighting = request.form.get('weighting', type=float)
 
-    is_valid, total = Assessment.is_valid_weighting(section, weighting, exclude_assessment_id=id)
+    is_valid, total = Assessment.isValidWeightingInSection(section, weighting, exclude_assessment=id)
     if not is_valid:
         flash(f'Total weighting would exceed 100%. Current total: {total:.2f}%. You entered: {weighting:.2f}%.', 'danger')
 
