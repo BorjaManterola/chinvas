@@ -19,7 +19,7 @@ class Task(db.Model):
                             .filter(Task.assessment_id == assessment_id)
         return sum
 
-    def isValidWeightingInAssessment(self, cls, assessment, new_weighting, exclude_task=None):
+    def isValidWeightingInAssessment(self, assessment, new_weighting, exclude_task=None):
         
         if assessment.type_evaluate != 'Percentage':
             return True, 0.0
