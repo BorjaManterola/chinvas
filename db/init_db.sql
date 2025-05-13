@@ -63,7 +63,7 @@ CREATE TABLE class (
     section_id INT NOT NULL,
     classroom_id INT NOT NULL,
     schedule_id INT NOT NULL,
-    day_of_week ENUM('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes') NOT NULL,
+    day_of_week ENUM('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday') NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

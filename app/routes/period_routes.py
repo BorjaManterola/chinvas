@@ -9,14 +9,14 @@ period_bp = Blueprint('period_routes', __name__, url_prefix='/periods')
 
 
 @period_bp.route('/new', methods=['GET'])
-def new_period_form():
+def newPeriodForm():
     course_id = request.args.get('course_id', type=int)
     course = Course.query.get(course_id) if course_id else None
     return render_template('periods/form.html', period=None, course=course)
 
 
 @period_bp.route('/', methods=['POST'])
-def create_period():
+def createPeriod():
     year = request.form['year']
     semester = request.form['semester']
     course_id = request.form['course_id']
@@ -34,27 +34,23 @@ def create_period():
 
     return redirect(url_for('course_routes.show_course', id=course_id))
 
-
 @period_bp.route('/', methods=['GET'])
-def list_periods():
+def listPeriods():
     periods = Period.query.all()
     return render_template('periods/index.html', periods=periods)
 
-
 @period_bp.route('/<int:id>/show', methods=['GET'])
-def show_period(id):
+def showPeriod(id):
     period = Period.query.get_or_404(id)
     return render_template('periods/show.html', period=period)
 
-
 @period_bp.route('/<int:id>/edit', methods=['GET'])
-def edit_period_form(id):
+def editPeriodForm(id):
     period = Period.query.get_or_404(id)
     return render_template('periods/form.html', period=period, course=period.course)
 
-
 @period_bp.route('/<int:id>', methods=['POST'])
-def update_period(id):
+def updatePeriod(id):
     period = Period.query.get_or_404(id)
     try:
         period.year = int(request.form['year'])
@@ -66,9 +62,8 @@ def update_period(id):
     db.session.commit()
     return redirect(url_for('course_routes.show_course', id=period.course_id))
 
-
 @period_bp.route('/<int:id>/delete', methods=['POST'])
-def delete_period(id):
+def deletePeriod(id):
     period = Period.query.get_or_404(id)
     course_id = period.course_id
     db.session.delete(period)
@@ -76,7 +71,7 @@ def delete_period(id):
     return redirect(url_for('course_routes.show_course', id=course_id))
 
 @period_bp.route('/periods/<int:id>/close', methods=['POST'])
-def close_period(id):
+def closePeriod(id):
     period = Period.query.get_or_404(id)
     period.opened = False
     db.session.commit()

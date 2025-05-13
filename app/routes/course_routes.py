@@ -7,12 +7,12 @@ course_bp = Blueprint('course_routes', __name__, url_prefix='/courses')
 
 
 @course_bp.route('/form', methods=['GET'])
-def new_course_form():
+def newCourseForm():
     return render_template('courses/form.html', course=None)
 
 
 @course_bp.route('/', methods=['POST'])
-def create_course():
+def createCourse():
     if request.is_json:
         data = request.get_json()
         name = data.get('name')
@@ -44,13 +44,13 @@ def create_course():
 
 
 @course_bp.route('/', methods=['GET'])
-def get_courses():
+def getCourses():
     courses = Course.query.all()
     return render_template('courses/index.html', courses=courses)
 
 
 @course_bp.route('/<int:id>', methods=['GET'])
-def get_course(id):
+def getCourse(id):
     course = Course.query.get_or_404(id)
     return jsonify({
         'id': course.id,
@@ -61,7 +61,7 @@ def get_course(id):
 
 
 @course_bp.route('/<int:id>/show', methods=['GET'])
-def show_course(id):
+def showCourse(id):
     course = Course.query.get_or_404(id)
     prerequisites = (
         db.session.query(Course)
@@ -74,13 +74,13 @@ def show_course(id):
 
 
 @course_bp.route('/<int:id>/edit', methods=['GET'])
-def edit_course_form(id):
+def editCourseForm(id):
     course = Course.query.get_or_404(id)
     return render_template('courses/form.html', course=course)
 
 
 @course_bp.route('/<int:id>', methods=['POST'])
-def update_course(id):
+def updateCourse(id):
     course = Course.query.get_or_404(id)
     course.name = request.form['name']
     course.code = request.form['code']
@@ -96,7 +96,7 @@ def update_course(id):
 
 
 @course_bp.route('/<int:id>/delete', methods=['POST'])
-def delete_course(id):
+def deleteCourse(id):
     course = Course.query.get_or_404(id)
     db.session.delete(course)
     db.session.commit()

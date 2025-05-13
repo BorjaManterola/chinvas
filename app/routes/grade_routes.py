@@ -9,7 +9,7 @@ from app.models.assessment import Assessment
 grade_bp = Blueprint('grade_routes', __name__, url_prefix='/grades')
 
 @grade_bp.route('/new', methods=['GET'])
-def new_grade_form():
+def newGradeForm():
     student_id = request.args.get('student_id', type=int)
     task_id = request.args.get('task_id', type=int)
 
@@ -19,7 +19,7 @@ def new_grade_form():
     return render_template('grades/form.html', grade=None, student=student, task=task)
 
 @grade_bp.route('/', methods=['POST'])
-def create_grade():
+def createGrade():
     student_id = request.form.get('student_id', type=int)
     task_id = request.form.get('task_id', type=int)
     score = request.form.get('score', type=float)
@@ -36,7 +36,7 @@ def create_grade():
     return redirect(url_for('student_situation_routes.show_student_situation', id=student_id))
 
 @grade_bp.route('/<int:id>/edit', methods=['GET'])
-def edit_grade_form(id):
+def editGradeForm(id):
     grade = Grade.query.get_or_404(id)
     student = Student.query.get_or_404(grade.student_id)
     task = Task.query.get_or_404(grade.task_id)
@@ -44,7 +44,7 @@ def edit_grade_form(id):
     return render_template('grades/form.html', grade=grade, student=student, task=task)
 
 @grade_bp.route('/<int:id>', methods=['POST'])
-def update_grade(id):
+def updateGrade(id):
     grade = Grade.query.get_or_404(id)
     score = request.form.get('score', type=float)
 
@@ -59,7 +59,7 @@ def update_grade(id):
     return redirect(url_for('student_situation_routes.show_student_situation', id=grade.student_id))
 
 @grade_bp.route('/<int:id>/delete', methods=['POST'])
-def delete_grade(id):
+def deleteGrade(id):
     grade = Grade.query.get_or_404(id)
     student_id = grade.student_id
 

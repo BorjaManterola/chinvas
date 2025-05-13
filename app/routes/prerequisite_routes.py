@@ -6,7 +6,7 @@ from app.models.prerequisite import Prerequisite
 prerequisite_bp = Blueprint('prerequisite_routes', __name__, url_prefix='/prerequisites')
 
 @prerequisite_bp.route('/new', methods=['GET'])
-def new_prerequisite_form():
+def newPrerequisiteForm():
     course_id = request.args.get('course_id', type=int)
     course = Course.query.get_or_404(course_id)
 
@@ -19,7 +19,7 @@ def new_prerequisite_form():
 
 
 @prerequisite_bp.route('/new', methods=['POST'])
-def create_prerequisites():
+def createPrerequisites():
     course_id = request.form.get('course_id')
     prereq_ids = request.form.getlist('prereq_ids')
 
@@ -39,19 +39,19 @@ def create_prerequisites():
 
 
 @prerequisite_bp.route('/', methods=['GET'])
-def list_prerequisites():
+def listPrerequisites():
     prerequisites = Prerequisite.query.all()
     return render_template('prerequisites/index.html', prerequisites=prerequisites)
 
 
 @prerequisite_bp.route('/<int:course_id>/<int:prerequisite_id>/show', methods=['GET'])
-def show_prerequisite(course_id, prerequisite_id):
+def showPrerequisite(course_id, prerequisite_id):
     prereq = Prerequisite.query.get_or_404((course_id, prerequisite_id))
     return render_template('prerequisites/show.html', prerequisite=prereq)
 
 
 @prerequisite_bp.route('/<int:course_id>/<int:prerequisite_id>/delete', methods=['POST'])
-def delete_prerequisite(course_id, prerequisite_id):
+def deletePrerequisite(course_id, prerequisite_id):
     prereq = Prerequisite.query.get_or_404((course_id, prerequisite_id))
     db.session.delete(prereq)
     db.session.commit()

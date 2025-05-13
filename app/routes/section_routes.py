@@ -8,14 +8,14 @@ section_bp = Blueprint('section_routes', __name__, url_prefix='/sections')
 
 
 @section_bp.route('/new', methods=['GET'])
-def new_section_form():
+def newSectionForm():
     period_id = request.args.get('period_id', type=int)
     period = Period.query.get_or_404(period_id)
     teachers = Teacher.query.all()
     return render_template('sections/form.html', section=None, period=period, teachers=teachers)
 
 @section_bp.route('/', methods=['POST'])
-def create_section():
+def createSection():
     period_id = request.form.get('period_id')
     teacher_id = request.form.get('teacher_id')
     type_evaluate = request.form.get('type_evaluate')
@@ -33,7 +33,7 @@ def create_section():
     return redirect(url_for('period_routes.show_period', id=period_id))
 
 @section_bp.route('/<int:id>/show', methods=['GET'])
-def show_section(id):
+def showSection(id):
     section = Section.query.get_or_404(id)
     assessments = section.assessments
     student_situations = section.student_situations
@@ -45,13 +45,13 @@ def show_section(id):
     )
 
 @section_bp.route('/<int:id>/edit', methods=['GET'])
-def edit_section_form(id):
+def editSectionForm(id):
     section = Section.query.get_or_404(id)
     teachers = Teacher.query.all()
     return render_template('sections/form.html', section=section, period=section.period, teachers=teachers)
 
 @section_bp.route('/<int:id>', methods=['POST'])
-def update_section(id):
+def updateSection(id):
     section = Section.query.get_or_404(id)
     section.teacher_id = request.form.get('teacher_id')
     section.type_evaluate = request.form.get('type_evaluate')
@@ -59,9 +59,8 @@ def update_section(id):
     flash("Section updated successfully.", "success")
     return redirect(url_for('period_routes.show_period', id=section.period_id))
 
-
 @section_bp.route('/<int:id>/delete', methods=['POST'])
-def delete_section(id):
+def deleteSection(id):
     section = Section.query.get_or_404(id)
     period_id = section.period_id
     db.session.delete(section)

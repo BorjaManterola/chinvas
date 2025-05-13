@@ -10,6 +10,7 @@ class Section(db.Model):
 
     assessments = db.relationship('Assessment', backref='section', lazy=True)
     student_situations = db.relationship('StudentSituation', backref='section', lazy=True)
+    teacher = db.relationship("Teacher", backref="sections")
     
     def calculatePercentageSumAssessments(self):
         total_percentage = 0
@@ -34,3 +35,7 @@ class Section(db.Model):
         
         for student_situation in self.student_situations:
             student_situation.calculateFinalGrade()
+
+    # @property
+    def getStudents(self):
+        return [ss.student for ss in self.student_situations]

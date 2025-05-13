@@ -1,37 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <div class="card mt-4 shadow-sm col-md-6 mx-auto">
+<div class="container mt-5">
+    <div class="card shadow-sm mx-auto" style="max-width: 500px;">
         <div class="card-body">
-            <h2 class="mb-4">{{ 'Edit Schedule' if schedule else 'New Schedule' }}</h2>
+            <h3 class="mb-4 text-center">New Schedule</h3>
 
-            <form method="POST"
-                  action="{{ url_for('schedule_routes.update_schedule', id=schedule.id) if schedule else url_for('schedule_routes.create_schedule') }}"
-                  class="card p-4 shadow-sm bg-light">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} d-flex align-items-center" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div>{{ message }}</div>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
 
+            <form method="POST" action="{{ url_for('schedule_routes.create_schedule') }}">
                 <div class="mb-3">
-                    <label for="year" class="form-label">Year:</label>
-                    <input type="number" class="form-control" id="year" name="year" min="2000" max="2100"
-                           value="{{ schedule.year if schedule else '' }}" required>
+                    <label for="year" class="form-label">Year</label>
+                    <input type="number" name="year" id="year" class="form-control" min="2020" max="2100" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="semester" class="form-label">Semester:</label>
-                    <select class="form-select" id="semester" name="semester" required>
-                        <option value="" disabled {{ not schedule.semester and 'selected' or '' }}>Select semester</option>
-                        <option value="1" {{ schedule.semester == '1' and 'selected' or '' }}>1</option>
-                        <option value="2" {{ schedule.semester == '2' and 'selected' or '' }}>2</option>
+                    <label for="semester" class="form-label">Semester</label>
+                    <select name="semester" id="semester" class="form-select" required>
+                        <option value="">-- Select semester --</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
                     </select>
                 </div>
 
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-save me-1"></i> {{ 'Update' if schedule else 'Save' }}
-                    </button>
-                    <a href="{{ url_for('schedule_routes.get_schedules') }}" class="btn btn-outline-secondary ms-2">
-                        <i class="fas fa-arrow-left me-1"></i> Cancel
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('schedule_routes.get_schedules') }}" class="btn btn-outline-secondary">
+                        Cancel
                     </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-calendar-plus me-1"></i> Create Schedule
+                    </button>
                 </div>
             </form>
         </div>

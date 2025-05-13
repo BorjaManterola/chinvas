@@ -9,7 +9,7 @@ class_bp = Blueprint('class_routes', __name__, url_prefix='/classes')
 
 
 @class_bp.route('/new', methods=['GET'])
-def new_class_form():
+def newClassForm():
     section_id = request.args.get('section_id', type=int)
     section = Section.query.get_or_404(section_id)
     classrooms = Classroom.query.all()
@@ -18,7 +18,7 @@ def new_class_form():
 
 
 @class_bp.route('/new', methods=['POST'])
-def create_class():
+def createClass():
     section_id = request.form.get('section_id', type=int)
     classroom_id = request.form.get('classroom_id', type=int)
     schedule_id = request.form.get('schedule_id', type=int)
@@ -44,13 +44,13 @@ def create_class():
 
 
 @class_bp.route('/', methods=['GET'])
-def list_classes():
+def listClasses():
     classes = Class.query.all()
     return render_template("classes/index.html", classes=classes)
 
 
 @class_bp.route('/<int:id>/delete', methods=['POST'])
-def delete_class(id):
+def deleteClass(id):
     class_instance = Class.query.get_or_404(id)
     section_id = class_instance.section_id
     db.session.delete(class_instance)

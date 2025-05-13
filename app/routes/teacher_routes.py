@@ -4,13 +4,8 @@ from app import db
 
 teacher_bp = Blueprint('teacher_routes', __name__, url_prefix='/teachers')
 
-@teacher_bp.route('/', methods=['GET'])
-def get_teachers():
-    teachers = Teacher.query.all()
-    return render_template('teachers/index.html', teachers=teachers)
-
 @teacher_bp.route('/new', methods=['GET', 'POST'])
-def create_teacher():
+def createTeacher():
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
@@ -27,8 +22,13 @@ def create_teacher():
 
     return render_template('teachers/form.html', teacher=None)
 
+@teacher_bp.route('/', methods=['GET'])
+def getTeachers():
+    teachers = Teacher.query.all()
+    return render_template('teachers/index.html', teachers=teachers)
+
 @teacher_bp.route('/<int:id>/edit', methods=['GET', 'POST'])
-def edit_teacher(id):
+def editTeacher(id):
     teacher = Teacher.query.get_or_404(id)
     if request.method == 'POST':
         teacher.name = request.form['name']
@@ -40,7 +40,7 @@ def edit_teacher(id):
     return render_template('teachers/form.html', teacher=teacher)
 
 @teacher_bp.route('/<int:id>/delete', methods=['POST'])
-def delete_teacher(id):
+def deleteTeacher(id):
     teacher = Teacher.query.get_or_404(id)
     db.session.delete(teacher)
     db.session.commit()
