@@ -12,30 +12,5 @@ class Section(db.Model):
     student_situations = db.relationship('StudentSituation', backref='section', lazy=True, cascade="all, delete-orphan")
     teacher = db.relationship("Teacher", backref=db.backref("sections", cascade="all, delete", lazy=True))
     
-    def calculatePercentageSumAssessments(self):
-        total_percentage = 0
-        for assessment in self.assessments:
-            total_percentage += assessment.weighting
-        return total_percentage
-    
-    def validateWeightingSection(self):
-        if self.type_evaluate == "Percentage":
-            total_percentage = self.calculatePercentageSumAssessments()
-            if total_percentage != 100:
-                return False
-        return True
-    
-    def calculateStudentsSituations(self):
-        for assessment in self.assessments:
-            if not assessment.validateWeightingAssessment():
-                return False
-            
-        if not self.validateWeightingSection():
-            return False
-        
-        for student_situation in self.student_situations:
-            student_situation.calculateFinalGrade()
-
-    # @property
     def getSectionStudents(self):
         return [ss.student for ss in self.student_situations]

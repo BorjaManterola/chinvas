@@ -46,7 +46,8 @@ class Schedule(db.Model):
                 joinedload(Section.teacher)
             ).            filter(Period.year == self.year, Period.semester == self.semester).            all()
 
-    def _buildAvailabilityMatrix(self, classrooms):
+    @staticmethod
+    def _buildAvailabilityMatrix(classrooms):
         DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         MODULES = [9, 10, 11, 12, 14, 15, 16, 17]
         return {
@@ -54,7 +55,8 @@ class Schedule(db.Model):
             for day in DAYS
         }
 
-    def _hasConflict(self, day, block, section):
+    @staticmethod
+    def _hasConflict(day, block, section):
         for h in block:
             existing_classes = Class.query.filter_by(
                 day_of_week=day,
