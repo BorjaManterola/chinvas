@@ -64,8 +64,8 @@ def getCourse(id):
 def showCourse(id):
     course = Course.query.get_or_404(id)
     prerequisites = (
-        db.session.query(Course)
-        .join(Prerequisite, Course.id == Prerequisite.prerequisite_id)
+        db.session.query(Prerequisite, Course)
+        .join(Course, Prerequisite.prerequisite_id == Course.id)
         .filter(Prerequisite.course_id == id)
         .all()
     )

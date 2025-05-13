@@ -17,11 +17,11 @@
 
                 {% if prerequisites %}
                     <ul class="list-group mb-3">
-                        {% for prereq in prerequisites %}
+                        {% for prereq, course in prerequisites %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ prereq.name }} ({{ prereq.code }})
-                                <form method="POST" action="{{ url_for('prerequisite_routes.deletePrerequisite', course_id=course.id, prerequisite_id=prereq.id) }}"
-                                      onsubmit="return confirm('Are you sure you want to remove this prerequisite?');">
+                                {{ course.name }} ({{ course.code }})
+                                <form method="POST" action="{{ url_for('prerequisite_routes.deletePrerequisite', id=prereq.id) }}"
+                                    onsubmit="return confirm('Are you sure you want to remove this prerequisite?');">
                                     <button type="submit" class="btn btn-sm btn-danger">
                                         <i class="fas fa-trash-alt me-1"></i> Remove
                                     </button>

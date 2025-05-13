@@ -37,23 +37,11 @@ def createPrerequisites():
     flash("Prerequisites assigned successfully.", "success")
     return redirect(url_for('course_routes.showCourse', id=course_id))
 
-
-@prerequisite_bp.route('/', methods=['GET'])
-def listPrerequisites():
-    prerequisites = Prerequisite.query.all()
-    return render_template('prerequisites/index.html', prerequisites=prerequisites)
-
-
-@prerequisite_bp.route('/<int:course_id>/<int:prerequisite_id>/show', methods=['GET'])
-def showPrerequisite(course_id, prerequisite_id):
-    prereq = Prerequisite.query.get_or_404((course_id, prerequisite_id))
-    return render_template('prerequisites/show.html', prerequisite=prereq)
-
-
-@prerequisite_bp.route('/<int:course_id>/<int:prerequisite_id>/delete', methods=['POST'])
-def deletePrerequisite(course_id, prerequisite_id):
-    prereq = Prerequisite.query.get_or_404((course_id, prerequisite_id))
+@prerequisite_bp.route('/<int:id>/delete', methods=['POST'])
+def deletePrerequisite(id):
+    prereq = Prerequisite.query.get_or_404(id)
+    course_id = prereq.course_id
     db.session.delete(prereq)
     db.session.commit()
     flash("Prerequisite removed successfully.", "success")
-    return redirect(url_for('course_routes.show_course', id=course_id))
+    return redirect(url_for('course_routes.showCourse', id=course_id))
