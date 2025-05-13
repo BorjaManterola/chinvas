@@ -161,3 +161,62 @@ class Schedule(db.Model):
             except AttributeError:
                 raise ValueError(f"Incomplete class data for class ID {cls.id}")
         return rows
+        
+    @staticmethod
+    def validateInputs(year, semester):
+        if not year or not semester:
+            return False, "Year and semester are required."
+        try:
+            int(year)
+        except ValueError:
+            return False, "Year must be a number."
+        return True, None
+
+    @staticmethod
+    def scheduleExists(year, semester):
+        return Schedule.query.filter_by(year=year, semester=semester).first() is not None
+
+    @staticmethod
+    def buildSchedule(year, semester):
+        schedule = Schedule(year=year, semester=semester)
+        db.session.add(schedule)
+        db.session.flush()
+        return schedule
+
+    @staticmethod
+    def persistClasses(classes_to_create, schedule_id):
+        for c in classes_to_create:
+            new_class = Class(
+                section_id=c["section_id"],
+                day_of_week=c["day_of_week"],
+                start_time=c["start_time"],
+                end_time=c["end_time"],
+                classroom_id=c["classroom_id"],
+                schedule_id=schedule_id
+            )
+            db.session.add(new_class)
+        db.session.commit()
+
+    @staticmethod
+    def handleScheduleCreation(year, semester):
+        is_valid, error_message = Schedule.validateInputs(year, semester)
+        if not is_valid:
+            return None, error_message
+
+        year = int(year)
+        if Schedule.scheduleExists(year, semester):
+            return None, f"A schedule for year {year} and semester '{semester}' already exists."
+
+        schedule = Schedule.buildSchedule(year, semester)
+        result = schedule.generateSchedule()
+
+        if not result["unassigned_sections"]:
+            Schedule.persistClasses(result["classes_to_create"], schedule.id)
+            return schedule, None
+        else:
+            db.session.rollback()
+            errors = ["⚠ Could not generate schedule due to conflicts:"]
+            for s in result["unassigned_sections"]:
+                errors.append(f"Section {s['section_id']}: {s['reason']}")
+            return None, "<br>".join(errors)
+
