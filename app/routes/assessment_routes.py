@@ -12,7 +12,7 @@ def newAssessmentForm():
     section = Section.query.get_or_404(section_id)
     return render_template('assessments/form.html', assessment=None, section=section)
 
-@assessment_bp.route('/', methods=['POST'])
+@assessment_bp.route('/new', methods=['POST'])
 def createAssessment():
     section_id = request.form['section_id']
     section = Section.query.get_or_404(section_id)
@@ -35,7 +35,7 @@ def createAssessment():
     db.session.commit()
     return redirect(url_for('section_routes.showSection', id=section_id))
 
-@assessment_bp.route('/<int:id>/show', methods=['GET'])
+@assessment_bp.route('/<int:id>', methods=['GET'])
 def showAssessment(id):
     assessment = Assessment.query.get_or_404(id)
     tasks = Task.query.filter_by(assessment_id=id).all()
@@ -47,7 +47,7 @@ def editAssessmentForm(id):
     section = Section.query.get_or_404(assessment.section_id)
     return render_template('assessments/form.html', assessment=assessment, section=section)
 
-@assessment_bp.route('/<int:id>', methods=['POST'])
+@assessment_bp.route('/<int:id>/edit', methods=['POST'])
 def updateAssessment(id):
     assessment = Assessment.query.get_or_404(id)
     section = Section.query.get_or_404(assessment.section_id)
@@ -65,7 +65,7 @@ def updateAssessment(id):
     assessment.type_evaluate = type_evaluate
     assessment.weighting = weighting
     db.session.commit()
-    flash('Assessment updated successfully.', 'success')
+    
     return redirect(url_for('section_routes.showSection', id=section.id))
 
 @assessment_bp.route('/<int:id>/delete', methods=['POST'])

@@ -18,8 +18,7 @@
             <p class="text-muted">For assessment: {{ assessment.name }} ({{ assessment.type_evaluate | capitalize }})</p>
 
             <form method="POST"
-            action="{{ url_for('task_routes.updateTask', id=task.id) if task else url_for('task_routes.createTask') }}">
-                
+                action="{{ url_for('task_routes.updateTask', id=task.id) if task else url_for('task_routes.createTask') }}">
                 <input type="hidden" name="assessment_id" value="{{ assessment.id }}">
 
                 <div class="mb-3">
@@ -36,7 +35,10 @@
                             Evaluation Type Not Set
                         {% endif %}
                     </label>
-                    <input type="number" class="form-control" id="weighting" name="weighting" value="{{ task.weighting if task else '' }}" step="0.01" min="0.01" max="100" required>
+                    <input type="number" class="form-control" id="weighting" name="weighting" 
+                        value="{{ task.weighting if task else '' }}" step="0.01" min="0" 
+                        {% if assessment and assessment.type_evaluate == 'Percentage' %}max="100"{% endif %} 
+                        required>
                 </div>
 
                 <div class="mb-3 form-check">

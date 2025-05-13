@@ -48,7 +48,6 @@ def getCourses():
     courses = Course.query.all()
     return render_template('courses/index.html', courses=courses)
 
-
 @course_bp.route('/<int:id>', methods=['GET'])
 def getCourse(id):
     course = Course.query.get_or_404(id)
@@ -58,7 +57,6 @@ def getCourse(id):
         'code': course.code,
         'credits': course.credits
     })
-
 
 @course_bp.route('/<int:id>/show', methods=['GET'])
 def showCourse(id):
@@ -70,8 +68,6 @@ def showCourse(id):
         .all()
     )
     return render_template("courses/show.html", course=course, prerequisites=prerequisites)
-
-
 
 @course_bp.route('/<int:id>/edit', methods=['GET'])
 def editCourseForm(id):
