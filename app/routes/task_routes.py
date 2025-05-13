@@ -53,7 +53,7 @@ def updateTask(id):
         flash("Weighting is required.", "danger")
         return redirect(url_for('task_routes.editTaskForm', id=id))
 
-    is_valid, total_weight = Task.isValidWeightingInAssessment(assessment_id, weighting, exclude_task_id=id)
+    is_valid, total_weight = Task.isValidWeightingInAssessment(assessment_id, weighting, exclude_task=id)
     if not is_valid:
         flash(f"Total task weighting cannot exceed 100%. Current total: {total_weight}%", "danger")
         return redirect(url_for('task_routes.editTaskForm', id=id))
