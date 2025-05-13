@@ -15,7 +15,7 @@ def newPeriodForm():
     return render_template('periods/form.html', period=None, course=course)
 
 
-@period_bp.route('/', methods=['POST'])
+@period_bp.route('/new', methods=['POST'])
 def createPeriod():
     year = request.form['year']
     semester = request.form['semester']
@@ -34,11 +34,6 @@ def createPeriod():
 
     return redirect(url_for('course_routes.showCourse', id=course_id))
 
-@period_bp.route('/', methods=['GET'])
-def listPeriods():
-    periods = Period.query.all()
-    return render_template('periods/index.html', periods=periods)
-
 @period_bp.route('/<int:id>/show', methods=['GET'])
 def showPeriod(id):
     period = Period.query.get_or_404(id)
@@ -49,7 +44,7 @@ def editPeriodForm(id):
     period = Period.query.get_or_404(id)
     return render_template('periods/form.html', period=period, course=period.course)
 
-@period_bp.route('/<int:id>', methods=['POST'])
+@period_bp.route('/<int:id>/edit', methods=['POST'])
 def updatePeriod(id):
     period = Period.query.get_or_404(id)
     try:

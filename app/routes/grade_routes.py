@@ -18,7 +18,7 @@ def newGradeForm():
 
     return render_template('grades/form.html', grade=None, student=student, task=task)
 
-@grade_bp.route('/', methods=['POST'])
+@grade_bp.route('/new', methods=['POST'])
 def createGrade():
     student_id = request.form.get('student_id', type=int)
     task_id = request.form.get('task_id', type=int)
@@ -43,7 +43,7 @@ def editGradeForm(id):
 
     return render_template('grades/form.html', grade=grade, student=student, task=task)
 
-@grade_bp.route('/<int:id>', methods=['POST'])
+@grade_bp.route('/<int:id>/edit', methods=['POST'])
 def updateGrade(id):
     grade = Grade.query.get_or_404(id)
     score = request.form.get('score', type=float)

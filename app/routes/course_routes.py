@@ -6,12 +6,12 @@ from app import db
 course_bp = Blueprint('course_routes', __name__, url_prefix='/courses')
 
 
-@course_bp.route('/form', methods=['GET'])
+@course_bp.route('/new', methods=['GET'])
 def newCourseForm():
     return render_template('courses/form.html', course=None)
 
 
-@course_bp.route('/', methods=['POST'])
+@course_bp.route('/new', methods=['POST'])
 def createCourse():
     if request.is_json:
         data = request.get_json()
@@ -48,15 +48,7 @@ def getCourses():
     courses = Course.query.all()
     return render_template('courses/index.html', courses=courses)
 
-@course_bp.route('/<int:id>', methods=['GET'])
-def getCourse(id):
-    course = Course.query.get_or_404(id)
-    return jsonify({
-        'id': course.id,
-        'name': course.name,
-        'code': course.code,
-        'credits': course.credits
-    })
+
 
 @course_bp.route('/<int:id>/show', methods=['GET'])
 def showCourse(id):
@@ -75,7 +67,7 @@ def editCourseForm(id):
     return render_template('courses/form.html', course=course)
 
 
-@course_bp.route('/<int:id>', methods=['POST'])
+@course_bp.route('/<int:id>/edit', methods=['POST'])
 def updateCourse(id):
     course = Course.query.get_or_404(id)
     course.name = request.form['name']

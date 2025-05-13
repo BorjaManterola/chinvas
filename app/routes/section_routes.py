@@ -14,7 +14,7 @@ def newSectionForm():
     teachers = Teacher.query.all()
     return render_template('sections/form.html', section=None, period=period, teachers=teachers)
 
-@section_bp.route('/', methods=['POST'])
+@section_bp.route('/new', methods=['POST'])
 def createSection():
     period_id = request.form.get('period_id')
     teacher_id = request.form.get('teacher_id')
@@ -32,7 +32,7 @@ def createSection():
     flash("Section created successfully.", "success")
     return redirect(url_for('period_routes.showPeriod', id=period_id))
 
-@section_bp.route('/<int:id>/show', methods=['GET'])
+@section_bp.route('/<int:id>', methods=['GET'])
 def showSection(id):
     section = Section.query.get_or_404(id)
     assessments = section.assessments
@@ -50,7 +50,7 @@ def editSectionForm(id):
     teachers = Teacher.query.all()
     return render_template('sections/form.html', section=section, period=section.period, teachers=teachers)
 
-@section_bp.route('/<int:id>', methods=['POST'])
+@section_bp.route('/<int:id>/edit', methods=['POST'])
 def updateSection(id):
     section = Section.query.get_or_404(id)
     section.teacher_id = request.form.get('teacher_id')

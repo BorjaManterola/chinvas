@@ -8,7 +8,7 @@ student_bp = Blueprint('student_routes', __name__, url_prefix='/students')
 def newStudentForm():
     return render_template('students/form.html', student=None)
 
-@student_bp.route('/', methods=['POST'])
+@student_bp.route('/new', methods=['POST'])
 def createStudent():
     name = request.form.get('name')
     email = request.form.get('email')
@@ -41,7 +41,7 @@ def editStudentForm(id):
     return render_template('students/form.html', student=student)
 
 
-@student_bp.route('/<int:id>', methods=['POST'])
+@student_bp.route('/<int:id>/edit', methods=['POST'])
 def updateStudent(id):
     student = Student.query.get_or_404(id)
     student.name = request.form.get('name')
