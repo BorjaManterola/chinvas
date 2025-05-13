@@ -70,6 +70,10 @@
                 <a href="{{ url_for('schedule_routes.getSchedules') }}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i> Back to List
                 </a>
+                <a href="{{ url_for('schedule_routes.exportScheduleToExcel', id=schedule.id) }}"
+                    class="btn btn-outline-primary">
+                    <i class="fas fa-download me-1"></i> Export as Excel
+                </a>
             </div>
         </div>
     </div>

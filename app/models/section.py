@@ -37,5 +37,5 @@ class Section(db.Model):
             student_situation.calculateFinalGrade()
 
     # @property
-    def getStudents(self):
+    def getSectionStudents(self):
         return [ss.student for ss in self.student_situations]
