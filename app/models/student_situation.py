@@ -1,4 +1,7 @@
 from app import db
+from app.models.grade import Grade
+from app.models.task import Task
+
 
 class StudentSituation(db.Model):
     __tablename__ = 'student_situations'
@@ -6,8 +9,22 @@ class StudentSituation(db.Model):
     section_id = db.Column(db.Integer, db.ForeignKey('sections.id'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('students.id'), nullable=False)
     final_grade = db.Column(db.Numeric(2, 1))
-
-    student = db.relationship('Student', backref='student_situations')
-
+    
+    def getAssessmentTasks(self, assessment):
+        tasks = db.session.query(Task).filter_by(assessment_id=assessment.id).all()
+        return tasks
+    
+    def userSectionTasks(self):
+        tasks = []
+        for assessment in self.section.assessments:
+            tasks += self.getAssessmentTasks(assessment)
+        return tasks
+    
+    def userGrades(self):
+        grades = db.session.query(Grade).filter_by(student_id=self.student_id).all()
+        return grades
+        
     def calculateFinalGrade(self):
-        print("Calculating final grade for student situation")
+        for grade in self.sectionGrades():
+            
+            print("Calculating final grade for student situation")

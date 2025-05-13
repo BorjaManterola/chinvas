@@ -27,7 +27,6 @@ def loadJson(file_path):
 def insertData(cursor, query, data):
     cursor.execute(query, data)
     
-
 def populateStudents(cursor):
     students = loadJson('db/population/1-alumnos.json')['alumnos']
     for student in students:
@@ -89,13 +88,13 @@ def typeEvaluate(type):
     elif type == 'porcentaje':
         return 'Percentage'
         
-def populateTasks(cursor, task, assessment):
+def populateTasks(cursor, task, assessment_id):
     for i in range(task["cantidad"]):
         task_query = """
         INSERT INTO tasks (assessment_id, optional, weighting)
         VALUES (%s, %s, %s)
         """
-        task_data = (assessment["id"], task['obligatorias'][i], task['valores'][i])
+        task_data = (assessment_id, task['obligatorias'][i], task['valores'][i])
         insertData(cursor, task_query, task_data)
         
 def populateAssessments(cursor, assessments, section):
@@ -114,7 +113,7 @@ def populateAssessments(cursor, assessments, section):
         task=section['evaluacion']['topicos'][f"{assessment['id']}"]
 
         print("Populating tasks for assessment:", assessment['id'])
-        populateTasks(cursor, task, assessment)
+        populateTasks(cursor, task, assessment['id'])
 
 def populateSections(cursor):
     sections = loadJson('db/population/5-instancia_cursos_con_secciones.json')['secciones']
@@ -141,7 +140,7 @@ def populateStudentsPerSection(cursor):
         data = (record['alumno_id'], record['seccion_id'])
         insertData(cursor, query, data)
         
-def getTaskId(cursor, topic_id, instance):
+def getTaskId(cursor, topic_id, instance, nota):
     task_query = """
     SELECT id FROM tasks
     WHERE assessment_id = %s
@@ -153,6 +152,7 @@ def getTaskId(cursor, topic_id, instance):
     result = cursor.fetchone()
     
     if result:
+        print(f"Se encontró task_id {result[0]} para topico_id {topic_id} con instancia {instance}, nota {nota}")
         return result[0]
     else:
         print(f"No se encontró un task_id para topico_id {topic_id} con instancia {instance}")
@@ -162,7 +162,7 @@ def populateGrades(cursor):
     grades = loadJson('db/population/7-notas_alumnos.json')['notas']
     for grade in grades:
         
-        task_id = getTaskId(cursor, grade['topico_id'], grade['instancia'])
+        task_id = getTaskId(cursor, grade['topico_id'], grade['instancia'], grade['nota'])
 
         if task_id:
             query = """
@@ -170,6 +170,7 @@ def populateGrades(cursor):
             VALUES (%s, %s, %s)
             """
             data = (grade['alumno_id'], task_id, grade['nota'])
+            print(f"Data: {data}")
             insertData(cursor, query, data)
 
 def populateClassrooms(cursor):

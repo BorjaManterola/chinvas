@@ -20,7 +20,6 @@ def new_student_situation_form():
 
     return render_template("student_situations/form.html", section=section, students=students)
 
-
 @student_situation_bp.route('/new', methods=['POST'])
 def create_student_situations():
     section_id = request.form.get('section_id')
@@ -41,8 +40,8 @@ def list_student_situations():
 @student_situation_bp.route('/<int:id>/show', methods=['GET'])
 def show_student_situation(id):
     student_situation = StudentSituation.query.get_or_404(id)
-    tasks = db.session.query(Task).filter_by(assessment_id=student_situation.section_id).all()
-    grades = {grade.task_id: grade for grade in db.session.query(Grade).filter_by(student_id=student_situation.student_id).all()}
+    tasks =student_situation.userSectionTasks()
+    grades = student_situation.userGrades()
     return render_template(
         'student_situations/show.html',
         student_situation=student_situation,

@@ -23,3 +23,14 @@ class Section(db.Model):
             if total_percentage != 100:
                 return False
         return True
+    
+    def calculateStudentsSituations(self):
+        for assessment in self.assessments:
+            if not assessment.validateWeightingAssessment():
+                return False
+            
+        if not self.validateWeightingSection():
+            return False
+        
+        for student_situation in self.student_situations:
+            student_situation.calculateFinalGrade()

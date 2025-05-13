@@ -182,61 +182,61 @@
         },
         {
             "alumno_id": 4,
-            "topico_id": 1,
+            "topico_id": 5,
             "instancia": 1,
             "nota": 6.4
         },
         {
             "alumno_id": 4,
-            "topico_id": 1,
+            "topico_id": 5,
             "instancia": 2,
             "nota": 5.3
         },
         {
             "alumno_id": 4,
-            "topico_id": 1,
+            "topico_id": 5,
             "instancia": 3,
             "nota": 5.2
         },
         {
             "alumno_id": 4,
-            "topico_id": 2,
+            "topico_id": 6,
             "instancia": 1,
             "nota": 5.7
         },
         {
             "alumno_id": 4,
-            "topico_id": 2,
+            "topico_id": 6,
             "instancia": 2,
             "nota": 6.8
         },
         {
             "alumno_id": 4,
-            "topico_id": 2,
+            "topico_id": 6,
             "instancia": 3,
             "nota": 5.5
         },
         {
             "alumno_id": 4,
-            "topico_id": 3,
+            "topico_id": 7,
             "instancia": 1,
             "nota": 4.6
         },
         {
             "alumno_id": 4,
-            "topico_id": 3,
+            "topico_id": 7,
             "instancia": 2,
             "nota": 4.3
         },
         {
             "alumno_id": 4,
-            "topico_id": 3,
+            "topico_id": 7,
             "instancia": 3,
             "nota": 4.4
         },
         {
             "alumno_id": 4,
-            "topico_id": 4,
+            "topico_id": 7,
             "instancia": 4,
             "nota": 5.5
         },
@@ -302,49 +302,49 @@
         },
         {
             "alumno_id": 6,
-            "topico_id": 5,
+            "topico_id": 8,
             "instancia": 1,
             "nota": 4.0
         },
         {
             "alumno_id": 6,
-            "topico_id": 5,
+            "topico_id": 8,
             "instancia": 2,
             "nota": 5.2
         },
         {
             "alumno_id": 6,
-            "topico_id": 5,
+            "topico_id": 8,
             "instancia": 3,
             "nota": 5.5
         },
         {
             "alumno_id": 6,
-            "topico_id": 6,
+            "topico_id": 9,
             "instancia": 1,
             "nota": 5.8
         },
         {
             "alumno_id": 6,
-            "topico_id": 6,
+            "topico_id": 9,
             "instancia": 2,
             "nota": 6.4
         },
         {
             "alumno_id": 6,
-            "topico_id": 6,
+            "topico_id": 9,
             "instancia": 3,
             "nota": 5.1
         },
         {
             "alumno_id": 6,
-            "topico_id": 6,
+            "topico_id": 9,
             "instancia": 4,
             "nota": 4.2
         },
         {
             "alumno_id": 6,
-            "topico_id": 7,
+            "topico_id": 10,
             "instancia": 1,
             "nota": 6.8
         },
