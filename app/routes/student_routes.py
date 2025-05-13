@@ -5,7 +5,7 @@ from app import db
 student_bp = Blueprint('student_routes', __name__, url_prefix='/students')
 
 @student_bp.route('/new', methods=['GET'])
-def newstudentForm():
+def newStudentForm():
     return render_template('students/form.html', student=None)
 
 @student_bp.route('/', methods=['POST'])
@@ -22,7 +22,7 @@ def createStudent():
     db.session.add(student)
     db.session.commit()
     flash("Student created successfully.", "success")
-    return redirect(url_for('student_routes.get_students'))
+    return redirect(url_for('student_routes.getStudents'))
 
 @student_bp.route('/', methods=['GET'])
 def getStudents():
@@ -49,7 +49,7 @@ def updateStudent(id):
     student.entry_date = request.form.get('entry_date')
     db.session.commit()
     flash("Student updated successfully.", "success")
-    return redirect(url_for('student_routes.get_students'))
+    return redirect(url_for('student_routes.getStudents'))
 
 @student_bp.route('/<int:id>/delete', methods=['POST'])
 def deleteStudent(id):
@@ -57,4 +57,4 @@ def deleteStudent(id):
     db.session.delete(student)
     db.session.commit()
     flash("Student deleted successfully.", "success")
-    return redirect(url_for('student_routes.get_students'))
+    return redirect(url_for('student_routes.getStudents'))

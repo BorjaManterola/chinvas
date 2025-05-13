@@ -42,7 +42,7 @@ def createSchedule():
     db.session.add(schedule)
     db.session.flush()
 
-    result = schedule.generate_schedule()
+    result = schedule.generateSchedule()
 
     if not result["unassigned_sections"]:
         for c in result["classes_to_create"]:
@@ -57,8 +57,11 @@ def createSchedule():
             db.session.add(new_class)
 
         db.session.commit()
-        flash("Schedule and all classes created successfully!", "success")
-        return redirect(url_for("schedule_routes.get_schedules"))
+        try:
+            return schedule.exportScheduleToExcel()
+        except Exception as e:
+            flash(f"Schedule created, but Excel download failed: {str(e)}", "warning")
+        return redirect(url_for("schedule_routes.getSchedules"))
     else:
         db.session.rollback()
         msg = ["⚠ Could not generate schedule due to conflicts:"]
@@ -127,7 +130,7 @@ def updateSchedule(id):
     if request.is_json:
         return jsonify({'message': 'Schedule updated'}), 200
 
-    return redirect(url_for('schedule_routes.show_schedule', id=schedule.id))
+    return redirect(url_for('schedule_routes.showSchedule', id=schedule.id))
 
 @schedule_bp.route('/<int:id>/delete', methods=['POST'])
 def deleteSchedule(id):
@@ -135,4 +138,13 @@ def deleteSchedule(id):
     db.session.delete(schedule)
     db.session.commit()
     flash("Schedule deleted successfully.", "success")
-    return redirect(url_for('schedule_routes.get_schedules'))
+    return redirect(url_for('schedule_routes.getSchedules'))
+
+@schedule_bp.route('/<int:id>/export')
+def exportScheduleToExcel(id):
+    schedule = Schedule.query.get_or_404(id)
+    try:
+        return schedule.exportScheduleToExcel()
+    except Exception as e:
+        flash(f"An error occurred while generating the Excel file: {str(e)}", "danger")
+        return redirect(url_for("schedule_routes.showSchedule", id=id))

@@ -40,7 +40,7 @@ def createCourse():
     if request.is_json:
         return jsonify({'message': 'Course created', 'id': course.id}), 201
 
-    return redirect(url_for('course_routes.get_courses'))
+    return redirect(url_for('course_routes.getCourses'))
 
 
 @course_bp.route('/', methods=['GET'])
@@ -92,7 +92,7 @@ def updateCourse(id):
 
     db.session.commit()
     flash("Course updated successfully.", "success")
-    return redirect(url_for('course_routes.get_courses'))
+    return redirect(url_for('course_routes.getCourses'))
 
 
 @course_bp.route('/<int:id>/delete', methods=['POST'])
@@ -101,4 +101,4 @@ def deleteCourse(id):
     db.session.delete(course)
     db.session.commit()
     flash("Course deleted successfully.", "success")
-    return redirect(url_for('course_routes.get_courses'))
+    return redirect(url_for('course_routes.getCourses'))

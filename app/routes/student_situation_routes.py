@@ -30,7 +30,7 @@ def createStudentSituations():
         db.session.add(situation)
     
     db.session.commit()
-    return redirect(url_for('section_routes.show_section', id=section_id))
+    return redirect(url_for('section_routes.showSection', id=section_id))
 
 @student_situation_bp.route('/', methods=['GET'])
 def listStudentSituations():
@@ -64,11 +64,11 @@ def updateStudentSituation(id):
     situation.final_grade = request.form.get('final_grade', None)
     db.session.commit()
 
-    return redirect(url_for('student_situation_routes.list_student_situations'))
+    return redirect(url_for('student_situation_routes.listStudentSituations'))
 
 @student_situation_bp.route('/<int:id>/delete', methods=['POST'])
 def deleteStudentSituation(id):
     situation = StudentSituation.query.get_or_404(id)
     db.session.delete(situation)
     db.session.commit()
-    return redirect(url_for('student_situation_routes.list_student_situations'))
+    return redirect(url_for('student_situation_routes.listStudentSituations'))

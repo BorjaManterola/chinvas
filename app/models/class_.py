@@ -12,7 +12,7 @@ class Class(db.Model):
     end_time = db.Column(db.Time, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-    section = db.relationship("Section", backref="classes")
+    section = db.relationship("Section", backref=db.backref("classes", cascade="all, delete", lazy=True))
     classroom = db.relationship("Classroom", backref="classes")
 
  

@@ -3,23 +3,13 @@
 {% block content %}
 
 <div class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
     <div class="card mt-4 shadow-sm col-md-6 mx-auto">
         <div class="card-body">
             <h4 class="card-title">{{ 'Edit Task' if task else 'Create Task' }}</h4>
             <p class="text-muted">For assessment: {{ assessment.name }} ({{ assessment.type_evaluate | capitalize }})</p>
 
             <form method="POST"
-            action="{{ url_for('task_routes.update_task', id=task.id) if task else url_for('task_routes.create_task') }}">
+            action="{{ url_for('task_routes.updateTask', id=task.id) if task else url_for('task_routes.createTask') }}">
                 
                 <input type="hidden" name="assessment_id" value="{{ assessment.id }}">
 
@@ -50,7 +40,7 @@
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save me-1"></i>Save
                     </button>
-                    <a href="{{ url_for('assessment_routes.show_assessment', id=assessment.id) }}" class="btn btn-outline-secondary ms-2">
+                    <a href="{{ url_for('assessment_routes.showAssessment', id=assessment.id) }}" class="btn btn-outline-secondary ms-2">
                         <i class="fas fa-arrow-left me-1"></i>Cancel
                     </a>
                 </div>

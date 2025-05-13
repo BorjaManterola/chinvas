@@ -17,7 +17,7 @@
               {% endif %}
             {% endwith %}
 
-            <form method="POST" action="{{ url_for('schedule_routes.create_schedule') }}">
+            <form method="POST" action="{{ url_for('schedule_routes.createSchedule') }}">
                 <div class="mb-3">
                     <label for="year" class="form-label">Year</label>
                     <input type="number" name="year" id="year" class="form-control" min="2020" max="2100" required>
@@ -33,8 +33,8 @@
                 </div>
 
                 <div class="d-flex justify-content-between">
-                    <a href="{{ url_for('schedule_routes.get_schedules') }}" class="btn btn-outline-secondary">
-                        Cancel
+                    <a href="{{ url_for('schedule_routes.getSchedules') }}" class="btn btn-outline-secondary">
+                        Back
                     </a>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-calendar-plus me-1"></i> Create Schedule

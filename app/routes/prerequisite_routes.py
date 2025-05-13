@@ -35,7 +35,7 @@ def createPrerequisites():
     
     db.session.commit()
     flash("Prerequisites assigned successfully.", "success")
-    return redirect(url_for('course_routes.show_course', id=course_id))
+    return redirect(url_for('course_routes.showCourse', id=course_id))
 
 
 @prerequisite_bp.route('/', methods=['GET'])
@@ -56,4 +56,4 @@ def deletePrerequisite(course_id, prerequisite_id):
     db.session.delete(prereq)
     db.session.commit()
     flash("Prerequisite removed successfully.", "success")
-    return redirect(url_for('course_routes.show_course', id=course_id))
+    return redirect(url_for('course_routes.showCourse', id=course_id))
