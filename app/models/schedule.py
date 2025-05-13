@@ -2,14 +2,13 @@ from app import db
 from app.models.section import Section
 from app.models.classroom import Classroom
 from app.models.class_ import Class
-from sqlalchemy.orm import joinedload
-from app.models.teacher import Teacher
 from app.models.period import Period
-from flask import Blueprint, request, render_template, redirect, url_for, flash
-from app.models.student import Student
 from app.models.student_situation import StudentSituation
+from sqlalchemy.orm import joinedload
 from datetime import time
-from app.models.course import Course
+from openpyxl import Workbook
+import io
+from flask import send_file
 
 class Schedule(db.Model):
     __tablename__ = 'schedule'
@@ -20,97 +19,143 @@ class Schedule(db.Model):
 
     classes = db.relationship("Class", backref="schedule", cascade="all, delete", lazy=True)
 
-    def generate_schedule(self):
-        DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-        MODULES = [9, 10, 11, 12, 14, 15, 16, 17]
-        MAX_CONSECUTIVE = 4
-
-        sections = db.session.query(Section).\
-            join(Period).\
-            options(
-                joinedload(Section.period).joinedload(Period.course),
-                joinedload(Section.student_situations).joinedload(StudentSituation.student)
-            ).\
-            filter(Period.year == self.year, Period.semester == self.semester).\
-            all()
-
+    def generateSchedule(self):
+        sections = self._getSections()
         classrooms = Classroom.query.all()
-
-        availability = {
-            day: {
-                hour: {room.id: True for room in classrooms} for hour in MODULES
-            } for day in DAYS
-        }
+        availability = self._buildAvailabilityMatrix(classrooms)
 
         classes_to_create = []
         unassigned_sections = []
 
         for section in sections:
-            assigned = False
-            blocks_needed = section.period.course.credits
-            students = section.getStudents()
+            result = self._assignSection(section, classrooms, availability)
+            if result["assigned"]:
+                classes_to_create.append(result["class_data"])
+            else:
+                unassigned_sections.append(result["error"])
 
-            if blocks_needed > MAX_CONSECUTIVE:
-                unassigned_sections.append({
-                    "section_id": section.id,
-                    "reason": "More than 4 consecutive blocks required"
-                })
-                continue
+        return {
+            "classes_to_create": classes_to_create,
+            "unassigned_sections": unassigned_sections
+        }
 
-            for day in DAYS:
-                for i in range(len(MODULES) - blocks_needed + 1):
-                    block = MODULES[i:i + blocks_needed]
-                    if 13 in block:
+    def _getSections(self):
+        return db.session.query(Section).            join(Period).            options(
+                joinedload(Section.period).joinedload(Period.course),
+                joinedload(Section.student_situations).joinedload(StudentSituation.student),
+                joinedload(Section.teacher)
+            ).            filter(Period.year == self.year, Period.semester == self.semester).            all()
+
+    def _buildAvailabilityMatrix(self, classrooms):
+        DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        MODULES = [9, 10, 11, 12, 14, 15, 16, 17]
+        return {
+            day: {hour: {room.id: True for room in classrooms} for hour in MODULES}
+            for day in DAYS
+        }
+
+    def _hasConflict(self, day, block, section):
+        for h in block:
+            existing_classes = Class.query.filter_by(
+                day_of_week=day,
+                start_time=time(h)
+            ).all()
+
+            for existing in existing_classes:
+                if existing.section.teacher_id == section.teacher_id:
+                    return True
+
+                existing_students = {s.id for s in existing.section.getSectionStudents()}
+                current_students = {s.id for s in section.getSectionStudents()}
+                if existing_students & current_students:
+                    return True
+
+        return False
+
+    def _assignSection(self, section, classrooms, availability):
+        DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        MODULES = [9, 10, 11, 12, 14, 15, 16, 17]
+        MAX_CONSECUTIVE = 4
+
+        blocks_needed = section.period.course.credits
+        students = section.getSectionStudents()
+
+        if blocks_needed > MAX_CONSECUTIVE:
+            return {"assigned": False, "error": {
+                "section_id": section.id,
+                "reason": "More than 4 consecutive blocks required"
+            }}
+
+        for day in DAYS:
+            for i in range(len(MODULES) - blocks_needed + 1):
+                block = MODULES[i:i + blocks_needed]
+                if 13 in block:
+                    continue
+
+                for room in classrooms:
+                    if room.capacity < len(students):
                         continue
 
-                    for room in classrooms:
-                        if room.capacity < len(students):
-                            continue
+                    if all(availability[day][h][room.id] for h in block) and not self._hasConflict(day, block, section):
+                        for h in block:
+                            availability[day][h][room.id] = False
 
-                        if all(availability[day][h][room.id] for h in block):
-                            conflict = False
-
-                            for h in block:
-                                start = time(h)
-                                existing_classes = Class.query.filter_by(
-                                    day_of_week=day,
-                                    start_time=start
-                                ).all()
-                                for existing in existing_classes:
-                                    if existing.section_id == section.id:
-                                        conflict = True
-                                        break
-                                if conflict:
-                                    break
-
-                            if conflict:
-                                continue
-
-                            for h in block:
-                                availability[day][h][room.id] = False
-
-                            classes_to_create.append({
+                        return {
+                            "assigned": True,
+                            "class_data": {
                                 "section_id": section.id,
                                 "day_of_week": day,
                                 "start_time": time(block[0]),
                                 "end_time": time(block[-1] + 1),
                                 "classroom_id": room.id,
                                 "schedule_id": self.id
-                            })
-                            assigned = True
-                            break
-                    if assigned:
-                        break
-                if assigned:
-                    break
+                            }
+                        }
 
-            if not assigned:
-                unassigned_sections.append({
-                    "section_id": section.id,
-                    "reason": "No available block without conflict"
-                })
+        return {"assigned": False, "error": {
+            "section_id": section.id,
+            "reason": "No available block without conflict"
+        }}
 
-        return {
-            "classes_to_create": classes_to_create,
-            "unassigned_sections": unassigned_sections
-        }
+    def exportScheduleToExcel(self):
+        try:
+            data_rows = self._buildExcelRows()
+        except Exception as e:
+            raise RuntimeError(f"Error building Excel rows: {str(e)}")
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Schedule"
+
+        headers = ["Course", "Section", "Classroom", "Start Time", "End Time"]
+        ws.append(headers)
+
+        for row in data_rows:
+            ws.append(row)
+
+        output = io.BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        return send_file(
+            output,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name=f'schedule_{self.year}_{self.semester}.xlsx'
+        )
+
+    def _buildExcelRows(self):
+        rows = []
+        classes = Class.query.filter_by(schedule_id=self.id).all()
+
+        for cls in classes:
+            try:
+                course_name = cls.section.period.course.name
+                section_id = cls.section.id
+                classroom_name = cls.classroom.name
+                start = cls.start_time.strftime("%H:%M")
+                end = cls.end_time.strftime("%H:%M")
+                rows.append([course_name, section_id, classroom_name, start, end])
+            except AttributeError:
+                raise ValueError(f"Incomplete class data for class ID {cls.id}")
+        return rows
