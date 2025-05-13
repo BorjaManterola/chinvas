@@ -31,7 +31,7 @@ def createAssessment():
     db.session.add(assessment)
     db.session.commit()
     flash('Assessment created successfully.', 'success')
-    return redirect(url_for('section_routes.show_section', id=section_id))
+    return redirect(url_for('section_routes.showSection', id=section_id))
 
 @assessment_bp.route('/<int:id>/show', methods=['GET'])
 def showAssessment(id):
@@ -64,7 +64,7 @@ def updateAssessment(id):
     assessment.weighting = weighting
     db.session.commit()
     flash('Assessment updated successfully.', 'success')
-    return redirect(url_for('section_routes.show_section', id=section.id))
+    return redirect(url_for('section_routes.showSection', id=section.id))
 
 @assessment_bp.route('/<int:id>/delete', methods=['POST'])
 def deleteAssessment(id):
@@ -75,4 +75,4 @@ def deleteAssessment(id):
     db.session.commit()
 
     flash("Assessment deleted successfully", "success")
-    return redirect(url_for('section_routes.show_section', id=assessment.section_id))
+    return redirect(url_for('section_routes.showSection', id=assessment.section_id))

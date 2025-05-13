@@ -30,7 +30,7 @@ def createSection():
     db.session.add(section)
     db.session.commit()
     flash("Section created successfully.", "success")
-    return redirect(url_for('period_routes.show_period', id=period_id))
+    return redirect(url_for('period_routes.showPeriod', id=period_id))
 
 @section_bp.route('/<int:id>/show', methods=['GET'])
 def showSection(id):
@@ -57,7 +57,7 @@ def updateSection(id):
     section.type_evaluate = request.form.get('type_evaluate')
     db.session.commit()
     flash("Section updated successfully.", "success")
-    return redirect(url_for('period_routes.show_period', id=section.period_id))
+    return redirect(url_for('period_routes.showPeriod', id=section.period_id))
 
 @section_bp.route('/<int:id>/delete', methods=['POST'])
 def deleteSection(id):
@@ -66,4 +66,4 @@ def deleteSection(id):
     db.session.delete(section)
     db.session.commit()
     flash("Section deleted successfully.", "success")
-    return redirect(url_for('period_routes.show_period', id=period_id))
+    return redirect(url_for('period_routes.showPeriod', id=period_id))

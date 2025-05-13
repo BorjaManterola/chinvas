@@ -8,5 +8,5 @@ class Student(db.Model):
     entry_date = db.Column(db.Date)
     created_at = db.Column(db.DateTime, server_default=db.func.current_timestamp())
 
-    grades = db.relationship('Grade', backref='student', lazy=True)
+    grades = db.relationship('Grade', backref='student', cascade="all, delete", lazy=True)
     student_situations = db.relationship('StudentSituation', backref='student', lazy=True)

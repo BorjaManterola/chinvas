@@ -32,7 +32,7 @@ def createPeriod():
     db.session.add(period)
     db.session.commit()
 
-    return redirect(url_for('course_routes.show_course', id=course_id))
+    return redirect(url_for('course_routes.showCourse', id=course_id))
 
 @period_bp.route('/', methods=['GET'])
 def listPeriods():
@@ -60,7 +60,7 @@ def updatePeriod(id):
 
     period.semester = request.form['semester']
     db.session.commit()
-    return redirect(url_for('course_routes.show_course', id=period.course_id))
+    return redirect(url_for('course_routes.showCourse', id=period.course_id))
 
 @period_bp.route('/<int:id>/delete', methods=['POST'])
 def deletePeriod(id):
@@ -68,7 +68,7 @@ def deletePeriod(id):
     course_id = period.course_id
     db.session.delete(period)
     db.session.commit()
-    return redirect(url_for('course_routes.show_course', id=course_id))
+    return redirect(url_for('course_routes.showCourse', id=course_id))
 
 @period_bp.route('/periods/<int:id>/close', methods=['POST'])
 def closePeriod(id):
@@ -76,4 +76,4 @@ def closePeriod(id):
     period.opened = False
     db.session.commit()
     flash('The period has been closed successfully.', 'success')
-    return redirect(url_for('period_routes.show_period', id=id))
+    return redirect(url_for('period_routes.showPeriod', id=id))

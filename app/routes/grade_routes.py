@@ -26,14 +26,14 @@ def createGrade():
 
     if score is None:
         flash("Score is required.", "danger")
-        return redirect(url_for('grade_routes.new_grade_form', student_id=student_id, task_id=task_id))
+        return redirect(url_for('grade_routes.newGradeForm', student_id=student_id, task_id=task_id))
 
     grade = Grade(student_id=student_id, task_id=task_id, score=score)
     db.session.add(grade)
     db.session.commit()
 
     flash("Grade created successfully.", "success")
-    return redirect(url_for('student_situation_routes.show_student_situation', id=student_id))
+    return redirect(url_for('student_situation_routes.showStudentSituation', id=student_id))
 
 @grade_bp.route('/<int:id>/edit', methods=['GET'])
 def editGradeForm(id):
@@ -50,13 +50,13 @@ def updateGrade(id):
 
     if score is None:
         flash("Score is required.", "danger")
-        return redirect(url_for('grade_routes.edit_grade_form', id=id))
+        return redirect(url_for('grade_routes.editGradeForm', id=id))
 
     grade.score = score
     db.session.commit()
 
     flash("Grade updated successfully.", "success")
-    return redirect(url_for('student_situation_routes.show_student_situation', id=grade.student_id))
+    return redirect(url_for('student_situation_routes.showStudentSituation', id=grade.student_id))
 
 @grade_bp.route('/<int:id>/delete', methods=['POST'])
 def deleteGrade(id):
@@ -67,4 +67,4 @@ def deleteGrade(id):
     db.session.commit()
 
     flash("Grade deleted successfully.", "success")
-    return redirect(url_for('student_situation_routes.show_student_situation', id=student_id))
+    return redirect(url_for('student_situation_routes.showStudentSituation', id=student_id))

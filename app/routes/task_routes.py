@@ -20,19 +20,19 @@ def createTask():
 
     if not assessment_id or weighting is None:
         flash("All fields are required.", "danger")
-        return redirect(url_for('assessment_routes.show_assessment', id=assessment_id))
+        return redirect(url_for('assessment_routes.showAssessment', id=assessment_id))
 
     is_valid, total_weight = Task.isValidWeightingInAssessment(assessment_id, weighting)
     if not is_valid:
         flash(f"Total task weighting cannot exceed 100%. Current total: {total_weight}%", "danger")
-        return redirect(url_for('task_routes.edit_task_form', id=id))
+        return redirect(url_for('task_routes.editTaskForm', id=id))
 
     task = Task(assessment_id=assessment_id, weighting=weighting, optional=optional)
     db.session.add(task)
     db.session.commit()
 
     flash("Task created successfully.", "success")
-    return redirect(url_for('assessment_routes.show_assessment', id=assessment_id))
+    return redirect(url_for('assessment_routes.showAssessment', id=assessment_id))
 
 @task_bp.route('/<int:id>/edit', methods=['GET'])
 def editTaskForm(id):
@@ -51,12 +51,12 @@ def updateTask(id):
 
     if weighting is None:
         flash("Weighting is required.", "danger")
-        return redirect(url_for('task_routes.edit_task_form', id=id))
+        return redirect(url_for('task_routes.editTaskForm', id=id))
 
     is_valid, total_weight = Task.isValidWeightingInAssessment(assessment_id, weighting, exclude_task_id=id)
     if not is_valid:
         flash(f"Total task weighting cannot exceed 100%. Current total: {total_weight}%", "danger")
-        return redirect(url_for('task_routes.edit_task_form', id=id))
+        return redirect(url_for('task_routes.editTaskForm', id=id))
 
 
     task.weighting = weighting
@@ -64,7 +64,7 @@ def updateTask(id):
     db.session.commit()
 
     flash("Task updated successfully.", "success")
-    return redirect(url_for('assessment_routes.show_assessment', id=assessment_id))
+    return redirect(url_for('assessment_routes.showAssessment', id=assessment_id))
 
 @task_bp.route('/<int:id>/delete', methods=['POST'])
 def deleteTask(id):
@@ -76,4 +76,4 @@ def deleteTask(id):
     db.session.commit()
 
     flash("Task deleted successfully.", "success")
-    return redirect(url_for('assessment_routes.show_assessment', id=assessment_id))
+    return redirect(url_for('assessment_routes.showAssessment', id=assessment_id))

@@ -58,7 +58,7 @@ def createSchedule():
 
         db.session.commit()
         flash("Schedule and all classes created successfully!", "success")
-        return redirect(url_for("schedule_routes.get_schedules"))
+        return redirect(url_for("schedule_routes.getSchedules"))
     else:
         db.session.rollback()
         msg = ["⚠ Could not generate schedule due to conflicts:"]
@@ -135,4 +135,4 @@ def deleteSchedule(id):
     db.session.delete(schedule)
     db.session.commit()
     flash("Schedule deleted successfully.", "success")
-    return redirect(url_for('schedule_routes.get_schedules'))
+    return redirect(url_for('schedule_routes.getSchedules'))

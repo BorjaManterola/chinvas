@@ -28,7 +28,7 @@ def createClass():
 
     if not all([section_id, classroom_id, schedule_id, day_of_week, start_time, end_time]):
         flash("All fields are required.", "danger")
-        return redirect(url_for('class_routes.new_class_form', section_id=section_id))
+        return redirect(url_for('class_routes.newClassForm', section_id=section_id))
 
     new_class = Class(
         section_id=section_id,
@@ -40,7 +40,7 @@ def createClass():
     )
     db.session.add(new_class)
     db.session.commit()
-    return redirect(url_for('section_routes.show_section', id=section_id))
+    return redirect(url_for('section_routes.showSection', id=section_id))
 
 
 @class_bp.route('/', methods=['GET'])
@@ -56,4 +56,4 @@ def deleteClass(id):
     db.session.delete(class_instance)
     db.session.commit()
     flash("Class deleted successfully.", "success")
-    return redirect(url_for('section_routes.show_section', id=section_id))
+    return redirect(url_for('section_routes.showSection', id=section_id))
