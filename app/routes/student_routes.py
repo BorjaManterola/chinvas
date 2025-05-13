@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for
 from app.models.student import Student
 from app import db
 
@@ -15,13 +15,11 @@ def createStudent():
     entry_date = request.form.get('entry_date')
 
     if not name or not email:
-        flash("Name and email are required.", "danger")
         return render_template('students/form.html', student=None)
 
     student = Student(name=name, email=email, entry_date=entry_date)
     db.session.add(student)
     db.session.commit()
-    flash("Student created successfully.", "success")
     return redirect(url_for('student_routes.getStudents'))
 
 @student_bp.route('/', methods=['GET'])
@@ -48,7 +46,6 @@ def updateStudent(id):
     student.email = request.form.get('email')
     student.entry_date = request.form.get('entry_date')
     db.session.commit()
-    flash("Student updated successfully.", "success")
     return redirect(url_for('student_routes.getStudents'))
 
 @student_bp.route('/<int:id>/delete', methods=['POST'])
@@ -56,5 +53,4 @@ def deleteStudent(id):
     student = Student.query.get_or_404(id)
     db.session.delete(student)
     db.session.commit()
-    flash("Student deleted successfully.", "success")
     return redirect(url_for('student_routes.getStudents'))

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash
+from flask import Blueprint, request, render_template, redirect, url_for
 from app import db
 from app.models.course import Course
 from app.models.prerequisite import Prerequisite
@@ -27,9 +27,6 @@ def createPrerequisites():
     prereq_ids = request.form.getlist('prereq_ids')
     created = False
     for prereq_id in prereq_ids:
-        if course_id == prereq_id:
-            flash("A course cannot be its own prerequisite.", "warning")
-            continue
         exists = Prerequisite.query.filter_by(
             course_id=course_id, prerequisite_id=prereq_id
         ).first()
@@ -37,12 +34,7 @@ def createPrerequisites():
         if not exists:
             prereq = Prerequisite(course_id=course_id, prerequisite_id=prereq_id)
             db.session.add(prereq)
-            created = True
-    if created:
-        db.session.commit()
-        flash("Prerequisites assigned successfully.", "success")
-    else:
-        flash("No new prerequisites were added.", "info")
+            db.session.commit()
 
     return redirect(url_for('course_routes.showCourse', id=course_id))
 
@@ -54,5 +46,4 @@ def deletePrerequisite(id):
     db.session.delete(prereq)
     db.session.commit()
 
-    flash("Prerequisite removed successfully.", "success")
     return redirect(url_for('course_routes.showCourse', id=course_id))

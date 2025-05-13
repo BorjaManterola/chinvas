@@ -152,7 +152,6 @@ def getTaskId(cursor, topic_id, instance, nota):
     result = cursor.fetchone()
     
     if result:
-        print(f"Se encontró task_id {result[0]} para topico_id {topic_id} con instancia {instance}, nota {nota}")
         return result[0]
     else:
         print(f"No se encontró un task_id para topico_id {topic_id} con instancia {instance}")
@@ -170,7 +169,6 @@ def populateGrades(cursor):
             VALUES (%s, %s, %s)
             """
             data = (grade['alumno_id'], task_id, grade['nota'])
-            print(f"Data: {data}")
             insertData(cursor, query, data)
 
 def populateClassrooms(cursor):

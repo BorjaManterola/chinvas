@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for
 from app.models.course import Course
 from app.models.prerequisite import Prerequisite
 from app import db
@@ -24,13 +24,11 @@ def createCourse():
         credits = request.form.get('credits')
 
     if not name or not code or not credits:
-        flash("All fields are required.", "danger")
         return render_template("courses/form.html", course=None)
 
     try:
         credits = int(credits)
     except ValueError:
-        flash("Credits must be a number.", "danger")
         return render_template("courses/form.html", course=None)
 
     course = Course(name=name, code=code, credits=credits)
@@ -75,11 +73,9 @@ def updateCourse(id):
     try:
         course.credits = int(request.form['credits'])
     except ValueError:
-        flash("Credits must be a number.", "danger")
         return render_template("courses/form.html", course=course)
 
     db.session.commit()
-    flash("Course updated successfully.", "success")
     return redirect(url_for('course_routes.getCourses'))
 
 
@@ -88,5 +84,4 @@ def deleteCourse(id):
     course = Course.query.get_or_404(id)
     db.session.delete(course)
     db.session.commit()
-    flash("Course deleted successfully.", "success")
     return redirect(url_for('course_routes.getCourses'))

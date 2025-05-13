@@ -11,13 +11,11 @@ def createTeacher():
         email = request.form['email']
 
         if not name or not email:
-            flash("Name and email are required.", "danger")
             return render_template('teachers/form.html', teacher=None)
 
         teacher = Teacher(name=name, email=email)
         db.session.add(teacher)
         db.session.commit()
-        flash("Teacher created successfully.", "success")
         return redirect(url_for('teacher_routes.getTeachers'))
 
     return render_template('teachers/form.html', teacher=None)
@@ -34,7 +32,6 @@ def editTeacher(id):
         teacher.name = request.form['name']
         teacher.email = request.form['email']
         db.session.commit()
-        flash("Teacher updated successfully.", "success")
         return redirect(url_for('teacher_routes.getTeachers'))
 
     return render_template('teachers/form.html', teacher=teacher)
@@ -44,5 +41,4 @@ def deleteTeacher(id):
     teacher = Teacher.query.get_or_404(id)
     db.session.delete(teacher)
     db.session.commit()
-    flash("Teacher deleted successfully.", "success")
     return redirect(url_for('teacher_routes.getTeachers'))

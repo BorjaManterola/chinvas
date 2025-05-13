@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash
+from flask import Blueprint, request, render_template, redirect, url_for
 from app.models.period import Period
 from app.models.course import Course
 from app.models.section import Section
@@ -24,7 +24,6 @@ def createPeriod():
     try:
         year = int(year)
     except ValueError:
-        flash("Year must be a number.", "danger")
         course = Course.query.get(course_id)
         return render_template('periods/form.html', period=None, course=course)
 
@@ -50,7 +49,6 @@ def updatePeriod(id):
     try:
         period.year = int(request.form['year'])
     except ValueError:
-        flash("Year must be a number.", "danger")
         return render_template('periods/form.html', period=period, course=period.course)
 
     period.semester = request.form['semester']
@@ -70,5 +68,4 @@ def closePeriod(id):
     period = Period.query.get_or_404(id)
     period.opened = False
     db.session.commit()
-    flash('The period has been closed successfully.', 'success')
     return redirect(url_for('period_routes.showPeriod', id=id))

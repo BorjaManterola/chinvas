@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash
+from flask import Blueprint, request, render_template, redirect, url_for
 from app import db
 from app.models.grade import Grade
 from app.models.task import Task
@@ -25,14 +25,12 @@ def createGrade():
     score = request.form.get('score', type=float)
 
     if score is None:
-        flash("Score is required.", "danger")
         return redirect(url_for('grade_routes.newGradeForm', student_id=student_id, task_id=task_id))
 
     grade = Grade(student_id=student_id, task_id=task_id, score=score)
     db.session.add(grade)
     db.session.commit()
 
-    flash("Grade created successfully.", "success")
     return redirect(url_for('student_situation_routes.showStudentSituation', id=student_id))
 
 @grade_bp.route('/<int:id>/edit', methods=['GET'])
@@ -49,13 +47,11 @@ def updateGrade(id):
     score = request.form.get('score', type=float)
 
     if score is None:
-        flash("Score is required.", "danger")
         return redirect(url_for('grade_routes.editGradeForm', id=id))
 
     grade.score = score
     db.session.commit()
 
-    flash("Grade updated successfully.", "success")
     return redirect(url_for('student_situation_routes.showStudentSituation', id=grade.student_id))
 
 @grade_bp.route('/<int:id>/delete', methods=['POST'])
@@ -66,5 +62,4 @@ def deleteGrade(id):
     db.session.delete(grade)
     db.session.commit()
 
-    flash("Grade deleted successfully.", "success")
     return redirect(url_for('student_situation_routes.showStudentSituation', id=student_id))

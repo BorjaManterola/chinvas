@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash
+from flask import Blueprint, request, render_template, redirect, url_for
 from app.models.section import Section
 from app.models.period import Period
 from app.models.teacher import Teacher
@@ -21,7 +21,6 @@ def createSection():
     type_evaluate = request.form.get('type_evaluate')
 
     if not teacher_id or not type_evaluate:
-        flash("All fields are required.", "danger")
         period = Period.query.get(period_id)
         teachers = Teacher.query.all()
         return render_template('sections/form.html', section=None, period=period, teachers=teachers)
@@ -29,7 +28,6 @@ def createSection():
     section = Section(period_id=period_id, teacher_id=teacher_id, type_evaluate=type_evaluate)
     db.session.add(section)
     db.session.commit()
-    flash("Section created successfully.", "success")
     return redirect(url_for('period_routes.showPeriod', id=period_id))
 
 @section_bp.route('/<int:id>', methods=['GET'])
@@ -56,7 +54,6 @@ def updateSection(id):
     section.teacher_id = request.form.get('teacher_id')
     section.type_evaluate = request.form.get('type_evaluate')
     db.session.commit()
-    flash("Section updated successfully.", "success")
     return redirect(url_for('period_routes.showPeriod', id=section.period_id))
 
 @section_bp.route('/<int:id>/delete', methods=['POST'])
@@ -65,5 +62,4 @@ def deleteSection(id):
     period_id = section.period_id
     db.session.delete(section)
     db.session.commit()
-    flash("Section deleted successfully.", "success")
     return redirect(url_for('period_routes.showPeriod', id=period_id))
