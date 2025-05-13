@@ -11,22 +11,17 @@ class Task(db.Model):
     
     @staticmethod
     def _getSumWeightingInAssessment(assessment_id, exclude_task):
-        if exclude_task:
-            sum = db.session.query(db.func.sum(Task.weighting)) \
-                              .filter(Task.assessment_id == assessment_id, Task.id != exclude_task)
-        else:
-            sum = db.session.query(db.func.sum(Task.weighting)) \
-                            .filter(Task.assessment_id == assessment_id)
-        return sum
+        sum = db.session.query(db.func.sum(Task.weighting)) \
+                            .filter(Task.assessment_id == assessment_id, Task.id != exclude_task)
+        return sum.scalar() or 0.0
 
-    def isValidWeightingInAssessment(self, assessment, new_weighting, exclude_task=None):
+    def isValidWeightingInAssessment(self, new_weighting, exclude_task):
         
-        if assessment.type_evaluate != 'Percentage':
+        if self.assessment.type_evaluate != 'Percentage':
             return True, 0.0
 
-        weighting_sum = self._getSumWeightingInAssessment(assessment.id, exclude_task)
+        weighting_sum = self._getSumWeightingInAssessment(self.assessment.id, exclude_task)
         
         total = weighting_sum + new_weighting
-
-        is_valid = total <= 100
+        is_valid = total <= 100 + 1e-5
         return is_valid, total

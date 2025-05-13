@@ -18,7 +18,7 @@
                         <a href="{{ url_for('student_situation_routes.newStudentSituationForm', section_id=section.id) }}" class="btn btn-primary">
                             <i class="fas fa-plus me-1"></i> Add Student
                         </a>
-                        <a href="{{ url_for('assessment_routes.createAssessment', id=section.id) }}" class="btn btn-success ms-2">
+                        <a href="{{ url_for('assessment_routes.newAssessmentForm', section_id=section.id) }}" class="btn btn-success ms-2">
                             <i class="fas fa-plus me-1"></i> Add Assessment
                         </a>
                         <a href="{{ url_for('section_routes.editSectionForm', id=section.id) }}" class="btn btn-warning ms-2">

@@ -6,7 +6,9 @@
         <div class="card-body">
             <h3 class="mb-4">Assign Students to Section {{ section.nrc }}</h3>
 
-            <form method="POST" action="{{ url_for('student_situation_routes.createStudentSituations') }}" class="card card-body bg-light shadow-sm">
+            <form method="POST" 
+                action="{{ url_for('student_situation_routes.createStudentSituations') }}" 
+                class="card card-body bg-light shadow-sm">
                 <input type="hidden" name="section_id" value="{{ section.id }}">
 
                 {% if students %}

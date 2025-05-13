@@ -20,17 +20,19 @@ def createAssessment():
     type_evaluate = request.form['type_evaluate']
     weighting = request.form.get('weighting', type=float)
 
-    is_valid, total = Assessment.isValidWeightingInSection(section, weighting)
-    if not is_valid:
-        flash(f'Total weighting would exceed 100%. Current total: {total:.2f}%. You entered: {weighting:.2f}%.', 'danger')
-
-        return render_template('assessments/form.html', section=section, assessment=None)
-
     assessment = Assessment(name=name, type_evaluate=type_evaluate,
                             weighting=weighting, section_id=section_id)
+    
     db.session.add(assessment)
+    db.session.flush()
+
+    is_valid, total = assessment.isValidWeightingInSection(weighting, assessment.id)
+    
+    if not is_valid:
+        flash(f'Total weighting would exceed 100%. Current total: {total:.2f}%. You entered: {weighting:.2f}%.', 'danger')
+        return render_template('assessments/form.html', section=section, assessment=None)
+
     db.session.commit()
-    flash('Assessment created successfully.', 'success')
     return redirect(url_for('section_routes.showSection', id=section_id))
 
 @assessment_bp.route('/<int:id>/show', methods=['GET'])
@@ -53,10 +55,10 @@ def updateAssessment(id):
     type_evaluate = request.form['type_evaluate']
     weighting = request.form.get('weighting', type=float)
 
-    is_valid, total = Assessment.isValidWeightingInSection(section, weighting, exclude_assessment=id)
+    is_valid, total = assessment.isValidWeightingInSection(weighting, id)
+    
     if not is_valid:
-        flash(f'Total weighting would exceed 100%. Current total: {total:.2f}%. You entered: {weighting:.2f}%.', 'danger')
-
+        flash(f'Total weighting would exceed 100%. Current total: {total}%. You entered: {weighting:.2f}%.', 'danger')
         return render_template('assessments/form.html', assessment=assessment, section=section)
 
     assessment.name = name
@@ -74,5 +76,4 @@ def deleteAssessment(id):
     db.session.delete(assessment)
     db.session.commit()
 
-    flash("Assessment deleted successfully", "success")
     return redirect(url_for('section_routes.showSection', id=assessment.section_id))

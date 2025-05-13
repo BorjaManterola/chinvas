@@ -2,13 +2,22 @@
 
 {% block content %}
 <div class="container">
-  
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flashes">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}    
     <div class="card mt-4 shadow-sm col-md-6 mx-auto">
         <div class="card-body">
             <h2 class="mb-4">{{ 'Edit Assessment' if assessment else 'New Assessment' }}</h2>
             <form method="POST"
                   action="{{ url_for('assessment_routes.updateAssessment', id=assessment.id) if assessment else url_for('assessment_routes.createAssessment', section_id=section.id) }}"
                   class="card card-body bg-light shadow-sm">
+                  <input type="hidden" name="section_id" value="{{ section.id }}">
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Assessment Name:</label>
