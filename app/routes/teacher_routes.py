@@ -18,7 +18,7 @@ def createTeacher():
         db.session.add(teacher)
         db.session.commit()
         flash("Teacher created successfully.", "success")
-        return redirect(url_for('teacher_routes.index'))
+        return redirect(url_for('teacher_routes.getTeachers'))
 
     return render_template('teachers/form.html', teacher=None)
 
@@ -35,7 +35,7 @@ def editTeacher(id):
         teacher.email = request.form['email']
         db.session.commit()
         flash("Teacher updated successfully.", "success")
-        return redirect(url_for('teacher_routes.index'))
+        return redirect(url_for('teacher_routes.getTeachers'))
 
     return render_template('teachers/form.html', teacher=teacher)
 
@@ -45,4 +45,4 @@ def deleteTeacher(id):
     db.session.delete(teacher)
     db.session.commit()
     flash("Teacher deleted successfully.", "success")
-    return redirect(url_for('teacher_routes.index'))
+    return redirect(url_for('teacher_routes.getTeachers'))
