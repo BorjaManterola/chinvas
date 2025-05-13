@@ -9,7 +9,8 @@ class Task(db.Model):
 
     grades = db.relationship('Grade', back_populates='task', cascade='all, delete-orphan', passive_deletes=True)
     
-    def getSumWeightingInAssessment(self, assessment_id, exclude_task):
+    @staticmethod
+    def _getSumWeightingInAssessment(assessment_id, exclude_task):
         if exclude_task:
             sum = db.session.query(db.func.sum(Task.weighting)) \
                               .filter(Task.assessment_id == assessment_id, Task.id != exclude_task)
@@ -23,7 +24,7 @@ class Task(db.Model):
         if assessment.type_evaluate != 'Percentage':
             return True, 0.0
 
-        weighting_sum = self.getSumWeightingInAssessment(assessment.id, exclude_task)
+        weighting_sum = self._getSumWeightingInAssessment(assessment.id, exclude_task)
         
         total = weighting_sum + new_weighting
 

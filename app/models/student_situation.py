@@ -10,21 +10,17 @@ class StudentSituation(db.Model):
     student_id = db.Column(db.Integer, db.ForeignKey('students.id'), nullable=False)
     final_grade = db.Column(db.Numeric(2, 1))
     
-    def getAssessmentTasks(self, assessment):
+    @staticmethod
+    def _getAssessmentTasks(assessment):
         tasks = db.session.query(Task).filter_by(assessment_id=assessment.id).all()
         return tasks
     
     def userSectionTasks(self):
         tasks = []
         for assessment in self.section.assessments:
-            tasks += self.getAssessmentTasks(assessment)
+            tasks += self._getAssessmentTasks(assessment)
         return tasks
     
     def userGrades(self):
         grades = db.session.query(Grade).filter_by(student_id=self.student_id).all()
         return grades
-        
-    def calculateFinalGrade(self):
-        for grade in self.sectionGrades():
-            
-            print("Calculating final grade for student situation")

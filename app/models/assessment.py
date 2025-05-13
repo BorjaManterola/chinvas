@@ -11,20 +11,8 @@ class Assessment(db.Model):
 
     tasks = db.relationship("Task", backref="assessment", cascade="all, delete-orphan", passive_deletes=True)
     
-    def calculatePercentageSumTasks(self):
-        total_percentage = 0
-        for task in self.tasks:
-            total_percentage += task.weighting
-        return total_percentage
-    
-    def validateWeightingSection(self):
-        if self.type_evaluate == "Percentage":
-            total_percentage = self.calculatePercentageSumTasks()
-            if total_percentage != 100:
-                return False
-        return True
-    
-    def getSumWeightingInSection(self, section_id, exclude_assessment):
+    @staticmethod
+    def _getSumWeightingInSection(section_id, exclude_assessment):
         if exclude_assessment:
             sum = db.session.query(db.func.sum(Assessment.weighting)) \
                               .filter(Assessment.section_id == section_id, Assessment.id != exclude_assessment)
@@ -37,7 +25,7 @@ class Assessment(db.Model):
         if section.type_evaluate != 'Percentage':
             return True, 0.0
 
-        weighting_sum = self.getSumWeightingInSection(section.id, exclude_assessment)
+        weighting_sum = self._getSumWeightingInSection(section.id, exclude_assessment)
 
         total = weighting_sum + new_weighting
         is_valid = total <= 100
