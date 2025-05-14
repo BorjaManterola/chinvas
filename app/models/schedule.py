@@ -57,20 +57,28 @@ class Schedule(db.Model):
 
     @staticmethod
     def _hasConflict(day, block, section):
-        for h in block:
-            existing_classes = Class.query.filter_by(
-                day_of_week=day,
-                start_time=time(h)
-            ).all()
+        """
+        Verifica si hay conflictos en el rango completo de horas del bloque.
+        """
+        block_start = time(block[0])
+        block_end = time(block[-1] + 1)
 
-            for existing in existing_classes:
-                if existing.section.teacher_id == section.teacher_id:
-                    return True
+        existing_classes = Class.query.filter(
+            Class.day_of_week == day,
+            Class.start_time < block_end,  # Comienza antes de que termine el bloque
+            Class.end_time > block_start   # Termina después de que comience el bloque
+        ).all()
 
-                existing_students = {s.id for s in existing.section.getSectionStudents()}
-                current_students = {s.id for s in section.getSectionStudents()}
-                if existing_students & current_students:
-                    return True
+        for existing_class in existing_classes:
+            # Verifica si el profesor ya tiene clases asignadas en este bloque
+            if existing_class.section.teacher_id == section.teacher_id:
+                return True
+
+            # Verifica si hay estudiantes en común entre las secciones
+            existing_students = {s.id for s in existing_class.section.getSectionStudents()}
+            current_students = {s.id for s in section.getSectionStudents()}
+            if existing_students & current_students:
+                return True
 
         return False
 
@@ -102,6 +110,15 @@ class Schedule(db.Model):
                         for h in block:
                             availability[day][h][room.id] = False
 
+                        self.createScheduleClass({
+                            "section_id": section.id,
+                            "day_of_week": day,
+                            "start_time": time(block[0]),
+                            "end_time": time(block[-1] + 1),
+                            "classroom_id": room.id,
+                            "schedule_id": self.id
+                        })
+
                         return {
                             "assigned": True,
                             "class_data": {
@@ -129,7 +146,7 @@ class Schedule(db.Model):
         ws = wb.active
         ws.title = "Schedule"
 
-        headers = ["Course", "Section", "Classroom", "Start Time", "End Time"]
+        headers = ["Course", "Section ID", "Teacher", "Classroom", "Day", "Start Time", "End Time"]
         ws.append(headers)
 
         for row in data_rows:
@@ -154,10 +171,12 @@ class Schedule(db.Model):
             try:
                 course_name = cls.section.period.course.name
                 section_id = cls.section.id
+                teacher_name = cls.section.teacher.name
                 classroom_name = cls.classroom.name
+                day_of_week = cls.day_of_week
                 start = cls.start_time.strftime("%H:%M")
                 end = cls.end_time.strftime("%H:%M")
-                rows.append([course_name, section_id, classroom_name, start, end])
+                rows.append([course_name, section_id, teacher_name, classroom_name, day_of_week, start, end])
             except AttributeError:
                 raise ValueError(f"Incomplete class data for class ID {cls.id}")
         return rows
@@ -182,19 +201,51 @@ class Schedule(db.Model):
         db.session.add(schedule)
         db.session.flush()
         return schedule
+    
+    def findClass(self, section_id, day_of_week, start_time, end_time, classroom_id):
+        return Class.query.filter_by(
+            section_id=section_id,
+            day_of_week=day_of_week,
+            start_time=start_time,
+            end_time=end_time,
+            classroom_id=classroom_id,
+            schedule_id=self.id
+        ).first()
+        
+    def createScheduleClass(self, class_data):
+        new_class = Class(
+            section_id=class_data["section_id"],
+            day_of_week=class_data["day_of_week"],
+            start_time=class_data["start_time"],
+            end_time=class_data["end_time"],
+            classroom_id=class_data["classroom_id"],
+            schedule_id=self.id
+        )
+        db.session.add(new_class)
+        db.session.flush()
+        db.session.commit()
 
-    @staticmethod
-    def persistClasses(classes_to_create, schedule_id):
+    def createScheduleClasses(self, classes_to_create, schedule_id):
         for c in classes_to_create:
-            new_class = Class(
+            existing_class = self.findClass(
                 section_id=c["section_id"],
                 day_of_week=c["day_of_week"],
                 start_time=c["start_time"],
                 end_time=c["end_time"],
-                classroom_id=c["classroom_id"],
-                schedule_id=schedule_id
+                classroom_id=c["classroom_id"]
             )
-            db.session.add(new_class)
+
+            if not existing_class:
+                new_class = Class(
+                    section_id=c["section_id"],
+                    day_of_week=c["day_of_week"],
+                    start_time=c["start_time"],
+                    end_time=c["end_time"],
+                    classroom_id=c["classroom_id"],
+                    schedule_id=schedule_id
+                )
+                db.session.add(new_class)
+                db.session.flush()
         db.session.commit()
 
     @staticmethod
@@ -211,7 +262,7 @@ class Schedule(db.Model):
         result = schedule.generateSchedule()
 
         if not result["unassigned_sections"]:
-            Schedule.persistClasses(result["classes_to_create"], schedule.id)
+            schedule.createScheduleClasses(result["classes_to_create"], schedule.id)
             return schedule, None
         else:
             db.session.rollback()

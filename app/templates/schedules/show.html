@@ -32,7 +32,8 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Course</th>
-                                <th>Section</th>
+                                <th>Section ID</th>
+                                <th>Teacher</th>
                                 <th>Classroom</th>
                                 <th>Day</th>
                                 <th>Start</th>
@@ -42,9 +43,10 @@
                         <tbody>
                             {% for c in classes %}
                             <tr>
-                                <td>{{ c.course_name }}</td>
+                                <td>{{ c.section.period.course.name }}</td>
                                 <td>{{ c.section_id }}</td>
-                                <td>{{ c.classroom_name }}</td>
+                                <td>{{ c.section.teacher.name }}</td>
+                                <td>{{ c.classroom.name }}</td>
                                 <td>{{ c.day_of_week }}</td>
                                 <td>{{ c.start_time.strftime('%H:%M') }}</td>
                                 <td>{{ c.end_time.strftime('%H:%M') }}</td>

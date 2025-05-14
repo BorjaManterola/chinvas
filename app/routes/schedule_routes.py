@@ -6,6 +6,7 @@ from app.models.section import Section
 from app.models.period import Period
 from app.models.course import Course
 from app.models.classroom import Classroom
+from sqlalchemy.orm import joinedload
 
 schedule_bp = Blueprint('schedule_routes', __name__, url_prefix='/schedules')
 
@@ -49,21 +50,15 @@ def getSchedules():
 def showSchedule(id):
     schedule = Schedule.query.get_or_404(id)
 
-    classes = db.session.query(Class).\
+    classes = Class.query.\
         join(Section, Class.section_id == Section.id).\
         join(Period, Section.period_id == Period.id).\
-        join(Course, Period.course_id == Course.id).\
         join(Classroom, Class.classroom_id == Classroom.id).\
-        filter(Class.schedule_id == id).\
-        add_columns(
-            Class.id.label("class_id"),
-            Course.name.label("course_name"),
-            Section.id.label("section_id"),
-            Classroom.name.label("classroom_name"),
-            Class.day_of_week,
-            Class.start_time,
-            Class.end_time
-        ).all()
+        options(
+            joinedload(Class.section).joinedload(Section.teacher),
+            joinedload(Class.classroom)
+        ).\
+        filter(Class.schedule_id == id).all()
     return render_template("schedules/show.html", schedule=schedule, classes=classes)
 
 @schedule_bp.route('/<int:id>/delete', methods=['POST'])
@@ -71,7 +66,6 @@ def deleteSchedule(id):
     schedule = Schedule.query.get_or_404(id)
     db.session.delete(schedule)
     db.session.commit()
-    flash("Schedule deleted successfully.", "success")
     return redirect(url_for('schedule_routes.getSchedules'))
 
 @schedule_bp.route('/<int:id>/export')

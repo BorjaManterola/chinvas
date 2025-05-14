@@ -2,6 +2,15 @@
 
 {% block content %}
 <div class="container mt-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flashes">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}    
     <div class="card shadow-sm mx-auto" style="max-width: 500px;">
         <div class="card-body">
             <h3 class="mb-4 text-center">New Schedule</h3>
