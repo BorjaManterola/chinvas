@@ -1,9 +1,8 @@
-from flask import Blueprint, request, render_template, redirect, url_for, jsonify
+from flask import Blueprint, request, render_template, redirect, url_for
 from app.models.student_situation import StudentSituation
 from app.models.student import Student
 from app.models.section import Section
-from app.models.task import Task
-from app.models.grade import Grade
+
 from app import db
 
 student_situation_bp = Blueprint('student_situation_routes', __name__, url_prefix='/student_situations')
