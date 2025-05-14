@@ -1,8 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from app.models.period import Period
 from app.models.course import Course
-from app.models.section import Section
-
 from app import db
 
 period_bp = Blueprint('period_routes', __name__, url_prefix='/periods')
