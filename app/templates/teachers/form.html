@@ -7,7 +7,7 @@
             <h2 class="mb-4">{{ "Edit Teacher" if teacher else "New Teacher" }}</h2>
 
             <form method="POST"
-                  action="{{ url_for('teacher_routes.editTeacher', id=teacher.id) if teacher else url_for('teacher_routes.createTeacher') }}">
+                  action="{{ url_for('teacher_routes.updateTeacher', id=teacher.id) if teacher else url_for('teacher_routes.createTeacher') }}">
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
