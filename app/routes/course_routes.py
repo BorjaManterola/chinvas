@@ -7,12 +7,12 @@ course_bp = Blueprint('course_routes', __name__, url_prefix='/courses')
 
 
 @course_bp.route('/new', methods=['GET'])
-def newCourseForm():
+def new_course_form():
     return render_template('courses/form.html', course=None)
 
 
 @course_bp.route('/new', methods=['POST'])
-def createCourse():
+def create_course():
     if request.is_json:
         data = request.get_json()
         name = data.get('name')
@@ -38,18 +38,18 @@ def createCourse():
     if request.is_json:
         return jsonify({'message': 'Course created', 'id': course.id}), 201
 
-    return redirect(url_for('course_routes.getCourses'))
+    return redirect(url_for('course_routes.get_courses'))
 
 
 @course_bp.route('/', methods=['GET'])
-def getCourses():
+def get_courses():
     courses = Course.query.all()
     return render_template('courses/index.html', courses=courses)
 
 
 
 @course_bp.route('/<int:id>/show', methods=['GET'])
-def showCourse(id):
+def show_course(id):
     course = Course.query.get_or_404(id)
     prerequisites = (
         db.session.query(Prerequisite, Course)
@@ -60,13 +60,13 @@ def showCourse(id):
     return render_template("courses/show.html", course=course, prerequisites=prerequisites)
 
 @course_bp.route('/<int:id>/edit', methods=['GET'])
-def editCourseForm(id):
+def edit_course_form(id):
     course = Course.query.get_or_404(id)
     return render_template('courses/form.html', course=course)
 
 
 @course_bp.route('/<int:id>/edit', methods=['POST'])
-def updateCourse(id):
+def update_course(id):
     course = Course.query.get_or_404(id)
     course.name = request.form['name']
     course.code = request.form['code']
@@ -76,12 +76,12 @@ def updateCourse(id):
         return render_template("courses/form.html", course=course)
 
     db.session.commit()
-    return redirect(url_for('course_routes.getCourses'))
+    return redirect(url_for('course_routes.get_courses'))
 
 
 @course_bp.route('/<int:id>/delete', methods=['POST'])
-def deleteCourse(id):
+def delete_course(id):
     course = Course.query.get_or_404(id)
     db.session.delete(course)
     db.session.commit()
-    return redirect(url_for('course_routes.getCourses'))
+    return redirect(url_for('course_routes.get_courses'))

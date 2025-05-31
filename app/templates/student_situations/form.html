@@ -7,7 +7,7 @@
             <h3 class="mb-4">Assign Students to Section {{ section.nrc }}</h3>
 
             <form method="POST" 
-                action="{{ url_for('student_situation_routes.createStudentSituations') }}" 
+                action="{{ url_for('student_situation_routes.create_student_situations') }}" 
                 class="card card-body bg-light shadow-sm">
                 <input type="hidden" name="section_id" value="{{ section.id }}">
 
@@ -45,7 +45,7 @@
                     <button type="submit" class="btn btn-success" {% if not students %}disabled{% endif %}>
                         <i class="bi bi-check2-circle"></i> Assign
                     </button>
-                    <a href="{{ url_for('section_routes.showSection', id=section.id) }}" class="btn btn-outline-secondary ms-2">
+                    <a href="{{ url_for('section_routes.show_section', id=section.id) }}" class="btn btn-outline-secondary ms-2">
                         Cancel
                     </a>
                 </div>

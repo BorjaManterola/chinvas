@@ -11,11 +11,11 @@ from sqlalchemy.orm import joinedload
 schedule_bp = Blueprint('schedule_routes', __name__, url_prefix='/schedules')
 
 @schedule_bp.route('/form', methods=['GET'])
-def newScheduleForm():
+def new_schedule_form():
     return render_template('schedules/form.html', schedule=None)
 
 @schedule_bp.route('/', methods=['POST'])
-def createSchedule():
+def create_schedule():
     if request.is_json:
         data = request.get_json()
         year = data.get("year")
@@ -31,14 +31,14 @@ def createSchedule():
             return schedule.exportScheduleToExcel()
         except Exception as e:
             flash(f"Schedule created, but Excel download failed: {str(e)}", "warning")
-            return redirect(url_for("schedule_routes.getSchedules"))
+            return redirect(url_for("schedule_routes.get_schedules"))
     else:
         flash(error, "danger")
         return render_template("schedules/form.html", schedule=None)
 
 
 @schedule_bp.route('/', methods=['GET'])
-def getSchedules():
+def get_schedules():
     year = request.args.get('year', type=int)
     if year:
         schedules = Schedule.query.filter_by(year=year).all()
@@ -47,7 +47,7 @@ def getSchedules():
     return render_template('schedules/index.html', schedules=schedules)
 
 @schedule_bp.route('/<int:id>', methods=['GET'])
-def showSchedule(id):
+def show_schedule(id):
     schedule = Schedule.query.get_or_404(id)
 
     classes = Class.query.\
@@ -62,17 +62,17 @@ def showSchedule(id):
     return render_template("schedules/show.html", schedule=schedule, classes=classes)
 
 @schedule_bp.route('/<int:id>/delete', methods=['POST'])
-def deleteSchedule(id):
+def delete_schedule(id):
     schedule = Schedule.query.get_or_404(id)
     db.session.delete(schedule)
     db.session.commit()
-    return redirect(url_for('schedule_routes.getSchedules'))
+    return redirect(url_for('schedule_routes.get_schedules'))
 
 @schedule_bp.route('/<int:id>/export')
-def exportScheduleToExcel(id):
+def export_schedule_to_excel(id):
     schedule = Schedule.query.get_or_404(id)
     try:
         return schedule.exportScheduleToExcel()
     except Exception as e:
         flash(f"An error occurred while generating the Excel file: {str(e)}", "danger")
-        return redirect(url_for("schedule_routes.showSchedule", id=id))
+        return redirect(url_for("schedule_routes.show_schedule", id=id))

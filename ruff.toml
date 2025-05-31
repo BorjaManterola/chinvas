@@ -1,0 +1,20 @@
+line-length = 79
+extend-exclude = [
+  "cleverhub_sim",
+  "tests"
+]
+
+[lint]
+select = [
+  "E",         # all pycodestyle errors
+  "F",         # all pyflakes errors
+  "I",
+  "W",         # pycodestyle warnings
+  "C90",       # McCabe complexity (C901)
+  "N",         # pep8-naming (N8xx)
+#   "D",         # pydocstyle (D1xx, D2xx, …)
+  "ERA",       # eradicate (commented-out code)
+]
+
+[lint.mccabe]
+max-complexity = 10

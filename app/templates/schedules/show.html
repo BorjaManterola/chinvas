@@ -62,17 +62,17 @@
             <hr>
             <div class="d-flex gap-2 justify-content-between">
                 <div>
-                    <form method="post" action="{{ url_for('schedule_routes.deleteSchedule', id=schedule.id) }}" onsubmit="return confirm('Are you sure you want to delete this schedule?');" class="d-inline">
+                    <form method="post" action="{{ url_for('schedule_routes.delete_schedule', id=schedule.id) }}" onsubmit="return confirm('Are you sure you want to delete this schedule?');" class="d-inline">
                         <button type="submit" class="btn btn-danger">
                             <i class="fas fa-trash-alt me-1"></i> Delete
                         </button>
                     </form>
-                    <a href="{{ url_for('schedule_routes.getSchedules') }}" class="btn btn-outline-secondary">
+                    <a href="{{ url_for('schedule_routes.get_schedules') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-1"></i> Back to List
                     </a>
                 </div>
                 <div>
-                    <a href="{{ url_for('schedule_routes.exportScheduleToExcel', id=schedule.id) }}"
+                    <a href="{{ url_for('schedule_routes.export_schedule_to_excel', id=schedule.id) }}"
                         class="btn btn-outline-primary">
                         <i class="fas fa-download me-1"></i> Export as Excel
                     </a>

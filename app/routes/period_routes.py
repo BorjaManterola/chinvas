@@ -7,14 +7,14 @@ period_bp = Blueprint('period_routes', __name__, url_prefix='/periods')
 
 
 @period_bp.route('/new', methods=['GET'])
-def newPeriodForm():
+def new_period_form():
     course_id = request.args.get('course_id', type=int)
     course = Course.query.get(course_id) if course_id else None
     return render_template('periods/form.html', period=None, course=course)
 
 
 @period_bp.route('/new', methods=['POST'])
-def createPeriod():
+def create_period():
     year = request.form['year']
     semester = request.form['semester']
     course_id = request.form['course_id']
@@ -32,17 +32,17 @@ def createPeriod():
     return redirect(url_for('course_routes.showCourse', id=course_id))
 
 @period_bp.route('/<int:id>/show', methods=['GET'])
-def showPeriod(id):
+def show_period(id):
     period = Period.query.get_or_404(id)
     return render_template('periods/show.html', period=period)
 
 @period_bp.route('/<int:id>/edit', methods=['GET'])
-def editPeriodForm(id):
+def edit_period_form(id):
     period = Period.query.get_or_404(id)
     return render_template('periods/form.html', period=period, course=period.course)
 
 @period_bp.route('/<int:id>/edit', methods=['POST'])
-def updatePeriod(id):
+def update_period(id):
     period = Period.query.get_or_404(id)
     try:
         period.year = int(request.form['year'])
@@ -54,7 +54,7 @@ def updatePeriod(id):
     return redirect(url_for('course_routes.showCourse', id=period.course_id))
 
 @period_bp.route('/<int:id>/delete', methods=['POST'])
-def deletePeriod(id):
+def delete_period(id):
     period = Period.query.get_or_404(id)
     course_id = period.course_id
     db.session.delete(period)
@@ -62,7 +62,7 @@ def deletePeriod(id):
     return redirect(url_for('course_routes.showCourse', id=course_id))
 
 @period_bp.route('/periods/<int:id>/close', methods=['POST'])
-def closePeriod(id):
+def close_period(id):
     period = Period.query.get_or_404(id)
     period.opened = False
     db.session.commit()

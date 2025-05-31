@@ -7,13 +7,13 @@ from app import db
 assessment_bp = Blueprint('assessment_routes', __name__, url_prefix='/assessments')
 
 @assessment_bp.route('/new', methods=['GET'])
-def newAssessmentForm():
+def new_assessment_form():
     section_id = request.args.get('section_id', type=int)
     section = Section.query.get_or_404(section_id)
     return render_template('assessments/form.html', assessment=None, section=section)
 
 @assessment_bp.route('/new', methods=['POST'])
-def createAssessment():
+def create_assessment():
     section_id = request.form['section_id']
     section = Section.query.get_or_404(section_id)
     name = request.form['name']
@@ -36,19 +36,19 @@ def createAssessment():
     return redirect(url_for('section_routes.showSection', id=section_id))
 
 @assessment_bp.route('/<int:id>', methods=['GET'])
-def showAssessment(id):
+def show_assessment(id):
     assessment = Assessment.query.get_or_404(id)
     tasks = Task.query.filter_by(assessment_id=id).all()
     return render_template('assessments/show.html', assessment=assessment, tasks=tasks)
 
 @assessment_bp.route('/<int:id>/edit', methods=['GET'])
-def editAssessmentForm(id):
+def edit_assessment_form(id):
     assessment = Assessment.query.get_or_404(id)
     section = Section.query.get_or_404(assessment.section_id)
     return render_template('assessments/form.html', assessment=assessment, section=section)
 
 @assessment_bp.route('/<int:id>/edit', methods=['POST'])
-def updateAssessment(id):
+def update_assessment(id):
     assessment = Assessment.query.get_or_404(id)
     section = Section.query.get_or_404(assessment.section_id)
     name = request.form['name']
@@ -69,7 +69,7 @@ def updateAssessment(id):
     return redirect(url_for('section_routes.showSection', id=section.id))
 
 @assessment_bp.route('/<int:id>/delete', methods=['POST'])
-def deleteAssessment(id):
+def delete_assessment(id):
     assessment = Assessment.query.get_or_404(id)
     for task in assessment.tasks:
         db.session.delete(task)

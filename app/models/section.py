@@ -12,5 +12,5 @@ class Section(db.Model):
     student_situations = db.relationship('StudentSituation', backref='section', lazy=True, cascade="all, delete-orphan")
     teacher = db.relationship("Teacher", backref=db.backref("sections", cascade="all, delete", lazy=True))
     
-    def getSectionStudents(self):
+    def get_section_students(self):
         return [ss.student for ss in self.student_situations]

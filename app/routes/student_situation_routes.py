@@ -8,7 +8,7 @@ from app import db
 student_situation_bp = Blueprint('student_situation_routes', __name__, url_prefix='/student_situations')
 
 @student_situation_bp.route('/new', methods=['GET'])
-def newStudentSituationForm():
+def new_student_situation_form():
     section_id = request.args.get('section_id', type=int)
     section = Section.query.get_or_404(section_id)
 
@@ -20,7 +20,7 @@ def newStudentSituationForm():
     return render_template("student_situations/form.html", section=section, students=students)
 
 @student_situation_bp.route('/new', methods=['POST'])
-def createStudentSituations():
+def create_student_situations():
     section_id = request.form.get('section_id')
     student_ids = request.form.getlist('student_ids')
 
@@ -32,7 +32,7 @@ def createStudentSituations():
     return redirect(url_for('section_routes.showSection', id=section_id))
 
 @student_situation_bp.route('/<int:id>/show', methods=['GET'])
-def showStudentSituation(id):
+def show_student_situation(id):
     student_situation = StudentSituation.query.get_or_404(id)
     tasks =student_situation.userSectionTasks()
     grades = student_situation.userGrades()
@@ -44,14 +44,14 @@ def showStudentSituation(id):
     )
 
 @student_situation_bp.route('/<int:id>/edit', methods=['GET'])
-def editStudentSituationForm(id):
+def edit_student_situation_form(id):
     situation = StudentSituation.query.get_or_404(id)
     students = Student.query.all()
     sections = Section.query.all()
     return render_template('student_situations/form.html', situation=situation, students=students, sections=sections)
 
 @student_situation_bp.route('/<int:id>', methods=['POST'])
-def updateStudentSituation(id):
+def update_student_situation(id):
     situation = StudentSituation.query.get_or_404(id)
     situation.student_id = request.form['student_id']
     situation.section_id = request.form['section_id']
@@ -61,7 +61,7 @@ def updateStudentSituation(id):
     return redirect(url_for('student_situation_routes.listStudentSituations'))
 
 @student_situation_bp.route('/<int:id>/delete', methods=['POST'])
-def deleteStudentSituation(id):
+def delete_student_situation(id):
     situation = StudentSituation.query.get_or_404(id)    
     section_id = situation.section_id
     db.session.delete(situation)

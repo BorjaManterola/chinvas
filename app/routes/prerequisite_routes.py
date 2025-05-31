@@ -6,7 +6,7 @@ from app.models.prerequisite import Prerequisite
 prerequisite_bp = Blueprint('prerequisite_routes', __name__, url_prefix='/prerequisites')
 
 @prerequisite_bp.route('/new', methods=['GET'])
-def newPrerequisiteForm():
+def new_prerequisite_form():
     course_id = request.args.get('course_id', type=int)
     course = Course.query.get_or_404(course_id)
     assigned_ids = {
@@ -22,7 +22,7 @@ def newPrerequisiteForm():
 
 
 @prerequisite_bp.route('/new', methods=['POST'])
-def createPrerequisites():
+def create_prerequisites():
     course_id = request.form.get('course_id')
     prereq_ids = request.form.getlist('prereq_ids')
     created = False
@@ -39,7 +39,7 @@ def createPrerequisites():
     return redirect(url_for('course_routes.showCourse', id=course_id))
 
 @prerequisite_bp.route('/<int:id>/delete', methods=['POST'])
-def deletePrerequisite(id):
+def delete_prerequisite(id):
     prereq = Prerequisite.query.get_or_404(id)
     course_id = prereq.course_id
 

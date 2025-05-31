@@ -7,7 +7,7 @@
             <h2 class="mb-4">{{ "Edit Teacher" if teacher else "New Teacher" }}</h2>
 
             <form method="POST"
-                  action="{{ url_for('teacher_routes.updateTeacher', id=teacher.id) if teacher else url_for('teacher_routes.createTeacher') }}">
+                  action="{{ url_for('teacher_routes.update_teacher', id=teacher.id) if teacher else url_for('teacher_routes.create_teacher') }}">
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
@@ -25,7 +25,7 @@
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save me-1"></i> {{ "Update" if teacher else "Save" }}
                     </button>
-                    <a href="{{ url_for('teacher_routes.getTeachers') }}" class="btn btn-outline-secondary">
+                    <a href="{{ url_for('teacher_routes.get_teachers') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-1"></i> Cancel
                     </a>
                 </div>

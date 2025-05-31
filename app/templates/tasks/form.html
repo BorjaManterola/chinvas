@@ -18,7 +18,7 @@
             <p class="text-muted">For assessment: {{ assessment.name }} ({{ assessment.type_evaluate | capitalize }})</p>
 
             <form method="POST"
-                action="{{ url_for('task_routes.updateTask', id=task.id) if task else url_for('task_routes.createTask') }}">
+                action="{{ url_for('task_routes.update_task', id=task.id) if task else url_for('task_routes.create_task') }}">
                 <input type="hidden" name="assessment_id" value="{{ assessment.id }}">
 
                 <div class="mb-3">
@@ -51,7 +51,7 @@
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save me-1"></i>Save
                     </button>
-                    <a href="{{ url_for('assessment_routes.showAssessment', id=assessment.id) }}" class="btn btn-outline-secondary ms-2">
+                    <a href="{{ url_for('assessment_routes.show_assessment', id=assessment.id) }}" class="btn btn-outline-secondary ms-2">
                         <i class="fas fa-arrow-left me-1"></i>Cancel
                     </a>
                 </div>

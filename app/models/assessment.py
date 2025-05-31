@@ -12,17 +12,16 @@ class Assessment(db.Model):
     tasks = db.relationship("Task", backref="assessment", cascade="all, delete-orphan", passive_deletes=True)
         
     @staticmethod
-    def _getSumWeightingInSection(section_id, exclude_assessment):
-        sum = db.session.query(db.func.sum(Assessment.weighting)) \
-                            .filter(Assessment.section_id == section_id, Assessment.id != exclude_assessment)
-        return sum.scalar() or 0.0
-        
-    def isValidWeightingInSection(self, new_weighting, exclude_assessment):
+    def get_sum_weighting_in_section(section_id, exclude_assessment):
+        sum_ = db.session.query(db.func.sum(Assessment.weighting)) \
+            .filter(Assessment.section_id == section_id, Assessment.id != exclude_assessment)
+        return sum_.scalar() or 0.0
+
+    def is_valid_weighting_in_section(self, new_weighting, exclude_assessment):
         if self.section.type_evaluate != 'Percentage':
             return True, 0.0
 
-        weighting_sum = self._getSumWeightingInSection(self.section.id, exclude_assessment)
-        
+        weighting_sum = self.get_sum_weighting_in_section(self.section.id, exclude_assessment)
         total = weighting_sum + new_weighting
         is_valid = total <= 100 + 1e-5
         return is_valid, total
