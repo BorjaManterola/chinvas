@@ -2,16 +2,7 @@
 
 {% block content %}
 
-<div class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flashes">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}    
+<div class="container">   
     <div class="card mt-4 shadow-sm col-md-6 mx-auto">
         <div class="card-body">
             <h4 class="card-title">{{ 'Edit Task' if task else 'Create Task' }}</h4>
