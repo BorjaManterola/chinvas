@@ -18,3 +18,9 @@ class Grade(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     task = db.relationship("Task", back_populates="grades")
+
+    @staticmethod
+    def get_grade_by_id(id):
+        grade = Grade.query.get_or_404(id)
+        return grade
+

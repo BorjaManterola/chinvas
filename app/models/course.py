@@ -21,3 +21,13 @@ class Course(db.Model):
             Course.id != course_id, ~Course.id.in_(assigned_ids)
         ).all()
         return unassigned_courses
+
+    @staticmethod
+    def get_course_by_id(id):
+        course = Course.query.get_or_404(id)
+        return course
+
+    @staticmethod
+    def get_all_courses():
+        courses = Course.query.all()
+        return courses

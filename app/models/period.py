@@ -9,3 +9,13 @@ class Period(db.Model):
     opened = db.Column(db.Boolean, default=True)
 
     sections = db.relationship('Section', backref='period', cascade='all, delete', lazy=True)
+
+    @staticmethod
+    def get_period_by_id(id):
+        period = Period.query.get_or_404(id)
+        return period
+
+    @staticmethod
+    def get_all_periods():
+        periods = Period.query.all()
+        return periods

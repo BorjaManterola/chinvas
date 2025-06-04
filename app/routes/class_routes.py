@@ -14,7 +14,7 @@ def new_class_form():
     section_id = request.args.get("section_id", type=int)
     section = Section.get_section_by_id(section_id)
     classrooms = Classroom.get_all_classrooms()
-    schedules = Schedule.query.all()
+    schedules = Schedule.get_all_schedules_sorted_by_year()
     return render_template(
         "classes/form.html",
         section=section,
@@ -43,7 +43,7 @@ def create_class():
         ]
     ):
         return redirect(
-            url_for("class_routes.newClassForm", section_id=section_id)
+            url_for("class_routes.new_class_form", section_id=section_id)
         )
 
     new_class = Class(
@@ -56,13 +56,7 @@ def create_class():
     )
     db.session.add(new_class)
     db.session.commit()
-    return redirect(url_for("section_routes.showSection", id=section_id))
-
-
-@class_bp.route("/", methods=["GET"])
-def list_classes():
-    classes = Class.get_all_classes()
-    return render_template("classes/index.html", classes=classes)
+    return redirect(url_for("section_routes.show_section", id=section_id))
 
 
 @class_bp.route("/<int:id>/delete", methods=["POST"])
@@ -71,4 +65,4 @@ def delete_class(id):
     section_id = class_instance.section_id
     db.session.delete(class_instance)
     db.session.commit()
-    return redirect(url_for("section_routes.showSection", id=section_id))
+    return redirect(url_for("section_routes.show_section", id=section_id))
