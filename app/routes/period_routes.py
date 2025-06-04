@@ -75,5 +75,6 @@ def delete_period(id):
 def close_period(id):
     period = Period.get_period_by_id(id)
     period.opened = False
+    period.set_students_final_grades()
     db.session.commit()
     return redirect(url_for("period_routes.show_period", id=id))
