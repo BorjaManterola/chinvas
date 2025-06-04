@@ -48,7 +48,6 @@ def create_course():
 
     return redirect(url_for("course_routes.get_courses"))
 
-
 @course_bp.route("/", methods=["GET"])
 def get_courses():
     courses = Course.query.all()

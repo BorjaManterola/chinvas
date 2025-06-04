@@ -38,3 +38,13 @@ class Section(db.Model):
 
     def get_section_students(self):
         return [ss.student for ss in self.student_situations]
+
+    @staticmethod
+    def get_section(id):
+        section = Section.query.get_or_404(id)
+        return section
+
+    @staticmethod
+    def get_all_sections():
+        sections = Section.query.all()
+        return sections

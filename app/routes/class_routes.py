@@ -59,15 +59,25 @@ def create_class():
     return redirect(url_for("section_routes.showSection", id=section_id))
 
 
+def get_class(class_id):
+    class_instance = Class.query.get_or_404(class_id)
+    return class_instance
+
+
+def get_all_classes():
+    classes = Class.query.all()
+    return classes
+
+
 @class_bp.route("/", methods=["GET"])
 def list_classes():
-    classes = Class.query.all()
+    classes = get_all_classes()
     return render_template("classes/index.html", classes=classes)
 
 
 @class_bp.route("/<int:id>/delete", methods=["POST"])
 def delete_class(id):
-    class_instance = Class.query.get_or_404(id)
+    class_instance = get_class(id)
     section_id = class_instance.section_id
     db.session.delete(class_instance)
     db.session.commit()
