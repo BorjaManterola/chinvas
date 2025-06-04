@@ -6,6 +6,11 @@ from app.models.schedule import Schedule
 schedule_bp = Blueprint("schedule_routes", __name__, url_prefix="/schedules")
 
 
+@schedule_bp.route("/form", methods=["GET"])
+def new_schedule_form():
+    return render_template("schedules/form.html", schedule=None)
+
+
 @schedule_bp.route("/", methods=["POST"])
 def create_schedule():
     if request.is_json:

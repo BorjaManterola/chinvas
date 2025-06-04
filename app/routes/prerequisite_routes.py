@@ -12,16 +12,13 @@ prerequisite_bp = Blueprint(
 @prerequisite_bp.route("/new", methods=["GET"])
 def new_prerequisite_form():
     course_id = request.args.get("course_id", type=int)
-    course = Course.query.get_or_404(course_id)
-    assigned_ids = {
-        id
-        for (id,) in db.session.query(Prerequisite.prerequisite_id)
-        .filter_by(course_id=course_id)
-        .all()
-    }
-    all_courses = Course.query.filter(
-        Course.id != course_id, ~Course.id.in_(assigned_ids)
-    ).all()
+
+    course = Course.get_course_by_id(course_id)
+    assigned_courses_ids = Prerequisite.get_assigned_courses_ids(course_id)
+
+    all_courses = Course.get_unassigned_courses(
+        course_id, assigned_courses_ids
+    )
 
     return render_template(
         "prerequisites/form.html", course=course, all_courses=all_courses
@@ -32,13 +29,13 @@ def new_prerequisite_form():
 def create_prerequisites():
     course_id = request.form.get("course_id")
     prereq_ids = request.form.getlist("prereq_ids")
-    created = False
-    for prereq_id in prereq_ids:
-        exists = Prerequisite.query.filter_by(
-            course_id=course_id, prerequisite_id=prereq_id
-        ).first()
 
-        if not exists:
+    for prereq_id in prereq_ids:
+        exist_prerequisite = Prerequisite.get_prerequisite_by_course_id_and_id(
+            course_id, prereq_id
+        )
+
+        if not exist_prerequisite:
             prereq = Prerequisite(
                 course_id=course_id, prerequisite_id=prereq_id
             )
@@ -50,7 +47,9 @@ def create_prerequisites():
 
 @prerequisite_bp.route("/<int:id>/delete", methods=["POST"])
 def delete_prerequisite(id):
-    prereq = Prerequisite.query.get_or_404(id)
+    prereq = Prerequisite.get_prerequisite_by_id(id)
+    if not prereq:
+        return redirect(url_for("course_routes.get_courses"))
     course_id = prereq.course_id
 
     db.session.delete(prereq)

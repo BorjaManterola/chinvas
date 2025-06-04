@@ -11,6 +11,7 @@ section_bp = Blueprint("section_routes", __name__, url_prefix="/sections")
 @section_bp.route("/new", methods=["GET"])
 def new_section_form():
     period_id = request.args.get("period_id", type=int)
+
     period = Period.query.get_or_404(period_id)
     teachers = Teacher.query.all()
     return render_template(
