@@ -40,7 +40,7 @@ class Section(db.Model):
         return [ss.student for ss in self.student_situations]
 
     @staticmethod
-    def get_section(id):
+    def get_section_by_id(id):
         section = Section.query.get_or_404(id)
         return section
 

@@ -13,7 +13,7 @@ assessment_bp = Blueprint(
 @assessment_bp.route("/new", methods=["GET"])
 def new_assessment_form():
     section_id = request.args.get("section_id", type=int)
-    section = Section.get_section(section_id)
+    section = Section.get_section_by_id(section_id)
     return render_template(
         "assessments/form.html", assessment=None, section=section
     )
@@ -22,7 +22,7 @@ def new_assessment_form():
 @assessment_bp.route("/new", methods=["POST"])
 def create_assessment():
     section_id = request.form["section_id"]
-    section = Section.get_section(section_id)
+    section = Section.get_section_by_id(section_id)
     name = request.form["name"]
     type_evaluate = request.form["type_evaluate"]
     weighting = request.form.get("weighting", type=float)

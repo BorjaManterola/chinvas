@@ -12,8 +12,8 @@ class_bp = Blueprint("class_routes", __name__, url_prefix="/classes")
 @class_bp.route("/new", methods=["GET"])
 def new_class_form():
     section_id = request.args.get("section_id", type=int)
-    section = Section.query.get_or_404(section_id)
-    classrooms = Classroom.query.all()
+    section = Section.get_section_by_id(section_id)
+    classrooms = Classroom.get_all_classrooms()
     schedules = Schedule.query.all()
     return render_template(
         "classes/form.html",
@@ -59,25 +59,15 @@ def create_class():
     return redirect(url_for("section_routes.showSection", id=section_id))
 
 
-def get_class(class_id):
-    class_instance = Class.query.get_or_404(class_id)
-    return class_instance
-
-
-def get_all_classes():
-    classes = Class.query.all()
-    return classes
-
-
 @class_bp.route("/", methods=["GET"])
 def list_classes():
-    classes = get_all_classes()
+    classes = Class.get_all_classes()
     return render_template("classes/index.html", classes=classes)
 
 
 @class_bp.route("/<int:id>/delete", methods=["POST"])
 def delete_class(id):
-    class_instance = get_class(id)
+    class_instance = Class.get_class_by_id(id)
     section_id = class_instance.section_id
     db.session.delete(class_instance)
     db.session.commit()
