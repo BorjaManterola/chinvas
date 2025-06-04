@@ -46,8 +46,8 @@ def create_student_situations():
 @student_situation_bp.route("/<int:id>/show", methods=["GET"])
 def show_student_situation(id):
     student_situation = StudentSituation.get_student_situation_by_id(id)
-    tasks = student_situation.userSectionTasks()
-    grades = student_situation.userGrades()
+    tasks = student_situation.get_user_tasks_in_section()
+    grades = student_situation.get_user_grades_in_section()
     return render_template(
         "student_situations/show.html",
         student_situation=student_situation,
