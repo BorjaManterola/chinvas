@@ -40,14 +40,14 @@ def create_student_situations():
         db.session.add(situation)
 
     db.session.commit()
-    return redirect(url_for("section_routes.showSection", id=section_id))
+    return redirect(url_for("section_routes.show_section", id=section_id))
 
 
 @student_situation_bp.route("/<int:id>/show", methods=["GET"])
 def show_student_situation(id):
     student_situation = StudentSituation.get_student_situation_by_id(id)
-    tasks = student_situation.userSectionTasks()
-    grades = student_situation.userGrades()
+    tasks = student_situation.get_user_tasks_in_section()
+    grades = student_situation.get_user_grades_in_section()
     return render_template(
         "student_situations/show.html",
         student_situation=student_situation,
@@ -81,7 +81,7 @@ def update_student_situation(id):
     situation.final_grade = final_grade if final_grade else None
     db.session.commit()
 
-    return redirect(url_for("student_situation_routes.listStudentSituations"))
+    return redirect(url_for("student_situation_routes.show_student_situation"))
 
 
 @student_situation_bp.route("/<int:id>/delete", methods=["POST"])
@@ -90,4 +90,4 @@ def delete_student_situation(id):
     section_id = situation.section_id
     db.session.delete(situation)
     db.session.commit()
-    return redirect(url_for("section_routes.showSection", id=section_id))
+    return redirect(url_for("section_routes.show_section", id=section_id))

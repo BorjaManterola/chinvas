@@ -10,7 +10,7 @@ task_bp = Blueprint("task_routes", __name__, url_prefix="/tasks")
 @task_bp.route("/new", methods=["GET"])
 def new_task_form():
     assessment_id = request.args.get("assessment_id", type=int)
-    assessment = Assessment.get_assesment_by_id(assessment_id)
+    assessment = Assessment.get_assessment_by_id(assessment_id)
     return render_template("tasks/form.html", task=None, assessment=assessment)
 
 
@@ -19,7 +19,7 @@ def create_task():
     assessment_id = request.form["assessment_id"]
     weighting = request.form.get("weighting", type=float)
 
-    assessment = Assessment.get_assesment_by_id(assessment_id)
+    assessment = Assessment.get_assessment_by_id(assessment_id)
     optional = "optional" in request.form
 
     task = Task(
@@ -48,7 +48,7 @@ def create_task():
 
     db.session.commit()
     return redirect(
-        url_for("assessment_routes.showAssessment", id=assessment_id)
+        url_for("assessment_routes.show_assessment", id=assessment_id)
     )
 
 
@@ -85,8 +85,12 @@ def update_task(id):
     db.session.commit()
 
     return redirect(
-        url_for("assessment_routes.showAssessment", id=assessment_id)
+        url_for("assessment_routes.show_assessment", id=assessment_id)
     )
+
+@task_bp.route("/task/<int:task_id>/report", methods=["GET"])
+def download_task_report(task_id):
+    return Task.export_task_grades_to_excel(task_id)
 
 
 @task_bp.route("/<int:id>/delete", methods=["POST"])
@@ -98,5 +102,5 @@ def delete_task(id):
     db.session.commit()
 
     return redirect(
-        url_for("assessment_routes.showAssessment", id=assessment_id)
+        url_for("assessment_routes.show_assessment", id=assessment_id)
     )

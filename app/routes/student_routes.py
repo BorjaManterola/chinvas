@@ -23,7 +23,7 @@ def create_student():
     student = Student(name=name, email=email, entry_date=entry_date)
     db.session.add(student)
     db.session.commit()
-    return redirect(url_for("student_routes.get_students"))
+    return redirect(url_for("student_routes.students_index"))
 
 
 @student_bp.route("/", methods=["GET"])
@@ -55,7 +55,7 @@ def update_student(id):
     student.email = email
     student.entry_date = entry_date
     db.session.commit()
-    return redirect(url_for("student_routes.get_students"))
+    return redirect(url_for("student_routes.students_index"))
 
 
 @student_bp.route("/<int:id>/delete", methods=["POST"])
@@ -63,4 +63,4 @@ def delete_student(id):
     student = Student.get_student_by_id(id)
     db.session.delete(student)
     db.session.commit()
-    return redirect(url_for("student_routes.get_students"))
+    return redirect(url_for("student_routes.students_index"))

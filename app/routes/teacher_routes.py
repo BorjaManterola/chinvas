@@ -22,7 +22,7 @@ def create_teacher():
     teacher = Teacher(name=name, email=email)
     db.session.add(teacher)
     db.session.commit()
-    return redirect(url_for("teacher_routes.get_teachers"))
+    return redirect(url_for("teacher_routes.teachers_index"))
 
 
 @teacher_bp.route("/", methods=["GET"])
@@ -43,7 +43,7 @@ def update_teacher(id):
     teacher.name = request.form.get("name")
     teacher.email = request.form.get("email")
     db.session.commit()
-    return redirect(url_for("teacher_routes.get_teachers"))
+    return redirect(url_for("teacher_routes.teachers_index"))
 
 
 @teacher_bp.route("/<int:id>/delete", methods=["POST"])
@@ -51,4 +51,4 @@ def delete_teacher(id):
     teacher = Teacher.get_teacher_by_id(id)
     db.session.delete(teacher)
     db.session.commit()
-    return redirect(url_for("teacher_routes.get_teachers"))
+    return redirect(url_for("teacher_routes.teachers_index"))

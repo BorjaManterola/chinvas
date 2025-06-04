@@ -42,7 +42,7 @@ def create_prerequisites():
             db.session.add(prereq)
             db.session.commit()
 
-    return redirect(url_for("course_routes.showCourse", id=course_id))
+    return redirect(url_for("course_routes.show_course", id=course_id))
 
 
 @prerequisite_bp.route("/<int:id>/delete", methods=["POST"])
@@ -55,4 +55,4 @@ def delete_prerequisite(id):
     db.session.delete(prereq)
     db.session.commit()
 
-    return redirect(url_for("course_routes.showCourse", id=course_id))
+    return redirect(url_for("course_routes.show_course", id=course_id))

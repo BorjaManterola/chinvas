@@ -24,3 +24,8 @@ class Grade(db.Model):
         grade = Grade.query.get_or_404(id)
         return grade
 
+    @staticmethod
+    def get_grades_by_task_id(task_id):
+        grades = Grade.query.filter_by(task_id=task_id).all()
+        return grades
+
