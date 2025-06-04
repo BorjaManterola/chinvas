@@ -1,4 +1,6 @@
 from app import db
+from app.models.section import Section
+from app.models.task import Task
 
 
 class Assessment(db.Model):
@@ -41,3 +43,19 @@ class Assessment(db.Model):
         total = weighting_sum + new_weighting
         is_valid = total <= 100 + 1e-5
         return is_valid, total
+
+    @staticmethod
+    def get_assesment(id):
+        assessment = Assessment.query.get_or_404(id)
+        return assessment
+
+    @staticmethod
+    def get_assessment_tasks(id):
+        tasks = db.session.query(Task).filter_by(assessment_id=id).all()
+        return tasks
+
+    @staticmethod
+    def get_assessment_section(id):
+        assessment = Assessment.get_assesment(id)
+        section = db.session.query(Section).get_or_404(assessment.section_id)
+        return section

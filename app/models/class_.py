@@ -15,4 +15,12 @@ class Class(db.Model):
     section = db.relationship("Section", backref=db.backref("classes", cascade="all, delete", lazy=True))
     classroom = db.relationship("Classroom", backref="classes")
 
- 
+    @staticmethod
+    def get_class_by_id(id):
+        class_instance = Class.query.get_or_404(id)
+        return class_instance
+
+    @staticmethod
+    def get_all_classes():
+        classes = Class.query.all()
+        return classes
