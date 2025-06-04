@@ -88,6 +88,10 @@ def update_task(id):
         url_for("assessment_routes.show_assessment", id=assessment_id)
     )
 
+@task_bp.route("/task/<int:task_id>/report", methods=["GET"])
+def download_task_report(task_id):
+    return Task.export_task_grades_to_excel(task_id)
+
 
 @task_bp.route("/<int:id>/delete", methods=["POST"])
 def delete_task(id):

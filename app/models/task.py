@@ -1,4 +1,11 @@
+import io
+
+from flask import send_file
+from openpyxl import Workbook
+
 from app import db
+from app.models.grade import Grade
+from app.models.student import Student
 
 
 class Task(db.Model):
@@ -42,3 +49,35 @@ class Task(db.Model):
         total_weight = weighting_sum + new_weighting
         is_valid_weight = total_weight <= 100 + 1e-5
         return is_valid_weight, total_weight
+
+    @staticmethod
+    def export_task_grades_to_excel(task_id):
+        task = Task.get_task_by_id(task_id)
+        grades = Grade.get_grades_by_task_id(task_id)
+        assessment = task.assessment
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Grades"
+
+        headers = ["Student ID", "Student Name", "Score"]
+        ws.append(headers)
+
+        for grade in grades:
+            student = Student.query.get(grade.student_id)
+            ws.append([
+                student.id,
+                student.name,
+                grade.score
+            ])
+
+        output = io.BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        return send_file(
+            output,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            as_attachment=True,
+            download_name=f"assesment_{assessment.name}_task_{task_id}_grades.xlsx"
+        )

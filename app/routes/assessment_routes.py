@@ -3,6 +3,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from app import db
 from app.models.assessment import Assessment
 from app.models.section import Section
+from app.models.task import Task
 
 assessment_bp = Blueprint(
     "assessment_routes", __name__, url_prefix="/assessments"
