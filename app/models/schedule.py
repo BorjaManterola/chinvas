@@ -24,6 +24,36 @@ class Schedule(db.Model):
         "Class", backref="schedule", cascade="all, delete", lazy=True
     )
 
+    @staticmethod
+    def get_all_schedules_sorted_by_year():
+        schedules = Schedule.query.order_by(Schedule.year.desc()).all()
+        return schedules
+
+    @staticmethod
+    def get_schedule_by_id(id):
+        schedule = Schedule.query.get_or_404(id)
+        return schedule
+
+    @staticmethod
+    def get_schedules_by_year(year):
+        schedules = Schedule.query.filter_by(year=year).all()
+        return schedules
+
+    @staticmethod
+    def get_classes_by_schedule_id(id):
+        classes = (
+            Class.query.join(Section, Class.section_id == Section.id)
+            .join(Period, Section.period_id == Period.id)
+            .join(Classroom, Class.classroom_id == Classroom.id)
+            .options(
+                joinedload(Class.section).joinedload(Section.teacher),
+                joinedload(Class.classroom),
+            )
+            .filter(Class.schedule_id == id)
+            .all()
+        )
+        return classes
+
     def generate_schedule(self):
         sections = self._get_sections()
         classrooms = Schedule.get_all_classrooms()
@@ -178,7 +208,7 @@ class Schedule(db.Model):
             availability[day][h][room_id] for h in block
         ) and not self._has_conflict(day, block, section)
 
-    def export_schedule_to_excel(self):
+    def export_to_excel(self):
         try:
             data_rows = self._build_excel_rows()
         except Exception as e:
