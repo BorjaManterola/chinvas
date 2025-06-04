@@ -13,19 +13,18 @@ student_situation_bp = Blueprint(
 @student_situation_bp.route("/new", methods=["GET"])
 def new_student_situation_form():
     section_id = request.args.get("section_id", type=int)
-    section = Section.query.get_or_404(section_id)
+    section = Section.get_section_by_id(section_id)
 
-    assigned_student_ids = (
-        db.session.query(StudentSituation.student_id)
-        .filter_by(section_id=section_id)
-        .all()
+    assigned_ids = StudentSituation.get_assigned_students_ids_in_section(
+        section_id
     )
-    assigned_ids = {id for (id,) in assigned_student_ids}
 
-    students = Student.query.filter(~Student.id.in_(assigned_ids)).all()
+    available_students = Student.get_available_students(assigned_ids)
 
     return render_template(
-        "student_situations/form.html", section=section, students=students
+        "student_situations/form.html",
+        section=section,
+        students=available_students,
     )
 
 
@@ -46,7 +45,7 @@ def create_student_situations():
 
 @student_situation_bp.route("/<int:id>/show", methods=["GET"])
 def show_student_situation(id):
-    student_situation = StudentSituation.query.get_or_404(id)
+    student_situation = StudentSituation.get_student_situation_by_id(id)
     tasks = student_situation.userSectionTasks()
     grades = student_situation.userGrades()
     return render_template(
@@ -59,9 +58,9 @@ def show_student_situation(id):
 
 @student_situation_bp.route("/<int:id>/edit", methods=["GET"])
 def edit_student_situation_form(id):
-    situation = StudentSituation.query.get_or_404(id)
-    students = Student.query.all()
-    sections = Section.query.all()
+    situation = StudentSituation.get_student_situation_by_id(id)
+    students = Student.get_all_students()
+    sections = Section.get_all_sections()
     return render_template(
         "student_situations/form.html",
         situation=situation,
@@ -72,10 +71,14 @@ def edit_student_situation_form(id):
 
 @student_situation_bp.route("/<int:id>", methods=["POST"])
 def update_student_situation(id):
-    situation = StudentSituation.query.get_or_404(id)
-    situation.student_id = request.form["student_id"]
-    situation.section_id = request.form["section_id"]
-    situation.final_grade = request.form.get("final_grade", None)
+    student_id = request.form.get("student_id")
+    section_id = request.form.get("section_id")
+    final_grade = request.form.get("final_grade", None)
+
+    situation = StudentSituation.get_student_situation_by_id(id)
+    situation.student_id = student_id
+    situation.section_id = section_id
+    situation.final_grade = final_grade if final_grade else None
     db.session.commit()
 
     return redirect(url_for("student_situation_routes.listStudentSituations"))
@@ -83,7 +86,7 @@ def update_student_situation(id):
 
 @student_situation_bp.route("/<int:id>/delete", methods=["POST"])
 def delete_student_situation(id):
-    situation = StudentSituation.query.get_or_404(id)
+    situation = StudentSituation.get_student_situation_by_id(id)
     section_id = situation.section_id
     db.session.delete(situation)
     db.session.commit()

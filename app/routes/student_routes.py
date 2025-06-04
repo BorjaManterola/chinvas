@@ -27,36 +27,40 @@ def create_student():
 
 
 @student_bp.route("/", methods=["GET"])
-def get_students():
-    students = Student.query.all()
+def students_index():
+    students = Student.get_all_students()
     return render_template("students/index.html", students=students)
 
 
 @student_bp.route("/<int:id>", methods=["GET"])
 def show_student(id):
-    student = Student.query.get_or_404(id)
+    student = Student.get_student_by_id(id)
     return render_template("students/show.html", student=student)
 
 
 @student_bp.route("/<int:id>/edit", methods=["GET"])
 def edit_student_form(id):
-    student = Student.query.get_or_404(id)
+    student = Student.get_student_by_id(id)
     return render_template("students/form.html", student=student)
 
 
 @student_bp.route("/<int:id>/edit", methods=["POST"])
 def update_student(id):
-    student = Student.query.get_or_404(id)
-    student.name = request.form.get("name")
-    student.email = request.form.get("email")
-    student.entry_date = request.form.get("entry_date")
+    name = request.form.get("name")
+    email = request.form.get("email")
+    entry_date = request.form.get("entry_date")
+
+    student = Student.get_student_by_id(id)
+    student.name = name
+    student.email = email
+    student.entry_date = entry_date
     db.session.commit()
     return redirect(url_for("student_routes.get_students"))
 
 
 @student_bp.route("/<int:id>/delete", methods=["POST"])
 def delete_student(id):
-    student = Student.query.get_or_404(id)
+    student = Student.get_student_by_id(id)
     db.session.delete(student)
     db.session.commit()
     return redirect(url_for("student_routes.get_students"))

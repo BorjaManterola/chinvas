@@ -12,8 +12,8 @@ section_bp = Blueprint("section_routes", __name__, url_prefix="/sections")
 def new_section_form():
     period_id = request.args.get("period_id", type=int)
 
-    period = Period.query.get_or_404(period_id)
-    teachers = Teacher.query.all()
+    period = Period.get_period_by_id(period_id)
+    teachers = Teacher.get_all_teachers()
     return render_template(
         "sections/form.html", section=None, period=period, teachers=teachers
     )
@@ -25,16 +25,6 @@ def create_section():
     teacher_id = request.form.get("teacher_id")
     type_evaluate = request.form.get("type_evaluate")
 
-    if not teacher_id or not type_evaluate:
-        period = Period.query.get(period_id)
-        teachers = Teacher.query.all()
-        return render_template(
-            "sections/form.html",
-            section=None,
-            period=period,
-            teachers=teachers,
-        )
-
     section = Section(
         period_id=period_id, teacher_id=teacher_id, type_evaluate=type_evaluate
     )
@@ -45,9 +35,9 @@ def create_section():
 
 @section_bp.route("/<int:id>", methods=["GET"])
 def show_section(id):
-    section = Section.query.get_or_404(id)
-    assessments = section.assessments
-    student_situations = section.student_situations
+    section = Section.get_section_by_id(id)
+    assessments = section.get_section_assessments()
+    student_situations = section.get_section_student_situations()
     return render_template(
         "sections/show.html",
         section=section,
@@ -58,7 +48,7 @@ def show_section(id):
 
 @section_bp.route("/<int:id>/edit", methods=["GET"])
 def edit_section_form(id):
-    section = Section.query.get_or_404(id)
+    section = Section.get_section_by_id(id)
     teachers = Teacher.query.all()
     return render_template(
         "sections/form.html",
@@ -70,16 +60,21 @@ def edit_section_form(id):
 
 @section_bp.route("/<int:id>/edit", methods=["POST"])
 def update_section(id):
-    section = Section.query.get_or_404(id)
-    section.teacher_id = request.form.get("teacher_id")
-    section.type_evaluate = request.form.get("type_evaluate")
+    teacher_id = request.form.get("teacher_id")
+    type_evaluate = request.form.get("type_evaluate")
+
+    section = Section.get_section_by_id(id)
+
+    section.teacher_id = teacher_id
+    section.type_evaluate = type_evaluate
+
     db.session.commit()
     return redirect(url_for("period_routes.showPeriod", id=section.period_id))
 
 
 @section_bp.route("/<int:id>/delete", methods=["POST"])
 def delete_section(id):
-    section = Section.query.get_or_404(id)
+    section = Section.get_section_by_id(id)
     period_id = section.period_id
     db.session.delete(section)
     db.session.commit()

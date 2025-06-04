@@ -26,20 +26,20 @@ def create_teacher():
 
 
 @teacher_bp.route("/", methods=["GET"])
-def get_teachers():
-    teachers = Teacher.query.all()
+def teachers_index():
+    teachers = Teacher.get_all_teachers()
     return render_template("teachers/index.html", teachers=teachers)
 
 
 @teacher_bp.route("/<int:id>/edit", methods=["GET"])
 def edit_teacher_form(id):
-    teacher = Teacher.query.get_or_404(id)
+    teacher = Teacher.get_teacher_by_id(id)
     return render_template("teachers/form.html", teacher=teacher)
 
 
 @teacher_bp.route("/<int:id>/edit", methods=["POST"])
 def update_teacher(id):
-    teacher = Teacher.query.get_or_404(id)
+    teacher = Teacher.get_teacher_by_id(id)
     teacher.name = request.form.get("name")
     teacher.email = request.form.get("email")
     db.session.commit()
@@ -48,7 +48,7 @@ def update_teacher(id):
 
 @teacher_bp.route("/<int:id>/delete", methods=["POST"])
 def delete_teacher(id):
-    teacher = Teacher.query.get_or_404(id)
+    teacher = Teacher.get_teacher_by_id(id)
     db.session.delete(teacher)
     db.session.commit()
     return redirect(url_for("teacher_routes.get_teachers"))

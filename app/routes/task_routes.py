@@ -10,16 +10,17 @@ task_bp = Blueprint("task_routes", __name__, url_prefix="/tasks")
 @task_bp.route("/new", methods=["GET"])
 def new_task_form():
     assessment_id = request.args.get("assessment_id", type=int)
-    assessment = Assessment.query.get_or_404(assessment_id)
+    assessment = Assessment.get_assesment_by_id(assessment_id)
     return render_template("tasks/form.html", task=None, assessment=assessment)
 
 
 @task_bp.route("/new", methods=["POST"])
 def create_task():
     assessment_id = request.form["assessment_id"]
-    assessment = Assessment.query.get_or_404(assessment_id)
-    optional = "optional" in request.form
     weighting = request.form.get("weighting", type=float)
+
+    assessment = Assessment.get_assesment_by_id(assessment_id)
+    optional = "optional" in request.form
 
     task = Task(
         assessment_id=assessment_id, weighting=weighting, optional=optional
@@ -28,7 +29,7 @@ def create_task():
     db.session.add(task)
     db.session.flush()
 
-    is_valid, total_weight = task.isValidWeightingInAssessment(
+    is_valid, total_weight = task.is_valid_weighting_in_assessment(
         weighting, task.id
     )
     if not is_valid:
@@ -53,20 +54,21 @@ def create_task():
 
 @task_bp.route("/<int:id>/edit", methods=["GET"])
 def edit_task_form(id):
-    task = Task.query.get_or_404(id)
+    task = Task.get_task_by_id(id)
     assessment = Assessment.query.get_or_404(task.assessment_id)
     return render_template("tasks/form.html", task=task, assessment=assessment)
 
 
 @task_bp.route("/<int:id>/edit", methods=["POST"])
 def update_task(id):
-    task = Task.query.get_or_404(id)
+    task = Task.get_task_by_id(id)
     assessment_id = task.assessment_id
     weighting = request.form.get("weighting", type=float)
     optional = "optional" in request.form
 
-    is_valid, total_weight = task.isValidWeightingInAssessment(
-        weighting, exclude_task=id
+    exclude_task_id = id
+    is_valid, total_weight = task.is_valid_weighting_in_assessment(
+        weighting, exclude_task_id
     )
     if not is_valid:
         flash(
@@ -89,7 +91,7 @@ def update_task(id):
 
 @task_bp.route("/<int:id>/delete", methods=["POST"])
 def delete_task(id):
-    task = Task.query.get_or_404(id)
+    task = Task.get_task_by_id(id)
     assessment_id = task.assessment_id
 
     db.session.delete(task)

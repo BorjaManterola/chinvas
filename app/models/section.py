@@ -48,3 +48,9 @@ class Section(db.Model):
     def get_all_sections():
         sections = Section.query.all()
         return sections
+
+    def get_section_assessments(self):
+        return self.assessments
+
+    def get_section_student_situations(self):
+        return self.student_situations

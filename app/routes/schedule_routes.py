@@ -38,7 +38,7 @@ def create_schedule():
 
 
 @schedule_bp.route("/", methods=["GET"])
-def get_schedules():
+def schedules_index():
     year = request.args.get("year", type=int)
     if year:
         schedules = Schedule.get_schedules_by_year(year)
