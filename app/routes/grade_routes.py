@@ -41,15 +41,15 @@ def create_grade():
     db.session.commit()
 
     return redirect(
-        url_for("student_situation_routes.showStudentSituation", id=student_id)
+        url_for("student_situation_routes.show_student_situation", id=student_id)
     )
 
 
 @grade_bp.route("/<int:id>/edit", methods=["GET"])
 def edit_grade_form(id):
-    grade = Grade.query.get_or_404(id)
-    student = Student.query.get_or_404(grade.student_id)
-    task = Task.query.get_or_404(grade.task_id)
+    grade = Grade.get_grade_by_id(id)
+    student = Student.get_student_by_id(grade.student_id)
+    task = Task.get_task_by_id(grade.task_id)
 
     return render_template(
         "grades/form.html", grade=grade, student=student, task=task
@@ -58,7 +58,7 @@ def edit_grade_form(id):
 
 @grade_bp.route("/<int:id>/edit", methods=["POST"])
 def update_grade(id):
-    grade = Grade.query.get_or_404(id)
+    grade = Grade.get_grade_by_id(id)
     score = request.form.get("score", type=float)
 
     if score is None:
@@ -69,7 +69,7 @@ def update_grade(id):
 
     return redirect(
         url_for(
-            "student_situation_routes.showStudentSituation",
+            "student_situation_routes.show_student_situation",
             id=grade.student_id,
         )
     )
@@ -77,12 +77,12 @@ def update_grade(id):
 
 @grade_bp.route("/<int:id>/delete", methods=["POST"])
 def delete_grade(id):
-    grade = Grade.query.get_or_404(id)
+    grade = Grade.get_grade_by_id(id)
     student_id = grade.student_id
 
     db.session.delete(grade)
     db.session.commit()
 
     return redirect(
-        url_for("student_situation_routes.showStudentSituation", id=student_id)
+        url_for("student_situation_routes.show_student_situation", id=student_id)
     )

@@ -45,7 +45,7 @@ class Assessment(db.Model):
         return is_valid, total
 
     @staticmethod
-    def get_assesment(id):
+    def get_assesment_by_id(id):
         assessment = Assessment.query.get_or_404(id)
         return assessment
 

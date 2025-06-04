@@ -49,14 +49,14 @@ def create_course():
     return redirect(url_for("course_routes.get_courses"))
 
 @course_bp.route("/", methods=["GET"])
-def get_courses():
-    courses = Course.query.all()
+def courses_index():
+    courses = Course.get_all_courses()
     return render_template("courses/index.html", courses=courses)
 
 
 @course_bp.route("/<int:id>/show", methods=["GET"])
 def show_course(id):
-    course = Course.query.get_or_404(id)
+    course = Course.get_course_by_id(id)
     prerequisites = (
         db.session.query(Prerequisite, Course)
         .join(Course, Prerequisite.prerequisite_id == Course.id)
@@ -70,13 +70,13 @@ def show_course(id):
 
 @course_bp.route("/<int:id>/edit", methods=["GET"])
 def edit_course_form(id):
-    course = Course.query.get_or_404(id)
+    course = Course.get_course_by_id(id)
     return render_template("courses/form.html", course=course)
 
 
 @course_bp.route("/<int:id>/edit", methods=["POST"])
 def update_course(id):
-    course = Course.query.get_or_404(id)
+    course = Course.get_course_by_id(id)
     course.name = request.form["name"]
     course.code = request.form["code"]
     try:
@@ -90,7 +90,7 @@ def update_course(id):
 
 @course_bp.route("/<int:id>/delete", methods=["POST"])
 def delete_course(id):
-    course = Course.query.get_or_404(id)
+    course = Course.get_course_by_id(id)
     db.session.delete(course)
     db.session.commit()
     return redirect(url_for("course_routes.get_courses"))

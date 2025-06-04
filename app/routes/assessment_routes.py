@@ -3,7 +3,6 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from app import db
 from app.models.assessment import Assessment
 from app.models.section import Section
-from app.models.task import Task
 
 assessment_bp = Blueprint(
     "assessment_routes", __name__, url_prefix="/assessments"
@@ -37,13 +36,17 @@ def create_assessment():
     db.session.add(assessment)
     db.session.flush()
 
-    is_valid, total = assessment.isValidWeightingInSection(
+    is_valid, total = assessment.is_valid_weighting_in_section(
         weighting, assessment.id
     )
 
     if not is_valid:
         flash(
-            f"Total weighting would exceed 100%. Current total: {total:.2f}%. You entered: {weighting:.2f}%.",
+            (
+                f"Total weighting would exceed 100%. "
+                f"Current total: {total:.2f}%. "
+                f"You entered: {weighting:.2f}%."
+            ),
             "danger",
         )
         return render_template(
@@ -51,12 +54,12 @@ def create_assessment():
         )
 
     db.session.commit()
-    return redirect(url_for("section_routes.showSection", id=section_id))
+    return redirect(url_for("section_routes.show_section", id=section_id))
 
 
 @assessment_bp.route("/<int:id>", methods=["GET"])
 def show_assessment(id):
-    assessment = Assessment.get_assessment(id)
+    assessment = Assessment.get_assessment_by_id(id)
     tasks = Assessment.get_assessment_tasks(id)
     return render_template(
         "assessments/show.html", assessment=assessment, tasks=tasks
@@ -65,7 +68,7 @@ def show_assessment(id):
 
 @assessment_bp.route("/<int:id>/edit", methods=["GET"])
 def edit_assessment_form(id):
-    assessment = Assessment.get_assessment(id)
+    assessment = Assessment.get_assessment_by_id(id)
     section = Assessment.get_assessment_section(id)
     return render_template(
         "assessments/form.html", assessment=assessment, section=section
@@ -74,17 +77,22 @@ def edit_assessment_form(id):
 
 @assessment_bp.route("/<int:id>/edit", methods=["POST"])
 def update_assessment(id):
-    assessment = Assessment.get_assessment(id)
+    assessment = Assessment.get_assessment_by_id(id)
     section = Assessment.get_assessment_section(id)
     name = request.form["name"]
     type_evaluate = request.form["type_evaluate"]
     weighting = request.form.get("weighting", type=float)
 
-    is_valid, total = assessment.isValidWeightingInSection(weighting, id)
+    is_valid, total = assessment.is_valid_weighting_in_section(
+        weighting, assessment.id)
 
     if not is_valid:
         flash(
-            f"Total weighting would exceed 100%. Current total: {total}%. You entered: {weighting:.2f}%.",
+            (
+                f"Total weighting would exceed 100%. "
+                f"Current total: {total}%. "
+                f"You entered: {weighting:.2f}%."
+            ),
             "danger",
         )
         return render_template(
@@ -96,17 +104,17 @@ def update_assessment(id):
     assessment.weighting = weighting
     db.session.commit()
 
-    return redirect(url_for("section_routes.showSection", id=section.id))
+    return redirect(url_for("section_routes.show_section", id=section.id))
 
 
 @assessment_bp.route("/<int:id>/delete", methods=["POST"])
 def delete_assessment(id):
-    assessment = Assessment.get_assessment(id)
+    assessment = Assessment.get_assessment_by_id(id)
     for task in assessment.tasks:
         db.session.delete(task)
     db.session.delete(assessment)
     db.session.commit()
 
     return redirect(
-        url_for("section_routes.showSection", id=assessment.section_id)
+        url_for("section_routes.show_section", id=assessment.section_id)
     )
