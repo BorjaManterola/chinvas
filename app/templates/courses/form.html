@@ -7,7 +7,7 @@
             <h2 class="mb-4">{{ 'Edit Course' if course else 'New Course' }}</h2>
 
             <form method="POST"
-                action="{{ url_for('course_routes.updateCourse', id=course.id) if course else url_for('course_routes.createCourse') }}"
+                action="{{ url_for('course_routes.update_course', id=course.id) if course else url_for('course_routes.create_course') }}"
                 class="card p-4 shadow-sm bg-light">
 
                 <div class="mb-3">
@@ -32,7 +32,7 @@
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save me-1"></i> {{ 'Update' if course else 'Save' }}
                     </button>
-                    <a href="{{ url_for('course_routes.getCourses') }}" class="btn btn-outline-secondary ms-2">
+                    <a href="{{ url_for('course_routes.get_courses') }}" class="btn btn-outline-secondary ms-2">
                         <i class="fas fa-arrow-left me-1"></i> Cancel
                     </a>
                 </div>

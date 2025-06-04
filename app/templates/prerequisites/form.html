@@ -6,7 +6,7 @@
         <div class="card-body">
             <h3 class="mb-4">Assign Prerequisites to {{ course.name }}</h3>
 
-            <form method="POST" action="{{ url_for('prerequisite_routes.createPrerequisites') }}" class="card card-body bg-light shadow-sm">
+            <form method="POST" action="{{ url_for('prerequisite_routes.create_prerequisites') }}" class="card card-body bg-light shadow-sm">
                 <input type="hidden" name="course_id" value="{{ course.id }}">
 
                 {% if all_courses %}
@@ -43,7 +43,7 @@
                     <button type="submit" class="btn btn-success" {% if not all_courses %}disabled{% endif %}>
                         <i class="bi bi-check2-circle"></i> Assign
                     </button>
-                    <a href="{{ url_for('course_routes.showCourse', id=course.id) }}" class="btn btn-outline-secondary ms-2">
+                    <a href="{{ url_for('course_routes.show_course', id=course.id) }}" class="btn btn-outline-secondary ms-2">
                         Cancel
                     </a>
                 </div>

@@ -14,21 +14,21 @@
             <div class="mt-3 d-flex justify-content-between align-items-center">
                 <div>
                     {% if period.opened %}
-                        <a href="{{ url_for('section_routes.newSectionForm', period_id=period.id) }}" class="btn btn-success">
+                        <a href="{{ url_for('section_routes.new_section_form', period_id=period.id) }}" class="btn btn-success">
                             <i class="fas fa-plus me-1"></i> Add Section
                         </a>
-                        <a href="{{ url_for('period_routes.editPeriodForm', id=period.id) }}" class="btn btn-warning">
+                        <a href="{{ url_for('period_routes.edit_period_form', id=period.id) }}" class="btn btn-warning">
                             <i class="fas fa-pencil-alt me-1"></i> Edit Period
                         </a>
                     {% endif %}
-                    <a href="{{ url_for('course_routes.showCourse', id=period.course_id) }}" class="btn btn-outline-secondary">
+                    <a href="{{ url_for('course_routes.show_course', id=period.course_id) }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-1"></i> Back to Course
                     </a>
                 </div>
                 <div>
                     {% if period.opened %}
                         <span class="badge bg-success text-white me-2">Opened</span>
-                        <form method="POST" action="{{ url_for('period_routes.closePeriod', id=period.id) }}" class="d-inline">
+                        <form method="POST" action="{{ url_for('period_routes.close_period', id=period.id) }}" class="d-inline">
                             <button type="submit" class="btn btn-sm btn-danger">
                                 <i class="fas fa-times-circle me-1"></i> Close Period
                             </button>
