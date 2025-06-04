@@ -7,7 +7,7 @@
             <h2 class="mb-4">{{ 'Edit Section' if section else 'New Section' }}</h2>
 
             <form method="POST"
-                action="{{ url_for('section_routes.updateSection', id=section.id) if section else url_for('section_routes.createSection') }}"
+                action="{{ url_for('section_routes.update_section', id=section.id) if section else url_for('section_routes.create_section') }}"
                 class="card card-body bg-light shadow-sm">
 
                 {% if period %}
@@ -46,7 +46,7 @@
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save me-1"></i> Save
                     </button>
-                    <a href="{{ url_for('period_routes.showPeriod', id=period.id if period else section.period_id) }}"
+                    <a href="{{ url_for('period_routes.show_period', id=period.id if period else section.period_id) }}"
                        class="btn btn-outline-secondary ms-2">
                         <i class="fas fa-arrow-left me-1"></i> Cancel
                     </a>

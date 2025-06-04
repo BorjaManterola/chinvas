@@ -9,7 +9,7 @@
             </h3>
 
             <form method="POST"
-                  action="{{ url_for('grade_routes.updateGrade', id=grade.id) if grade else url_for('grade_routes.createGrade') }}">
+                  action="{{ url_for('grade_routes.update_grade', id=grade.id) if grade else url_for('grade_routes.create_grade') }}">
 
                 <input type="hidden" name="student_id" value="{{ student.id }}">
                 <input type="hidden" name="task_id" value="{{ task.id }}">
@@ -33,7 +33,7 @@
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save me-1"></i> Save
                     </button>
-                    <a href="{{ url_for('student_situation_routes.showStudentSituation', id=student.id) }}" class="btn btn-outline-secondary ms-2">
+                    <a href="{{ url_for('student_situation_routes.show_student_situation', id=student.id) }}" class="btn btn-outline-secondary ms-2">
                         <i class="fas fa-arrow-left me-1"></i> Cancel
                     </a>
                 </div>

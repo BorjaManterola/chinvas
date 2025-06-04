@@ -110,73 +110,91 @@ class Schedule(db.Model):
         ).all()
 
     def _assign_section(self, section, classrooms, availability):
-        # TODO: Disminuir la complejidad de este método
-        days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         modules = [9, 10, 11, 12, 14, 15, 16, 17]
-        max_consecutives = 4
-
-        blocks_needed = section.period.course.credits
         students = section.get_section_students()
+        blocks_needed = section.period.course.credits
 
-        assigned_section = {}
+        assigned_section = self._block_limit_check(section)
+        if assigned_section:
+            return assigned_section
 
-        if blocks_needed > max_consecutives:
-            assigned_section = {
+        result = self._find_available_assignment(
+            section, classrooms, availability, modules, blocks_needed, students
+        )
+        if result:
+            day, block, room = result
+            self._mark_availability(availability, day, block, room)
+            class_data = self._build_class_data(section, block, day, room)
+            self.create_schedule_class(class_data)
+            return {"assigned": True, "class_data": class_data}
+
+        return self._availability_assignment_error(section)
+
+    def _find_available_assignment(
+        self,
+        section,
+        classrooms,
+        availability,
+        modules,
+        blocks_needed,
+        students,
+    ):
+        for day in self._get_days():
+            for i in range(len(modules) - blocks_needed + 1):
+                block = modules[i : i + blocks_needed]
+                if 13 in block:
+                    continue
+                for room in classrooms:
+                    if room.capacity < len(students):
+                        continue
+                    if self.check_availability(
+                        availability, block, day, room.id, section
+                    ):
+                        return day, block, room
+        return None
+
+    def _mark_availability(self, availability, day, block, room):
+        for h in block:
+            availability[day][h][room.id] = False
+
+    def check_availability(self, availability, block, day, room_id, section):
+        return all(
+            availability[day][h][room_id] for h in block
+        ) and not self._has_conflict(day, block, section)
+
+    def _block_limit_check(self, section):
+        if section.period.course.credits > 4:
+            return {
                 "assigned": False,
                 "error": {
                     "section_id": section.id,
                     "reason": "More than 4 consecutive blocks required",
                 },
             }
+        else:
+            return {}
 
-        for day in days:
-            for i in range(len(modules) - blocks_needed + 1):
-                block = modules[i : i + blocks_needed]
-                if 13 in block:
-                    continue
+    def _get_days(self):
+        return ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 
-                for room in classrooms:
-                    if room.capacity < len(students):
-                        continue
+    def _build_class_data(self, section, block, day, room):
+        return {
+            "section_id": section.id,
+            "day_of_week": day,
+            "start_time": time(block[0]),
+            "end_time": time(block[-1] + 1),
+            "classroom_id": room.id,
+            "schedule_id": self.id,
+        }
 
-                    if self.check_availability(
-                        availability, block, day, room.id, section
-                    ):
-                        for h in block:
-                            availability[day][h][room.id] = False
-
-                        class_data = {
-                            "section_id": section.id,
-                            "day_of_week": day,
-                            "start_time": time(block[0]),
-                            "end_time": time(block[-1] + 1),
-                            "classroom_id": room.id,
-                            "schedule_id": self.id,
-                        }
-
-                        self.create_schedule_class(class_data)
-
-                        assigned_section = {
-                            "assigned": True,
-                            "class_data": class_data,
-                        }
-                        return assigned_section
-
-        if not assigned_section:
-            assigned_section = {
-                "assigned": False,
-                "error": {
-                    "section_id": section.id,
-                    "reason": "No available block without conflict",
-                },
-            }
-
-        return assigned_section
-
-    def check_availability(self, availability, block, day, room_id, section):
-        return all(
-            availability[day][h][room_id] for h in block
-        ) and not self._has_conflict(day, block, section)
+    def _availability_assignment_error(self, section):
+        return {
+            "assigned": False,
+            "error": {
+                "section_id": section.id,
+                "reason": "No available time slots or rooms",
+            },
+        }
 
     def export_schedule_to_excel(self):
         try:
@@ -294,7 +312,7 @@ class Schedule(db.Model):
 
     def create_schedule_classes(self, classes_to_create, schedule_id):
         for c in classes_to_create:
-            existing_class = self.findClass(
+            existing_class = self.find_class(
                 section_id=c["section_id"],
                 day_of_week=c["day_of_week"],
                 start_time=c["start_time"],
@@ -317,12 +335,12 @@ class Schedule(db.Model):
 
     @staticmethod
     def handle_schedule_creation(year, semester):
-        is_valid, error_message = Schedule.validateInputs(year, semester)
+        is_valid, error_message = Schedule.validate_inputs(year, semester)
         if not is_valid:
             return None, error_message
 
         year = int(year)
-        if Schedule.scheduleExists(year, semester):
+        if Schedule.schedule_exists(year, semester):
             return (
                 None,
                 f"A schedule for year {year} and semester '{semester}' already exists.",

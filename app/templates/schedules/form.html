@@ -14,7 +14,7 @@
     <div class="card shadow-sm mx-auto" style="max-width: 500px;">
         <div class="card-body">
             <h3 class="mb-4 text-center">New Schedule</h3>
-            <form method="POST" action="{{ url_for('schedule_routes.createSchedule') }}">
+            <form method="POST" action="{{ url_for('schedule_routes.create_schedule') }}">
                 <div class="mb-3">
                     <label for="year" class="form-label">Year</label>
                     <input type="number" name="year" id="year" class="form-control" min="2020" max="2100" required>
@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="d-flex justify-content-between">
-                    <a href="{{ url_for('schedule_routes.getSchedules') }}" class="btn btn-outline-secondary">
+                    <a href="{{ url_for('schedule_routes.get_schedules') }}" class="btn btn-outline-secondary">
                         Back
                     </a>
                     <button type="submit" class="btn btn-primary">
