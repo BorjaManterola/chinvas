@@ -48,7 +48,7 @@ def create_task():
 
     db.session.commit()
     return redirect(
-        url_for("assessment_routes.showAssessment", id=assessment_id)
+        url_for("assessment_routes.show_assessment", id=assessment_id)
     )
 
 
@@ -85,7 +85,7 @@ def update_task(id):
     db.session.commit()
 
     return redirect(
-        url_for("assessment_routes.showAssessment", id=assessment_id)
+        url_for("assessment_routes.show_assessment", id=assessment_id)
     )
 
 
@@ -98,5 +98,5 @@ def delete_task(id):
     db.session.commit()
 
     return redirect(
-        url_for("assessment_routes.showAssessment", id=assessment_id)
+        url_for("assessment_routes.show_assessment", id=assessment_id)
     )

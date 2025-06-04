@@ -31,7 +31,7 @@ def create_schedule():
                 f"Schedule created, but Excel download failed: {str(e)}",
                 "warning",
             )
-            return redirect(url_for("schedule_routes.get_schedules"))
+            return redirect(url_for("schedule_routes.schedules_index"))
     else:
         flash(error, "danger")
         return render_template("schedules/form.html", schedule=None)
@@ -62,7 +62,7 @@ def delete_schedule(id):
     schedule = Schedule.get_schedule_by_id(id)
     db.session.delete(schedule)
     db.session.commit()
-    return redirect(url_for("schedule_routes.get_schedules"))
+    return redirect(url_for("schedule_routes.schedules_index"))
 
 
 @schedule_bp.route("/<int:id>/export")
