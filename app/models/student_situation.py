@@ -1,5 +1,6 @@
 from app import db
 from app.models.grade import Grade
+from app.models.student import Student
 from app.models.task import Task
 
 
@@ -35,17 +36,23 @@ class StudentSituation(db.Model):
 
         return assigned_ids
 
+    def get_user_tasks_in_section(self):
+        tasks = []
+        for assessment in self.section.assessments:
+            tasks += self.get_assessment_tasks(assessment)
+        return tasks
+
+    def get_user_grades_in_section(self):
+        grades = []
+        for assessment in self.section.assessments:
+            grades += self.get_user_grades_in_asessment(assessment)
+        return grades
+
     @staticmethod
     def get_assessment_tasks(assessment):
         tasks = (
             db.session.query(Task).filter_by(assessment_id=assessment.id).all()
         )
-        return tasks
-
-    def get_user_tasks_in_section(self):
-        tasks = []
-        for assessment in self.section.assessments:
-            tasks += self.get_assessment_tasks(assessment)
         return tasks
 
     def set_user_final_grade(self):
@@ -74,13 +81,13 @@ class StudentSituation(db.Model):
         if assessment.type_evaluate == "Percentage":
             final_grade_of_assessment = (
                 self.calculate_final_grade_percentage_in_assessment(
-                    self, assessment, final_grade_of_assessment
+                    assessment, final_grade_of_assessment
                 )
             )
         elif assessment.type_evaluate == "Weight":
             final_grade_of_assessment = (
                 self.calculate_final_grade_weight_in_assessment(
-                    self, assessment, final_grade_of_assessment
+                    assessment, final_grade_of_assessment
                 )
             )
         return final_grade_of_assessment
@@ -106,8 +113,11 @@ class StudentSituation(db.Model):
         self, assessment, final_grade_of_assessment
     ):
         tasks = self.get_assessment_tasks(assessment)
+        grades = self.get_user_grades_in_asessment(assessment)
+        for grade in grades:
+            print(grade.score)
 
-        for grade in self.get_user_grades_in_asessment(assessment):
+        for grade in grades:
             for task in tasks:
                 if grade.task_id == task.id:
                     if task.optional and grade.score is None:
@@ -124,9 +134,13 @@ class StudentSituation(db.Model):
         self, assessment, final_grade_of_assessment
     ):
         tasks = self.get_assessment_tasks(assessment)
+        grades = self.get_user_grades_in_asessment(assessment)
+        for grade in grades:
+            print(grade.score)
+
         total_weighting = sum(task.weighting for task in tasks)
         sum_ponderates_grades = 0.0
-        for grade in self.get_user_grades_in_asessment(assessment):
+        for grade in grades:
             for task in tasks:
                 if grade.task_id == task.id:
                     if task.optional and grade.score is None:

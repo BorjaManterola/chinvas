@@ -50,11 +50,13 @@
                                 <div>
                                     <span class="text-danger">No grade assigned yet.</span>
                                 </div>
+                                {% if student_situation.section.period.opened %}
                                 <div>
                                     <a href="{{ url_for('grade_routes.new_grade_form', student_id=student_situation.student.id, task_id=task.id) }}" class="btn btn-sm btn-success ms-2">
                                         <i class="fas fa-plus me-1"></i> Add Grade
                                     </a>
                                 </div>
+                                {% endif %}
                             {% endif %}
                         </li>
                     {% endfor %}
