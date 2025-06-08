@@ -13,13 +13,13 @@
                 <div class="mb-3">
                     <label for="year" class="form-label">Year:</label>
                     <input type="number" class="form-control" id="year" name="year"
-                           value="{{ period.year if period else '' }}" required>
+                           value="{{ period.year if period else '' }}" required min="1900" max="2100">
                 </div>
 
                 <div class="mb-3">
                     <label for="semester" class="form-label">Semester:</label>
                     <input type="text" class="form-control" id="semester" name="semester"
-                           value="{{ period.semester if period else '' }}" required>
+                           value="{{ period.semester if period else '' }}" required maxlength="10">
                 </div>
 
                 {% if course %}

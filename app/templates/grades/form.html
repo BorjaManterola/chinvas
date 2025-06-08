@@ -26,7 +26,7 @@
 
                 <div class="mb-3">
                     <label for="score" class="form-label">Score:</label>
-                    <input type="number" step="0.01" class="form-control" id="score" name="score" value="{{ grade.score if grade else '' }}" required>
+                    <input type="number" step="0.01" class="form-control" id="score" name="score" value="{{ grade.score if grade else '' }}" required min="1" max="7">
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-4">
