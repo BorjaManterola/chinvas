@@ -1,6 +1,5 @@
 from app import db
 from app.models.grade import Grade
-from app.models.student import Student
 from app.models.task import Task
 
 
@@ -77,67 +76,8 @@ class StudentSituation(db.Model):
         return final_grade
 
     def get_user_final_grade_in_assessment(self, assessment):
-        final_grade_of_assessment = 0.0
-        if assessment.type_evaluate == "Percentage":
-            final_grade_of_assessment = (
-                self.calculate_final_grade_percentage_in_assessment(
-                    assessment, final_grade_of_assessment
-                )
-            )
-        elif assessment.type_evaluate == "Weight":
-            final_grade_of_assessment = (
-                self.calculate_final_grade_weight_in_assessment(
-                    assessment, final_grade_of_assessment
-                )
-            )
-        return final_grade_of_assessment
-
-    def get_user_final_grade_in_assessment2(self, assessment):
-        # TODO: Hacer que se revise si hay una tarea opcional q el usuario
-        # no ha hecho antes de calcular la nota final, para ajustar
-        # correctamente el weighting de las tareas
-        tasks = self.get_assessment_tasks(assessment)
-        total_weighting = sum(task.weighting for task in tasks)
-        sum_ponderates_grades = 0.0
-        for grade in self.get_user_grades_in_asessment(assessment):
-            for task in tasks:
-                if grade.task_id == task.id:
-                    if task.optional and grade.score is None:
-                        continue
-                    sum_ponderates_grades += grade.score * task.weighting
-
-        final_grade_of_assessment = sum_ponderates_grades / total_weighting
-        return final_grade_of_assessment
-
-    def calculate_final_grade_percentage_in_assessment(
-        self, assessment, final_grade_of_assessment
-    ):
         tasks = self.get_assessment_tasks(assessment)
         grades = self.get_user_grades_in_asessment(assessment)
-        for grade in grades:
-            print(grade.score)
-
-        for grade in grades:
-            for task in tasks:
-                if grade.task_id == task.id:
-                    if task.optional and grade.score is None:
-                        # TODO: Ajustar los valores de los weightings
-                        # En caso de que la tarea sea opcional
-                        continue
-                    final_grade_of_assessment += (
-                        grade.score * task.weighting / 100
-                    )
-
-        return final_grade_of_assessment
-
-    def calculate_final_grade_weight_in_assessment(
-        self, assessment, final_grade_of_assessment
-    ):
-        tasks = self.get_assessment_tasks(assessment)
-        grades = self.get_user_grades_in_asessment(assessment)
-        for grade in grades:
-            print(grade.score)
-
         total_weighting = sum(task.weighting for task in tasks)
         sum_ponderates_grades = 0.0
         for grade in grades:
@@ -145,6 +85,9 @@ class StudentSituation(db.Model):
                 if grade.task_id == task.id:
                     if task.optional and grade.score is None:
                         continue
+                    else:
+                        if grade.score is None:
+                            grade.score = 1.0
                     sum_ponderates_grades += grade.score * task.weighting
 
         final_grade_of_assessment = sum_ponderates_grades / total_weighting
