@@ -85,9 +85,8 @@ class StudentSituation(db.Model):
                 if grade.task_id == task.id:
                     if task.optional and grade.score is None:
                         continue
-                    else:
-                        if grade.score is None:
-                            grade.score = 1.0
+                    elif not task.optional and grade.score is None:
+                        grade.score = 1.0
                     sum_ponderates_grades += grade.score * task.weighting
 
         final_grade_of_assessment = sum_ponderates_grades / total_weighting
