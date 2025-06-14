@@ -78,7 +78,7 @@ class StudentSituation(db.Model):
     def get_user_final_grade_in_assessment(self, assessment):
         tasks = self.get_assessment_tasks(assessment)
         grades = self.get_user_grades_in_asessment(assessment)
-        total_weighting = sum(task.weighting for task in tasks)
+        total_weighting = 0
         sum_ponderates_grades = 0.0
         for grade in grades:
             for task in tasks:
@@ -87,8 +87,11 @@ class StudentSituation(db.Model):
                         continue
                     elif not task.optional and grade.score is None:
                         grade.score = 1.0
+                    total_weighting += task.weighting
                     sum_ponderates_grades += grade.score * task.weighting
 
+        if total_weighting == 0:
+            total_weighting = 1.0
         final_grade_of_assessment = sum_ponderates_grades / total_weighting
         return final_grade_of_assessment
 

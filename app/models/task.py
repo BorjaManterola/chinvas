@@ -4,6 +4,9 @@ from flask import send_file
 from openpyxl import Workbook
 
 from app import db
+from app.models.grade import Grade
+from app.models.section import Section
+from app.models.student import Student
 
 
 class Task(db.Model):
@@ -50,8 +53,6 @@ class Task(db.Model):
 
     @staticmethod
     def export_task_grades_to_excel(task_id):
-        from app.models.grade import Grade
-        from app.models.student import Student
         task = Task.get_task_by_id(task_id)
         grades = Grade.get_grades_by_task_id(task_id)
         assessment = task.assessment
@@ -79,5 +80,15 @@ class Task(db.Model):
             output,
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             as_attachment=True,
-            download_name=f"assesment_{assessment.name}_task_{task_id}_grades.xlsx"
+            download_name=f"assesment_{assessment.name}_task_{task_id}_grades.xlsx",
         )
+
+    def create_task_student_grades(self):
+        section = Section.get_section_by_id(self.assessment.section_id)
+        if not section:
+            raise ValueError("Section not found for the task's assessment.")
+        section_students = section.get_section_students()
+        for student in section_students:
+            grade = Grade(student_id=student.id, task_id=self.id)
+            db.session.add(grade)
+        db.session.commit()

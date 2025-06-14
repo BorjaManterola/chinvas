@@ -185,7 +185,7 @@ def populate_students_per_section(cursor):
         insert_data(cursor, query, data)
 
 
-def get_task_id(cursor, topic_id, instance, nota):
+def get_task_id(cursor, topic_id, instance):
     task_query = """
     SELECT id FROM tasks
     WHERE assessment_id = %s
@@ -208,9 +208,7 @@ def get_task_id(cursor, topic_id, instance, nota):
 def populate_grades(cursor):
     grades = load_json("db/population/7-notas_alumnos.json")["notas"]
     for grade in grades:
-        task_id = get_task_id(
-            cursor, grade["topico_id"], grade["instancia"], grade["nota"]
-        )
+        task_id = get_task_id(cursor, grade["topico_id"], grade["instancia"])
 
         if task_id:
             query = """
@@ -230,6 +228,61 @@ def populate_classrooms(cursor):
         """
         data = (classroom["id"], classroom["nombre"], classroom["capacidad"])
         insert_data(cursor, query, data)
+
+
+def get_student_ids(cursor, section_id):
+    cursor.execute(
+        """
+        SELECT student_id FROM student_situations WHERE section_id = %s
+    """,
+        (section_id,),
+    )
+    return [row[0] for row in cursor.fetchall()]
+
+
+def get_task_ids(cursor, section_id):
+    cursor.execute(
+        """
+        SELECT t.id
+        FROM tasks t
+        JOIN assessments a ON t.assessment_id = a.id
+        WHERE a.section_id = %s
+    """,
+        (section_id,),
+    )
+    return [row[0] for row in cursor.fetchall()]
+
+def get_section_ids(cursor):
+    cursor.execute("SELECT id FROM sections")
+    return [row[0] for row in cursor.fetchall()]
+
+
+def create_missing_grades_for_section(cursor, section_id):
+    student_ids = get_student_ids(cursor, section_id)
+    task_ids = get_task_ids(cursor, section_id)
+
+    for student_id in student_ids:
+        for task_id in task_ids:
+            cursor.execute(
+                """
+                SELECT 1 FROM grades WHERE student_id = %s AND task_id = %s
+            """,
+                (student_id, task_id),
+            )
+            if not cursor.fetchone():
+                cursor.execute(
+                    """
+                    INSERT INTO grades (student_id, task_id, score)
+                    VALUES (%s, %s, NULL)
+                """,
+                    (student_id, task_id),
+                )
+
+
+def create_missing_grades_for_all_sections(cursor):
+    section_ids = get_section_ids(cursor)
+    for section_id in section_ids:
+        create_missing_grades_for_section(cursor, section_id)
 
 
 def main():
@@ -253,7 +306,8 @@ def main():
         populate_grades(cursor)
         print("Populating Classrooms...")
         populate_classrooms(cursor)
-
+        print("Creating Grades from Tasks with No Grades...")
+        create_missing_grades_for_all_sections(cursor)
         connection.commit()
     except Exception as e:
         print(f"Error: {e}")

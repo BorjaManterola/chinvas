@@ -32,7 +32,7 @@
                     {% for task in assessment.tasks %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
-                                <strong>Task {{ loop.index }}</strong> - Weighting: {{ task.weighting }}{% if assessment.type_evaluate == 'Percentage' %}%{% endif %}
+                                <strong>Task {{ task.id }}</strong> - Weighting: {{ task.weighting }}{% if assessment.type_evaluate == 'Percentage' %}%{% endif %}
                                 {% if task.optional %}<span class="badge bg-info text-dark ms-2">Optional</span>{% endif %}
                             </div>
                             <div class="d-flex gap-2">
