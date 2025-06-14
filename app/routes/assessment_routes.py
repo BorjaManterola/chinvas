@@ -3,7 +3,6 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from app import db
 from app.models.assessment import Assessment
 from app.models.section import Section
-from app.models.task import Task
 
 assessment_bp = Blueprint(
     "assessment_routes", __name__, url_prefix="/assessments"
@@ -25,6 +24,7 @@ def create_assessment():
     name = request.form["name"]
     type_evaluate = request.form["type_evaluate"]
     weighting = request.form.get("weighting", type=float)
+    section = Section.get_section_by_id(section_id)
 
     assessment = Assessment(
         name=name,
@@ -36,7 +36,7 @@ def create_assessment():
     db.session.add(assessment)
     db.session.flush()
 
-    is_valid, total = assessment.is_valid_weighting_in_section(
+    is_valid, total_weight = assessment.is_valid_weighting_in_section(
         weighting, assessment.id
     )
 
@@ -44,13 +44,13 @@ def create_assessment():
         flash(
             (
                 f"Total weighting would exceed 100%. "
-                f"Current total: {total:.2f}%. "
+                f"Current total: {total_weight:.2f}%. "
                 f"You entered: {weighting:.2f}%."
             ),
             "danger",
         )
         return render_template(
-            "assessments/form.html", section_id=section_id, assessment=None
+            "assessments/form.html", section=section, assessment=None
         )
 
     db.session.commit()
@@ -83,14 +83,15 @@ def update_assessment(id):
     type_evaluate = request.form["type_evaluate"]
     weighting = request.form.get("weighting", type=float)
 
-    is_valid, total = assessment.is_valid_weighting_in_section(
-        weighting, assessment.id)
+    is_valid, total_weight = assessment.is_valid_weighting_in_section(
+        weighting, assessment.id
+    )
 
     if not is_valid:
         flash(
             (
                 f"Total weighting would exceed 100%. "
-                f"Current total: {total}%. "
+                f"Current total: {total_weight:.2f}%. "
                 f"You entered: {weighting:.2f}%."
             ),
             "danger",

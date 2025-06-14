@@ -4,6 +4,7 @@ from app import db
 from app.models.grade import Grade
 from app.models.student import Student
 from app.models.task import Task
+from app.models.student_situation import StudentSituation
 
 grade_bp = Blueprint("grade_routes", __name__, url_prefix="/grades")
 
@@ -41,7 +42,9 @@ def create_grade():
     db.session.commit()
 
     return redirect(
-        url_for("student_situation_routes.show_student_situation", id=student_id)
+        url_for(
+            "student_situation_routes.show_student_situation", id=student_id
+        )
     )
 
 
@@ -67,10 +70,15 @@ def update_grade(id):
     grade.score = score
     db.session.commit()
 
+    student_situation = StudentSituation.get_student_situation_by_exact_values(
+        student_id=grade.student_id,
+        section_id=grade.task.assessment.section.id,
+    )
+
     return redirect(
         url_for(
             "student_situation_routes.show_student_situation",
-            id=grade.student_id,
+            id=student_situation.id,
         )
     )
 
@@ -84,5 +92,7 @@ def delete_grade(id):
     db.session.commit()
 
     return redirect(
-        url_for("student_situation_routes.show_student_situation", id=student_id)
+        url_for(
+            "student_situation_routes.show_student_situation", id=student_id
+        )
     )

@@ -24,6 +24,15 @@ class StudentSituation(db.Model):
         return student_situation
 
     @staticmethod
+    def get_student_situation_by_exact_values(section_id, student_id):
+        student_situation = (
+            db.session.query(StudentSituation)
+            .filter_by(section_id=section_id, student_id=student_id)
+            .first()
+        )
+        return student_situation
+
+    @staticmethod
     def get_assigned_students_ids_in_section(section_id):
         student_situations_ids = (
             db.session.query(StudentSituation.student_id)

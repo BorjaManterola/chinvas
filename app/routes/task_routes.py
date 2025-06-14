@@ -19,7 +19,6 @@ def create_task():
     assessment_id = request.form["assessment_id"]
     weighting = request.form.get("weighting", type=float)
 
-    assessment = Assessment.get_assessment_by_id(assessment_id)
     optional = "optional" in request.form
 
     task = Task(
@@ -35,14 +34,17 @@ def create_task():
     if not is_valid:
         flash(
             (
-                "Total task weighting cannot exceed 100%. "
-                f"Current total: {total_weight}%"
+                f"Total weighting would exceed 100%. "
+                f"Current total: {total_weight:.2f}%. "
+                f"You entered: {weighting:.2f}%."
             ),
             "danger",
         )
         return redirect(
             url_for(
-                "task_routes.new_task_form", assessment_id=assessment_id, task=None
+                "task_routes.new_task_form",
+                assessment_id=assessment_id,
+                task=None,
             )
         )
 
@@ -74,8 +76,9 @@ def update_task(id):
     if not is_valid:
         flash(
             (
-                "Total task weighting cannot exceed 100%. "
-                f"Current total: {total_weight}%"
+                f"Total weighting would exceed 100%. "
+                f"Current total: {total_weight:.2f}%. "
+                f"You entered: {weighting:.2f}%."
             ),
             "danger",
         )
@@ -88,6 +91,7 @@ def update_task(id):
     return redirect(
         url_for("assessment_routes.show_assessment", id=assessment_id)
     )
+
 
 @task_bp.route("/task/<int:task_id>/report", methods=["GET"])
 def download_task_report(task_id):
