@@ -19,6 +19,13 @@ def create_teacher():
     if not name or not email:
         return render_template("teachers/form.html", teacher=None)
 
+    if Teacher.get_teacher_by_email(email):
+        return render_template(
+            "teachers/form.html",
+            teacher=None,
+            error="Email already exists."
+        )
+
     teacher = Teacher(name=name, email=email)
     db.session.add(teacher)
     db.session.commit()

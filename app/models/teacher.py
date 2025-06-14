@@ -19,3 +19,8 @@ class Teacher(db.Model):
     def get_teacher_by_id(id):
         teacher = Teacher.query.get_or_404(id)
         return teacher
+
+    @staticmethod
+    def get_teacher_by_email(email):
+        teacher = Teacher.query.filter_by(email=email).first()
+        return teacher

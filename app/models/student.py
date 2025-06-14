@@ -39,6 +39,11 @@ class Student(db.Model):
         return students
 
     @staticmethod
+    def get_student_by_email(email):
+        student = Student.query.filter_by(email=email).first()
+        return student
+
+    @staticmethod
     def export_closed_course_grades(student_id):
         student = Student.get_student_by_id(student_id)
         situations = student.student_situations

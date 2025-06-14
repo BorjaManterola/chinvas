@@ -42,7 +42,7 @@ def create_task():
         )
         return redirect(
             url_for(
-                "task_routes.new_task_form", assessment=assessment, task=None
+                "task_routes.new_task_form", assessment_id=assessment_id, task=None
             )
         )
 

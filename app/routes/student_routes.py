@@ -20,6 +20,13 @@ def create_student():
     if not name or not email:
         return render_template("students/form.html", student=None)
 
+    if Student.get_student_by_email(email):
+        return render_template(
+            "students/form.html",
+            student=None,
+            error="Email already exists."
+        )
+
     student = Student(name=name, email=email, entry_date=entry_date)
     db.session.add(student)
     db.session.commit()

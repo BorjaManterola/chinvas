@@ -39,6 +39,11 @@ def create_course():
     except ValueError:
         return render_template("courses/form.html", course=None)
 
+    if Course.get_course_by_code(code):
+        return render_template(
+            "courses/form.html", course=None, error="Course code already exists."
+        )
+
     course = Course(name=name, code=code, credits=credits)
     db.session.add(course)
     db.session.commit()

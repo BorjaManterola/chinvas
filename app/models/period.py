@@ -27,7 +27,18 @@ class Period(db.Model):
         periods = Period.query.all()
         return periods
 
+    @staticmethod
     def set_students_final_grades(self):
         for section in self.sections:
             for student_situation in section.student_situations:
                 student_situation.set_user_final_grade()
+
+    @staticmethod
+    def get_period_by_exact_values(course_id, year, semester):
+        period = (
+            Period.query.filter_by(
+                course_id=course_id, year=year, semester=semester
+            )
+            .first()
+        )
+        return period

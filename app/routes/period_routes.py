@@ -26,6 +26,17 @@ def create_period():
         course = Course.get_course_by_id(course_id)
         return render_template("periods/form.html", period=None, course=course)
 
+    if Period.get_period_by_exact_values(
+        year=year, semester=semester, course_id=course_id
+    ):
+        course = Course.get_course_by_id(course_id)
+        return render_template(
+            "periods/form.html",
+            period=None,
+            course=course,
+            error="Period already exists for this course.",
+        )
+
     period = Period(year=year, semester=semester, course_id=course_id)
     db.session.add(period)
     db.session.commit()

@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <div class="card mt-4 shadow-sm col-md-6 mx-auto">
+<div class="container mt-5">
+    {% if error %}
+    <div class="alert alert-danger mb-3">
+        {{ error }}
+    </div>
+    {% endif %}
+    <div class="card shadow-sm col-md-6 mx-auto">
         <div class="card-body">
-            <h2 class="mb-4">{{ 'Edit Course' if course else 'New Course' }}</h2>
+            <h2 class="mb-4 text-center">{{ 'Edit Course' if course else 'New Course' }}</h2>
 
             <form method="POST"
                 action="{{ url_for('course_routes.update_course', id=course.id) if course else url_for('course_routes.create_course') }}"

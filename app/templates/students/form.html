@@ -24,7 +24,7 @@
                 <div class="mb-3">
                     <label for="entry_date" class="form-label">Entry Date</label>
                     <input type="date" class="form-control" id="entry_date" name="entry_date"
-                           value="{{ student.entry_date if student else '' }}">
+                           value="{{ student.entry_date if student else '' }}" required>
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">

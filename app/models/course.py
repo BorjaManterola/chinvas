@@ -31,3 +31,8 @@ class Course(db.Model):
     def get_all_courses():
         courses = Course.query.all()
         return courses
+
+    @staticmethod
+    def get_course_by_code(code):
+        course = Course.query.filter_by(code=code).first()
+        return course
