@@ -64,7 +64,7 @@ class Task(db.Model):
         ws.append(headers)
 
         for grade in grades:
-            student = Student.query.get(grade.student_id)
+            student = Student.get_student_by_id(grade.student_id)
             ws.append([
                 student.id,
                 student.name,
