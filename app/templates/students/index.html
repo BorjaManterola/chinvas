@@ -42,6 +42,9 @@
                             <i class="fas fa-trash me-1"></i> Delete
                         </button>
                     </form>
+                    <a href="{{ url_for('student_routes.download_student_history', student_id=student.id) }}" class="btn btn-sm btn-success">
+                        <i class="fas fa-file-alt me-1"></i> Download Academic History
+                    </a>
                 </td>
             </tr>
             {% endfor %}
