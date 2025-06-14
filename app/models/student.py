@@ -1,3 +1,8 @@
+import io
+
+from flask import send_file
+from openpyxl import Workbook
+
 from app import db
 
 
@@ -32,3 +37,42 @@ class Student(db.Model):
     def get_available_students(assigned_ids):
         students = Student.query.filter(~Student.id.in_(assigned_ids)).all()
         return students
+
+    @staticmethod
+    def export_closed_course_grades(student_id):
+        student = Student.get_student_by_id(student_id)
+        situations = student.student_situations
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Academic History"
+
+        headers = ["Course", "Instance", "Section", "Year", "Semester", "Final Grade"]
+        ws.append(headers)
+
+        for sit in situations:
+            if sit.final_grade is None:
+                continue
+            section = sit.section
+            period = section.period
+            course = period.course
+
+            ws.append([
+                course.name,
+                course.code if hasattr(course, 'code') else course.id,
+                section.id,
+                period.year,
+                period.semester,
+                sit.final_grade
+            ])
+
+        output = io.BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        return send_file(
+            output,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            as_attachment=True,
+            download_name=f"student_{student.name}_academic_history.xlsx"
+        )

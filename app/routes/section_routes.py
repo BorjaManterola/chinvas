@@ -79,3 +79,7 @@ def delete_section(id):
     db.session.delete(section)
     db.session.commit()
     return redirect(url_for("period_routes.show_period", id=period_id))
+
+@section_bp.route("/section/<int:section_id>/export-grades", methods=["GET"])
+def export_final_grades(section_id):
+    return Section.export_final_grades_to_excel(section_id)

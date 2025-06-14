@@ -1,3 +1,8 @@
+import io
+
+from flask import send_file
+from openpyxl import Workbook
+
 from app import db
 
 
@@ -54,3 +59,34 @@ class Section(db.Model):
 
     def get_section_student_situations(self):
         return self.student_situations
+
+    @staticmethod
+    def export_final_grades_to_excel(section_id):
+        section = Section.get_section_by_id(section_id)
+        situations = section.get_section_student_situations()
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Final Grades"
+
+        headers = ["Student ID", "Student Name", "Final Grade"]
+        ws.append(headers)
+
+        for sit in situations:
+            student = sit.student
+            ws.append([
+                student.id,
+                student.name,
+                sit.final_grade if sit.final_grade is not None else "N/A"
+            ])
+
+        output = io.BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        return send_file(
+            output,
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            as_attachment=True,
+            download_name=f"section_{section_id}_final_grades.xlsx"
+        )
