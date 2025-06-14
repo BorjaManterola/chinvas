@@ -47,6 +47,7 @@ def create_task():
         )
 
     db.session.commit()
+    task.create_task_student_grades()
     return redirect(
         url_for("assessment_routes.show_assessment", id=assessment_id)
     )
