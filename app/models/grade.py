@@ -29,3 +29,12 @@ class Grade(db.Model):
         grades = Grade.query.filter_by(task_id=task_id).all()
         return grades
 
+    @staticmethod
+    def get_grade_by_student_id_and_task_id(student_id, task_id):
+        grade = (
+            db.session.query(Grade)
+            .filter_by(student_id=student_id, task_id=task_id)
+            .first()
+        )
+        return grade
+

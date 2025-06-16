@@ -25,7 +25,7 @@ def create_schedule():
 
     if schedule:
         try:
-            return schedule.export_to_excel()
+            return schedule.export_schedule_to_excel()
         except Exception as e:
             flash(
                 f"Schedule created, but Excel download failed: {str(e)}",
@@ -66,10 +66,10 @@ def delete_schedule(id):
 
 
 @schedule_bp.route("/<int:id>/export")
-def export_schedule_to_excel(id):
+def download_schedule(id):
     schedule = Schedule.get_schedule_by_id(id)
     try:
-        return schedule.export_to_excel()
+        return schedule.export_schedule_to_excel()
     except Exception as e:
         flash(
             f"An error occurred while generating the Excel file: {str(e)}",

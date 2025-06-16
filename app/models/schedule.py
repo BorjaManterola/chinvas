@@ -226,7 +226,7 @@ class Schedule(db.Model):
             },
         }
 
-    def export_to_excel(self):
+    def export_schedule_to_excel(self):
         try:
             data_rows = self._build_excel_rows()
         except Exception as e:

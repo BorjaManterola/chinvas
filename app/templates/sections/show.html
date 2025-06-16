@@ -31,7 +31,7 @@
                         <i class="fas fa-arrow-left me-1"></i> Back to Period
                     </a>
                     {% if not section.period.opened %}
-                    <a href="{{ url_for('section_routes.export_final_grades', section_id=section.id) }}" class="btn btn-outline-success">
+                    <a href="{{ url_for('section_routes.download_final_grades', section_id=section.id) }}" class="btn btn-outline-success">
                         <i class="fas fa-file-excel me-1"></i> Export Final Grades
                     </a>
                     {% endif %}
