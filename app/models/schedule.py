@@ -389,4 +389,4 @@ class Schedule(db.Model):
             errors = ["⚠ Could not generate schedule due to conflicts:"]
             for s in result["unassigned_sections"]:
                 errors.append(f"Section {s['section_id']}: {s['reason']}")
-            return None, "<br>".join(errors)
+            return None," ".join(errors)
