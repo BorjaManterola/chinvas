@@ -31,8 +31,8 @@ def create_prerequisites():
     prereq_ids = request.form.getlist("prereq_ids")
 
     for prereq_id in prereq_ids:
-        exist_prerequisite = Prerequisite.get_prerequisite_by_course_id_and_id(
-            course_id, prereq_id
+        exist_prerequisite = Prerequisite.get_prerequisite_by_exact_values(
+            prereq_id, course_id
         )
 
         if not exist_prerequisite:
@@ -40,7 +40,8 @@ def create_prerequisites():
                 course_id=course_id, prerequisite_id=prereq_id
             )
             db.session.add(prereq)
-            db.session.commit()
+
+    db.session.commit()
 
     return redirect(url_for("course_routes.show_course", id=course_id))
 

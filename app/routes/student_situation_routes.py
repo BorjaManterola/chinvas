@@ -34,10 +34,15 @@ def create_student_situations():
     student_ids = request.form.getlist("student_ids")
 
     for student_id in student_ids:
-        situation = StudentSituation(
-            student_id=student_id, section_id=section_id
+        situation_exists = StudentSituation.get_student_situation_by_exact_values(
+            section_id=section_id,
+            student_id=student_id,
         )
-        db.session.add(situation)
+        if not situation_exists:
+            situation = StudentSituation(
+                student_id=student_id, section_id=section_id
+            )
+            db.session.add(situation)
 
     db.session.commit()
     return redirect(url_for("section_routes.show_section", id=section_id))
