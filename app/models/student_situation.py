@@ -1,4 +1,7 @@
+from typing import List
+
 from app import db
+from app.models.assessment import Assessment
 from app.models.grade import Grade
 from app.models.task import Task
 
@@ -44,6 +47,10 @@ class StudentSituation(db.Model):
 
         return assigned_ids
 
+    def get_student_situation_assessments(self):
+        assessments = self.section.assessments
+        return assessments
+
     def get_user_tasks_in_section(self):
         tasks = []
         for assessment in self.section.assessments:
@@ -69,35 +76,49 @@ class StudentSituation(db.Model):
         db.session.commit()
 
     def calculate_final_grade(self):
-        assessments = self.section.assessments
-        total_weighting = sum(
-            assessment.weighting for assessment in assessments
+        assessments: List[Assessment] = (
+            self.get_student_situation_assessments()
+        )
+        total_weighting = self.calculate_total_weighting_in_section(
+            assessments
         )
         sum_ponderates_grades = 0.0
         for assessment in assessments:
             final_grade_of_assessment = (
-                self.get_user_final_grade_in_assessment(assessment)
+                self.calculate_user_grade_in_assessment(assessment)
             )
             sum_ponderates_grades += (
-                final_grade_of_assessment * assessment.weighting
+                final_grade_of_assessment
+                * assessment.get_assessment_weighting()
             )
         final_grade = sum_ponderates_grades / total_weighting
         return final_grade
 
-    def get_user_final_grade_in_assessment(self, assessment):
-        tasks = self.get_assessment_tasks(assessment)
-        grades = self.get_user_grades_in_asessment(assessment)
+    def calculate_total_weighting_in_section(self, assessments):
+        total_weighting = sum(
+            assessment.weighting for assessment in assessments
+        )
+        return total_weighting
+
+    def _is_corresponding_task(self, grade, task):
+        return grade.task_id == task.id
+
+    def calculate_user_grade_in_assessment(self, assessment):
+        tasks: List[Task] = self.get_assessment_tasks(assessment)
+        grades: List[Grade] = self.get_user_grades_in_asessment(assessment)
         total_weighting = 0
         sum_ponderates_grades = 0.0
         for grade in grades:
             for task in tasks:
-                if grade.task_id == task.id:
-                    if task.optional and grade.score is None:
+                if self._is_corresponding_task(grade, task):
+                    if task.is_optional() and grade.get_score() is None:
                         continue
-                    elif not task.optional and grade.score is None:
-                        grade.score = 1.0
-                    total_weighting += task.weighting
-                    sum_ponderates_grades += grade.score * task.weighting
+                    elif not task.is_optional() and grade.get_score() is None:
+                        grade.set_default_score()
+                    total_weighting += task.get_weighting()
+                    sum_ponderates_grades += (
+                        grade.get_score() * task.get_weighting()
+                    )
 
         if total_weighting == 0:
             total_weighting = 1.0

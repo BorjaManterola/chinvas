@@ -39,6 +39,9 @@ class Task(db.Model):
         )
         return sum.scalar() or 0.0
 
+    def is_optional(self):
+        return self.optional
+
     def is_valid_weighting_in_assessment(self, new_weighting, exclude_task_id):
         if self.assessment.type_evaluate != "Percentage":
             return True, 0.0
@@ -92,3 +95,6 @@ class Task(db.Model):
             grade = Grade(student_id=student.id, task_id=self.id)
             db.session.add(grade)
         db.session.commit()
+
+    def get_weighting(self):
+        return self.weighting

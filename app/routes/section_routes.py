@@ -82,4 +82,5 @@ def delete_section(id):
 
 @section_bp.route("/section/<int:section_id>/export-grades", methods=["GET"])
 def export_final_grades(section_id):
-    return Section.export_final_grades_to_excel(section_id)
+    section: Section = Section.get_section_by_id(section_id)
+    return section.export_final_grades_to_excel()

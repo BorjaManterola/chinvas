@@ -169,14 +169,18 @@ class Schedule(db.Model):
         blocks_needed,
         students,
     ):
+        valid_rooms = [
+            room for room in classrooms
+            if room.capacity >= len(students)
+        ]
+        valid_blocks = [
+            modules[i : i + blocks_needed]
+            for i in range(len(modules) - blocks_needed + 1)
+            if 13 not in modules[i : i + blocks_needed]
+        ]
         for day in self._get_days():
-            for i in range(len(modules) - blocks_needed + 1):
-                block = modules[i : i + blocks_needed]
-                if 13 in block:
-                    continue
-                for room in classrooms:
-                    if room.capacity < len(students):
-                        continue
+            for block in valid_blocks:
+                for room in valid_rooms:
                     if self.check_availability(
                         availability, block, day, room.id, section
                     ):

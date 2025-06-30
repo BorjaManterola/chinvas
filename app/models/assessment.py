@@ -60,3 +60,6 @@ class Assessment(db.Model):
         section = db.session.query(Section).get_or_404(assessment.section_id)
         return section
 
+    def get_assessment_weighting(self):
+        return self.weighting
+

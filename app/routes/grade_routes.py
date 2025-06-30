@@ -3,8 +3,8 @@ from flask import Blueprint, redirect, render_template, request, url_for
 from app import db
 from app.models.grade import Grade
 from app.models.student import Student
-from app.models.task import Task
 from app.models.student_situation import StudentSituation
+from app.models.task import Task
 
 grade_bp = Blueprint("grade_routes", __name__, url_prefix="/grades")
 

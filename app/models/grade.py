@@ -29,3 +29,9 @@ class Grade(db.Model):
         grades = Grade.query.filter_by(task_id=task_id).all()
         return grades
 
+    def get_score(self):
+        return self.score
+
+    def set_default_score(self):
+        self.score = 1.0
+

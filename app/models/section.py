@@ -4,6 +4,7 @@ from flask import send_file
 from openpyxl import Workbook
 
 from app import db
+from app.models.student_situation import StudentSituation
 
 
 class Section(db.Model):
@@ -60,10 +61,11 @@ class Section(db.Model):
     def get_section_student_situations(self):
         return self.student_situations
 
-    @staticmethod
-    def export_final_grades_to_excel(section_id):
-        section = Section.get_section_by_id(section_id)
-        situations = section.get_section_student_situations()
+    def export_final_grades_to_excel(self):
+        try:
+            data_rows = self._build_final_grades_excel_rows()
+        except Exception as e:
+            raise RuntimeError(f"Error building Excel rows: {str(e)}")
 
         wb = Workbook()
         ws = wb.active
@@ -72,13 +74,8 @@ class Section(db.Model):
         headers = ["Student ID", "Student Name", "Final Grade"]
         ws.append(headers)
 
-        for sit in situations:
-            student = sit.student
-            ws.append([
-                student.id,
-                student.name,
-                sit.final_grade if sit.final_grade is not None else "N/A"
-            ])
+        for row in data_rows:
+            ws.append(row)
 
         output = io.BytesIO()
         wb.save(output)
@@ -88,5 +85,16 @@ class Section(db.Model):
             output,
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             as_attachment=True,
-            download_name=f"section_{section_id}_final_grades.xlsx"
+            download_name=f"section_{self.id}_final_grades.xlsx"
         )
+
+    def _build_final_grades_excel_rows(self):
+        rows = []
+        situations: StudentSituation = self.get_section_student_situations()
+        for sit in situations:
+            student = sit.student
+            rows.append([
+                student.id,
+                student.name,
+                sit.final_grade if sit.final_grade is not None else "N/A"
+            ])
