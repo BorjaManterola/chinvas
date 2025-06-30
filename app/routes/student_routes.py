@@ -74,4 +74,4 @@ def delete_student(id):
 
 @student_bp.route("/students/<int:student_id>/history", methods=["GET"])
 def download_student_history(student_id):
-    return Student.export_academic_history(student_id)
+    return Student.export_academic_history_to_excel(student_id)
