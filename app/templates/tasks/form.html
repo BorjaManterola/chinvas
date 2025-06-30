@@ -36,8 +36,8 @@
                         {% endif %}
                     </label>
                     <input type="number" class="form-control" id="weighting" name="weighting" 
-                        value="{{ task.weighting if task else '' }}" step="0.01" min="0" 
-                        {% if assessment and assessment.type_evaluate == 'Percentage' %}max="100"{% endif %} 
+                        value="{{ task.weighting if task else '' }}" step="0.01" min="0"
+                        {% if assessment and assessment.type_evaluate == 'Percentage' %}max="100"{% elif assessment and assessment.type_evaluate == 'Weight' %}max="999"{% endif %}
                         required>
                 </div>
 

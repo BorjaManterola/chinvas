@@ -44,7 +44,7 @@ class Student(db.Model):
         return student
 
     @staticmethod
-    def export_closed_course_grades(student_id):
+    def export_academic_history_to_excel(student_id):
         student = Student.get_student_by_id(student_id)
         situations = student.student_situations
 

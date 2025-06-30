@@ -47,8 +47,8 @@ class Prerequisite(db.Model):
         return courses_ids
 
     @staticmethod
-    def get_prerequisite_by_course_id_and_id(id, course_id):
+    def get_prerequisite_by_exact_values(prerequisite_id, course_id):
         exist_prerequisite = Prerequisite.query.filter_by(
-            course_id=course_id, prerequisite_id=id
+            course_id=course_id, prerequisite_id=prerequisite_id
         ).first()
         return exist_prerequisite

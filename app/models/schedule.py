@@ -230,7 +230,7 @@ class Schedule(db.Model):
             },
         }
 
-    def export_to_excel(self):
+    def export_schedule_to_excel(self):
         try:
             data_rows = self._build_excel_rows()
         except Exception as e:
@@ -393,4 +393,4 @@ class Schedule(db.Model):
             errors = ["⚠ Could not generate schedule due to conflicts:"]
             for s in result["unassigned_sections"]:
                 errors.append(f"Section {s['section_id']}: {s['reason']}")
-            return None, "<br>".join(errors)
+            return None," ".join(errors)
