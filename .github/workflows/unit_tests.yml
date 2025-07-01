@@ -18,9 +18,10 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
+          pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-mock
 
       - name: Run tests
         run: |
-          PYTHONPATH=. pytest app/tests
+          pytest app/tests -v
