@@ -1,7 +1,6 @@
 from typing import List
 
 from app import db
-from app.models.assessment import Assessment
 from app.models.grade import Grade
 from app.models.task import Task
 
@@ -76,7 +75,7 @@ class StudentSituation(db.Model):
         db.session.commit()
 
     def calculate_final_grade(self):
-        assessments: List[Assessment] = (
+        assessments = (
             self.get_student_situation_assessments()
         )
         total_weighting = self.calculate_total_weighting_in_section(

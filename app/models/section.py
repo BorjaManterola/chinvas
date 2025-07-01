@@ -4,7 +4,6 @@ from flask import send_file
 from openpyxl import Workbook
 
 from app import db
-from app.models.student_situation import StudentSituation
 
 
 class Section(db.Model):
@@ -90,7 +89,7 @@ class Section(db.Model):
 
     def _build_final_grades_excel_rows(self):
         rows = []
-        situations: StudentSituation = self.get_section_student_situations()
+        situations = self.get_section_student_situations()
         for sit in situations:
             student = sit.student
             rows.append([
