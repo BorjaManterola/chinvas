@@ -17,11 +17,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest pytest-mock
+          ./venv/bin/pip install -r requirements.txt
+          ./venv/bin/pip install pytest pytest-mock
 
       - name: Run tests
         run: |
-          pytest app/tests -v
+          PYTHONPATH=. ./venv/bin/python -m pytest app/tests -v
